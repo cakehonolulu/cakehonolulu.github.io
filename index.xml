@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>~/cake</title>
+    <link>https://cakehonolulu.github.io/</link>
+    <description>Recent content on ~/cake</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 13 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://cakehonolulu.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About me</title>
+      <link>https://cakehonolulu.github.io/about/</link>
+      <pubDate>Mon, 13 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://cakehonolulu.github.io/about/</guid>
+      <description>🚧 Studying a degree in Mobile and Web Application Development @ Univ. Rovira i Virgili. 🚩 Improving my offensive security skills. ⚡ Studying hardware architecture whilst developing emulators for Nintendo Game Boy (DMG-01) and Sony PlayStation 1 (PSX). 🔭 Reading on Just-in-Time compilation techniques. 🧑🏽‍💻 Open for collaborations!  What I love doing:  📖 Learning new things everyday. 🎮 Engaging in CTF competitions; great way to practise offensive-security skills in a gamified way.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://cakehonolulu.github.io/archives/</link>
+      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://cakehonolulu.github.io/archives/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
