@@ -24,6 +24,9 @@ mode = "dark-mode"
 # Sidebar: about/bio
 [params.about]
 
+# Sidebar: about/bio
+[params.ctfs]
+
 # Sidebar: social links
 # Available icon sets:
 # * FontAwesome 5 <https://fontawesome.com/> ('fas fa-' or 'fab-fa' for brands)
