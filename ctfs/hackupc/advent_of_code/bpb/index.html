@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-	<meta name="generator" content="Hugo 0.96.0" /><title>~/cake</title>
+    <head><title>🧩 [0x00] Binary problem: Byte per byte &ndash; ~/cake</title>
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +35,7 @@
     
     <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
     
-    <li class="main-nav__item"><a class="nav-main-item" href="/ctfs/" title="writeups">writeups</a></li>
+    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
     
     </ul>
 </nav>
@@ -44,10 +43,30 @@
 </header>
 
             <section class="page__body">
-    <h1 id="-cake-here-welcome">🫧 cake here, welcome!</h1>
+    <h1 id="0x00-binary-problem-byte-per-byte">🧩 [0x00] Binary problem: Byte per byte</h1>
+
+    <h1 id="1--provided-challenge-description">1.- Provided challenge description</h1>
 <br>
-<p>In my website you&rsquo;ll find a wide variety of posts, I hope you feel like at home!</p>
-<p>Have fun!</p>
+<p>The code is inside the binary code of this binary following this structure: Advent{code}. Good luck!</p>
+<h1 id="2--provided-files">2.- Provided files</h1>
+<br>
+<a href="https://github.com/cakehonolulu/HackUPC/blob/main/2022/AdventOfHackUPC/BPB/byte_per_byte?raw=true">byte_per_byte</a>
+<h1 id="3--challenge">3.- Challenge</h1>
+<br>
+<p>We&rsquo;ll apply the &rsquo;lowest hanging fruit&rsquo; methodology, that is, testing each thing from the bottom up so that we don&rsquo;t
+forget anything inbetween.</p>
+<p>We run the <code>file</code> command to see what information we may get from the binary; it returns:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>byte_per_byte: ELF 64-bit LSB pie executable, x86-64, version <span style="color:#ae81ff">1</span> <span style="color:#f92672">(</span>SYSV<span style="color:#f92672">)</span>, dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2,
+</span></span><span style="display:flex;"><span>BuildID<span style="color:#f92672">[</span>sha1<span style="color:#f92672">]=</span>bfca996e2b11c48694a780ff141d9b4c5dc88fdc, <span style="color:#66d9ef">for</span> GNU/Linux 3.2.0, not stripped</span></span></code></pre></div>
+<p>Binary isn&rsquo;t stripped (That means it has debug symbols which may come in handy if there&rsquo;s any need to disassemble the file), we&rsquo;ll run it to see how it behaves (<code>./byte_per_byte</code>):</p>
+<p>All it does is print &ldquo;Nothing to see here&hellip;&rdquo; string on the screen</p>
+<p>We run a quick hexdump on the file (<code>hexdump -c byte_per_byte</code>) and we discover the flag at offset 0x00003020 with 2 NULL bytes of padding inbetween ASCII characters, fixing the representation yields us the flag:</p>
+<p><code>Advent{qkGGTxcRmwfDQP8ZrJQuFPIm5Jyim3pn}</code></p>
+
+
+    <ul>
+    
+    </ul>
 
 
             </section>

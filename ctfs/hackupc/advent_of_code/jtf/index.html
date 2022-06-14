@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-	<meta name="generator" content="Hugo 0.96.0" /><title>~/cake</title>
+    <head><title>🚧 [0x02] Crypto: Jumping the fence &ndash; ~/cake</title>
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +35,7 @@
     
     <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
     
-    <li class="main-nav__item"><a class="nav-main-item" href="/ctfs/" title="writeups">writeups</a></li>
+    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
     
     </ul>
 </nav>
@@ -44,10 +43,37 @@
 </header>
 
             <section class="page__body">
-    <h1 id="-cake-here-welcome">🫧 cake here, welcome!</h1>
-<br>
-<p>In my website you&rsquo;ll find a wide variety of posts, I hope you feel like at home!</p>
-<p>Have fun!</p>
+    <h1 id="0x02-crypto-jumping-the-fence">🚧 [0x02] Crypto: Jumping the fence</h1>
+
+    <p>1.- Provided challenge description
+<br></p>
+<p>Can you find the encrypted code? Maybe is not as easy at is seems&hellip;</p>
+<p>2.- Provided information
+<br></p>
+<code>
+Lb't'cnga(lrgíñmranaitoran
+amlIleyelneudarFmaBeoDinSraiaaoaiBroamsrc,er,oiBroa
+saa,leoWlaaolSaaiiacn)niagMn,emcñ(cl)aiaaíaosñt(cl)
+rsmudradlraknitioeMtSdeae
+</code>
+<p>3.- Challenge</p>
+<p>This challenge is an interesting one, it tests your crypto-detection capabilities (And your ability to search in strange places for hints&hellip;)</p>
+<p>While you could go ahead and decrypt the message, you&rsquo;d still be missing the hint that enables you to solve the challenge&hellip;</p>
+<p>If you view the source code of the challenge&rsquo;s website you find a hint hidden in a HTML comment:</p>
+<p><code>The code is the next 12 words of the song without spaces, jumps, comas and dots</p>
+<p>So next, I inspected the provided code&hellip; Immediately found the use of Spanish glyphs (ñ), so that led me to know that the song was spanish&hellip; in a way&hellip;</p>
+<p>The code can be decrypted using a zig-zag cypher solver (4 rows, 9 offset)</p>
+<p>Decrypting it gives us:</p>
+<p><code>Lasramblas,I&rsquo;llmeetyouWe&rsquo;lldancearoundlaSagradaFamilia(Barcelona)DrinkingSangríaMiniña,teamomicariño(Barcelona)MamasitaricaSí,teadoro,señorita(Barcelona)</code></p>
+<p>Which is the lyrics of an Ed Sheeran song related to Barcelona&hellip;</p>
+<p>So we search up the song&rsquo;s lyrics to find the next 12 words and&hellip;
+<br></p>
+<p><code>Advent{LosotrosvivalavidaComeonlet&rsquo;sbefreeinBarcelona}</code></p>
+
+
+    <ul>
+    
+    </ul>
 
 
             </section>

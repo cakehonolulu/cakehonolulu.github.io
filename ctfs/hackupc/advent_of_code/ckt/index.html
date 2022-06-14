@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-	<meta name="generator" content="Hugo 0.96.0" /><title>~/cake</title>
+    <head><title>🍸 [0x01] Reverse engineering: Cocktail &ndash; ~/cake</title>
 
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,7 +35,7 @@
     
     <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
     
-    <li class="main-nav__item"><a class="nav-main-item" href="/ctfs/" title="writeups">writeups</a></li>
+    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
     
     </ul>
 </nav>
@@ -44,10 +43,28 @@
 </header>
 
             <section class="page__body">
-    <h1 id="-cake-here-welcome">🫧 cake here, welcome!</h1>
+    <h1 id="0x01-reverse-engineering-cocktail">🍸 [0x01] Reverse engineering: Cocktail</h1>
+
+    <p>1.- Provided challenge description
+<br></p>
+<p>The code is inside this program, can you find it?</p>
+<h1 id="2--provided-files">2.- Provided files</h1>
 <br>
-<p>In my website you&rsquo;ll find a wide variety of posts, I hope you feel like at home!</p>
-<p>Have fun!</p>
+<h3 style="color:lightblue">
+<p><a href="https://raw.githubusercontent.com/cakehonolulu/HackUPC/main/2022/AdventOfHackUPC/CKT/code.py">code.py</a></p>
+<h1 id="3--challenge">3.- Challenge</h1>
+<p>This challenge tests your Python knowledge, so it&rsquo;s a good idea to have at least the bare minimum idea of how to write simple programs on it</p>
+<p>We try to run the script (<code>python3 code.py</code>) and it errors out, by looking at the code we can see that it expects an argument
+so we provide a random one to it, prints out &ldquo;No&rdquo;</p>
+<p>By inspecting the code you can see that it does some Python String Slicings, so it should be as easy as reversing the algorithm used to craft the flag (The result gets compared to a string to know if that&rsquo;s the flag)</p>
+<p>The main idea behind the algorithm is that it works kinda like a cocktail mixer, you pour some content from the left glass and then some from the right glass; generating an unique mixture crafted by both glasses (The flag)</p>
+<p>While you can do the reversing manually, I personally wrote a script that crafted the flag automatically.</p>
+<p><code>Advent{NJgm4LQC6afk8MstzVuiFAtn21xpjAWq}</code></p>
+
+
+    <ul>
+    
+    </ul>
 
 
             </section>
