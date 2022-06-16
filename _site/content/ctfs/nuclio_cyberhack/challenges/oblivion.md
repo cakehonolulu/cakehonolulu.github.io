@@ -1,5 +1,5 @@
 +++
-title = "🌐 [0x01] Oblivion"
+title = "🌐 [0x00] Oblivion"
 description = "Writeup for 'Oblivion'"
 date = "2022-06-14"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]
