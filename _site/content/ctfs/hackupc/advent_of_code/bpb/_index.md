@@ -1,5 +1,5 @@
 +++
-title = "🧩 [0x00] Binary problem: Byte per byte"
+title = "❔ [0x00] Binary problem: Byte per byte"
 description = "Writeup for the first 2022's Advent of Hack CTF challenge"
 date = "2022-04-29"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]

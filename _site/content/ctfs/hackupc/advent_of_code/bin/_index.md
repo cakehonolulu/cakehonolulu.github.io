@@ -1,5 +1,5 @@
 +++
-title = "🎮 [0x05] ????????: 01001001 01010100 00100111 01010011 00100000 01000010 01000001 01000011 01001011"
+title = "🧩 [0x05] ????????: 01001001 01010100 00100111 01010011 00100000 01000010 01000001 01000011 01001011"
 description = "Writeup for the sixth and last 2022's Advent of Hack CTF challenge"
 date = "2022-04-29"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]

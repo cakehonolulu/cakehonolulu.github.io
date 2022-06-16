@@ -1,5 +1,5 @@
 +++
-title = "⬜ [0x03] Steganography: Blank?"
+title = "🎮 [0x03] Steganography: Blank?"
 description = "Writeup for the fourth 2022's Advent of Hack CTF challenge"
 date = "2022-04-29"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]

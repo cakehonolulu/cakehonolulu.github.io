@@ -1,5 +1,5 @@
 +++
-title = "🚧 [0x02] Crypto: Jumping the fence"
+title = "🍸 [0x02] Crypto: Jumping the fence"
 description = "Writeup for the third 2022's Advent of Hack CTF challenge"
 date = "2022-04-29"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]

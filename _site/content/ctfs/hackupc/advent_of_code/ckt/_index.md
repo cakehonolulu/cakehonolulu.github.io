@@ -1,5 +1,5 @@
 +++
-title = "🍸 [0x01] Reverse engineering: Cocktail"
+title = "⬜ [0x01] Reverse engineering: Cocktail"
 description = "Writeup for the second 2022's Advent of Hack CTF challenge"
 date = "2022-04-29"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]

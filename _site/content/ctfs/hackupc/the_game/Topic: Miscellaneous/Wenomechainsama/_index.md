@@ -1,9 +1,9 @@
 +++
-title = "⚡ HackUPC 2022 CTFs"
-description = "Writeups for 2022's HackUPC CTFs"
+title = "☀️ Wenomechainsama"
 date = "2022-05-01"
 aliases = ["writeup", "writeups", "ctf", "ctfs"]
 author = "cakehonolulu"
 +++
 
 <br>
+👨🏽‍🍳 Chef is cooking the writeups... 
