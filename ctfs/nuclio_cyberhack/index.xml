@@ -13,7 +13,7 @@
       <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
       
       <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/oblivion/</guid>
-      <description>Difficulty Beginner     Points 20   Category Networking    Description Com veureu, sembla que el grup d&#39;atacants es diu Oblivion, però de l&#39;executable no sabem res sobre què fa, ni per a què serveix... Comenceu la vostra investigació i descobriu el que pugueu. El que ens interessa és on es connecta, si és que ho fa. Aleshores, el token del joc serà l&#39;adreça IP de destinació.</description>
+      <description>Difficulty Beginner Points 20 Category Networking Description Com veureu, sembla que el grup d&#39;atacants es diu Oblivion, però de l&#39;executable no sabem res sobre què fa, ni per a què serveix... Comenceu la vostra investigació i descobriu el que pugueu. El que ens interessa és on es connecta, si és que ho fa. Aleshores, el token del joc serà l&#39;adreça IP de destinació... 🇺🇸 As you can see, it looks like the group of attackers is named Oblivion, but we know nothing about the executable file nor what it does.</description>
     </item>
     
     <item>
@@ -22,8 +22,8 @@
       <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
       
       <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/attacking-the-bad-guy/</guid>
-      <description>Difficulty Medium     Points 70   Category Software security    Description En els darrers dies s&#39;han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet. Tots ells accepten que aquests càrrecs es fan després d&amp;rsquo;haver realitzat una compra a la nostra botiga col·laboradora.
-Després d&amp;rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas.</description>
+      <description>Difficulty Medium Points 70 Category Software security Description En els darrers dies s&#39;han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet. Tots ells accepten que aquests càrrecs es fan després d&amp;rsquo;haver realitzat una compra a la nostra botiga col·laboradora.
+Després d&amp;rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas. Després de revisar tant els registres com el codi web, van aconseguir trobar una biblioteca de tercers que va capturar la informació de les targetes bancàries, així com el seu CVV i data de venciment.</description>
     </item>
     
     <item>
@@ -32,9 +32,11 @@ Després d&amp;rsquo;aquest estrany incident, truquem al nostre Equip Blau per i
       <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
       
       <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/ftpando/</guid>
-      <description>Difficulty Hard     Points 95   Category Multiple (Web Services, CVE&#39;s...)    Description Això sí, aconseguir el token no serà gens fàcil. Hauràs d&#39;utilitzatr diferents tècniques i encadenar-ne diverses juntes. Així que ja n&amp;rsquo;hi ha prou de xerrada per ara.
+      <description>Difficulty Hard Points 95 Category Multiple (Web Services, CVE&#39;s...) Description Això sí, aconseguir el token no serà gens fàcil. Hauràs d&#39;utilitzatr diferents tècniques i encadenar-ne diverses juntes. Així que ja n&amp;rsquo;hi ha prou de xerrada per ara.
 El teu objectiu? La propera màquina: caixa1.hackrocks.com
-Bona sort! 🇺🇸 Getting the token won&amp;rsquo;t be easy. You&amp;rsquo;ll have to concatenate different techniques to get it.</description>
+Bona sort! 🇺🇸 Getting the token won&amp;rsquo;t be easy. You&amp;rsquo;ll have to concatenate different techniques to get it.
+Let&amp;rsquo;s stop talking.
+Your objective? This machine: caixa1.</description>
     </item>
     
   </channel>
