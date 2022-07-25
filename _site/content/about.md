@@ -8,10 +8,11 @@ author = "cakehonolulu"
 
 <br>
 
-- 🚧 Studying a degree in Mobile and Web Application Development @ Univ. Rovira i Virgili.
-- 🚩 Improving my offensive security skills.
+- 🚧 Currently enrolled in a Full-Stack Bootcamp offered by T-Systems in collaboration with Esplai Jove.
+- 📖 Studying a Computer Science Degree @ UOC (Universitat Oberta de Catalunya)
+- 🚩 Constantly improving my offensive security skills (Reverse engineering, binary/web exploitation, vuln. search, recon...).
 - ⚡ Studying hardware architecture whilst developing emulators for <a href="https://github.com/cakehonolulu/GameGirl">Nintendo Game Boy (DMG-01)</a> and <a href="https://github.com/cakehonolulu/SimpleStation">Sony PlayStation 1 (PSX)</a>.
-- 🔭 Reading on Just-in-Time compilation techniques.
+- 🔭 Taking a glance on Just-in-Time compilation techniques.
 - 🧑🏽‍💻 Open for collaborations!
 
 # What I love doing:
