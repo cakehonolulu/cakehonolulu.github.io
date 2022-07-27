@@ -36,6 +36,8 @@ author = "cakehonolulu"
 <i class="devicon-css3-plain" style="font-size: 35px"></i>
 <i class="devicon-javascript-plain" style="font-size: 35px"></i>
 <i class="devicon-mysql-plain" style="font-size: 35px"></i>
+<i class="devicon-mongodb-plain" style="font-size: 35px"></i>
+<i class="devicon-java-plain" style="font-size: 35px"></i>
 </div>
 
 
