@@ -17,5 +17,4 @@ jobs:
         uses: chabad360/hugo-gh-pages@master
         with:
           githubToken: ${{ secrets.TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
           branch: main
