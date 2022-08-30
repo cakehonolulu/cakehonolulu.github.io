@@ -18,3 +18,4 @@ jobs:
         with:
           githubToken: ${{ secrets.TOKEN }}
           branch: main
+          siteDir: /github/workspace/_site
