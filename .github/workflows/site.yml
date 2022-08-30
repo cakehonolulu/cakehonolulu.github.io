@@ -16,5 +16,5 @@ jobs:
       - name: Site workflow
         uses: chabad360/hugo-gh-pages@master
         with:
-          githubToken: ${{ secrets.PERSONAL_TOKEN }}
+          githubToken: ${{ secrets.TOKEN }}
           branch: main
