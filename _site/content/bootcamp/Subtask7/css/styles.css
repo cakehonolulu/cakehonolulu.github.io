@@ -1,0 +1,83 @@
+body, html {
+    background-image: url("../images/ac.jpg");
+    display: flex;
+    justify-content: center;
+}
+
+.col1, .col2, .col3 {
+    display: inline-block;
+    width: 150px;
+    height: 140px;
+    border: 1px solid black;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 10px;
+    margin-top: 20px;
+}
+
+div img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+#a {
+    background-image: url("../images/back_mantel.jpg");
+    background-repeat: round;
+}
+
+#b {
+    width: 110px;
+    height: 110px;
+    margin: 10px auto auto;
+    background-image: url("../images/back_mantel.jpg");
+    background-repeat: repeat;
+}
+
+#c {
+    background-image: url("../images/back_mantel.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#d {
+    background-color: white;
+}
+
+#d div {
+    width: 110px;
+    height: 110px;
+    margin: 10px auto auto;
+    background-image: url("../images/back_mantel.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#e, #h {
+  padding-top: 0;
+  height: 150px;
+}
+
+#e img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#f, #g, #h {
+    background-color: white;
+}
+
+#f img {
+    width: 120px;
+    height: 120px;
+    margin-top: 7px;
+    margin-left: 0;
+}
+
+#g img {
+    margin-top: 20px;
+}
+
+#h img {
+    margin-left: 0;    
+}

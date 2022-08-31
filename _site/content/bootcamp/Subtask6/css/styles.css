@@ -1,0 +1,44 @@
+table {
+    border: 2px solid grey;
+    border-bottom: 2px solid rgb(75, 75, 75);
+    border-right: 2px solid rgb(75, 75, 75);
+    font-family: Arial;
+    font-size: 15px;
+    text-align: center;
+    color: #7a1813;
+}
+
+td, th {
+    border: 1px solid rgb(75, 75, 75);
+    margin: 15px;
+    font-family: Arial;
+    font-size: 15px;
+    padding: 0 15px;
+}
+
+th {
+    background-color: #669966;
+    font-weight: normal;
+    font-family: Arial;
+    font-size: 15px;
+}
+
+.mustardCell {
+    background-image: none;
+    background-color: #ffff99;
+    font-family: Arial;
+    font-size: 15px;
+}
+
+.redCell {
+    background-image: none;
+    background-color: #ffcc99;
+    font-family: Arial;
+    font-size: 15px;
+}
+
+td {
+    background-image: url("../images/text.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}

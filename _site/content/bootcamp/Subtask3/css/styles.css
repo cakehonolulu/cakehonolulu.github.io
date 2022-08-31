@@ -1,0 +1,36 @@
+h4 {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+td {
+    border-style: outset;
+}
+
+table {
+    border-collapse: collapse;
+    font-weight: bold;
+    text-align: center;
+    width: 100%;
+}
+
+#cell1 {
+    background-color: lightgreen;
+}
+
+#cellRedText {
+    color: red;
+    border-color: gray;
+}
+
+#cell2 {
+    background-color: cyan;
+    text-align: left;
+}
+
+#cell6 {
+    background-color: magenta;
+    text-align: right;
+    vertical-align: bottom;
+}

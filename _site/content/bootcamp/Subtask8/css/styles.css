@@ -1,0 +1,81 @@
+div {
+  background-color: #a4d3ff;
+  margin-top: 21px;
+  position: relative;
+}
+
+#viewPort1,
+#viewPort3 {
+  outline: 3px solid #5837ff;
+}
+
+#viewPort1,
+#frame {
+    width: 165px;
+    height: 90px;
+}
+
+#viewPort2 {
+    width: 344px;
+  height: 270px;
+  outline: 4px solid #ca0000;
+  margin-left: 20px;
+}
+
+#viewPort2 span {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+  }
+  
+#viewPort3 {
+  width: 140px;
+  height: 80px;
+}
+
+.horizPlane {
+  position: absolute;
+  bottom: 0;
+  height: 15px;
+  width: 100%;
+  background-image: url("../images/f01.png");
+  background-repeat: repeat;
+}
+
+.skyPlane {
+  position: absolute;
+  width: 120%;
+  left: 0;
+}
+
+.content {
+  position: absolute;
+  width: 110%;
+  bottom: 5px;
+  left: 0;
+}
+
+#frame {
+  position: absolute;
+  bottom: 0;
+}
+
+#ski {
+  width: 100%;
+  height: 150px;
+}
+
+#ski div {
+  width: 48%;
+  height: 80px;
+  display: inline-block;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+#ski div:nth-child(2) {
+  left: 8px;
+}
+#ski div:nth-child(2) img:nth-child(1) {
+  left: 22px;
+}
