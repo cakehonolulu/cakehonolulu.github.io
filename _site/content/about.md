@@ -8,61 +8,52 @@ author = "cakehonolulu"
 
 <br>
 
-- 🚧 Currently enrolled in a Full-Stack Bootcamp offered by T-Systems in collaboration with Esplai Jove.
-- 📖 Studying a Computer Science Degree @ UOC (Universitat Oberta de Catalunya)
-- 🚩 Constantly improving my offensive security skills (Reverse engineering, binary/web exploitation, vuln. search, recon...).
-- ⚡ Studying hardware architecture whilst developing emulators for <a href="https://github.com/cakehonolulu/GameGirl">Nintendo Game Boy (DMG-01)</a> and <a href="https://github.com/cakehonolulu/SimpleStation">Sony PlayStation 1 (PSX)</a>.
-- 🔭 Taking a glance on Just-in-Time compilation techniques.
-- 🧑🏽‍💻 Open for collaborations!
+My name is Joel and I am a Spanish Software Developer that has loved everything-computers since I can remember.
 
-# What I love doing:
-<br>
+I'm always passionate about what I do, be it web development (Front, or back end), pure software developent (High or low level) or any other code-related task; if it's programmable, chances are that I'll love it.
 
-- 📖 Learning new things everyday.
-- 🎮 Engaging in CTF competitions; great way to practise offensive-security skills in a gamified way.
-- ✨ Programming personal projects to further improve my skill-set.
+If you want to further connect with me, don't hesitate to use any of the paths below:
+
+* [Personal Blog](https://cakehonolulu.github.io)
+* [Linkedin](https://www.linkedin.com/in/joel-bueno-calvache)
+* Email: cakehonolulu@protonmail.com
+
+Even though I started a 3-year University Degree called GTDAWIM @ Universitat Rovira i Virgili (Web and mobile app development), I'm currently enrolled on a 4-year Computer Science degree @ Universitat Oberta de Catalunya.
+
+The reasoning behind the change is that I love computers in general and I thought that I'd be loosing an important part of their quirks if I only learned Web/Mobile app development.
+
+Aso, Universitat Oberta de Catalunya is one of the first universities that lets you have your own, customized schedule so that you can also work on a company in the meantime; on the other hand, my plan is to continue improving my programming skills and expanding my knowledge!
+
+I have a *really* high interest towards Cybersecurity, that's why I plan on getting a Master's degree as sonn as I finish my current degree.
 
 # Current skillset
+
 <br>
+
 <div class="abilities"> 
-<i class="devicon-c-plain" style="font-size: 35px"></i>
-<i class="devicon-rust-plain" style="font-size: 35px"></i>
-<i class="devicon-python-plain" style="font-size: 35px"></i>
-<i class="devicon-git-plain" style="font-size: 35px"></i>
-<i class="devicon-markdown-original" style="font-size: 35px"></i>
-<i class="devicon-bash-plain" style="font-size: 35px"></i>
-<i class="devicon-linux-plain" style="font-size: 35px"></i>
-<i class="devicon-html5-plain" style="font-size: 35px"></i>
-<i class="devicon-css3-plain" style="font-size: 35px"></i>
-<i class="devicon-javascript-plain" style="font-size: 35px"></i>
-<i class="devicon-mysql-plain" style="font-size: 35px"></i>
-<i class="devicon-mongodb-plain" style="font-size: 35px"></i>
-<i class="devicon-java-plain" style="font-size: 35px"></i>
-</div>
-
-
-# My HackTheBox Profile
+<img alt="C23" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-plain.svg" width="35" height="35" />
+<img alt="RUST" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-plain.svg" width="35" height="35" />
+<img alt="PYTHON" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original-wordmark.svg" width="35" height="35" />
+<img alt="GIT" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="35" height="35" />
+<img alt="MARKDOWN" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/markdown/markdown-original.svg" width="35" height="35" />
+<img alt="BASH" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg" width="35" height="35" />
+<img alt="LINUX" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-plain.svg" width="35" height="35" />
+<img alt="HTML5" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original-wordmark.svg" width="35" height="35" />
+<img alt="CSS3" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original-wordmark.svg" width="35" height="35" />
+<img alt="JS" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="35" height="35" />
+<img alt="MySQL/MariaDB" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" width="35" height="35" />
+<img alt="NoSQL/MongoDB" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original-wordmark.svg" width="35" height="35" />
+<img alt="Java" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="35" height="35" />
+<img alt="Spring Framework" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="35" height="35" />
+<img alt="Hibernate Framework" src="https://design.jboss.org/hibernate/logo/final/hibernate_logo_whitebkg_stacked_256px.png" width="35" height="35" />
 <br>
-<img alt="HTB" src="https://www.hackthebox.com/badge/image/1009760" />
-
-# Latest CTF
-
 <br>
 
-![CTF-Cyber-Apocalypse-2022](https://raw.githubusercontent.com/cakehonolulu/cakehonolulu/main/resources/images/CTF-Cyber-Apocalypse-2022-cakehonolulu.jpg)
+<picture>
+  <img alt="Shows the stats in light/dark mode" src="https://api.githubtrends.io/user/svg/cakehonolulu/langs?time_range=one_year&use_percent=True&loc_metric=changed&theme=dark">
+</picture>
 
-<summary><h1>Old CTFs</h1></summary>
-
-<br>
-
-<details>
-
-<a href="https://cakehonolulu.github.io/writeups/hackupc/2022/thegame.html"><h1>HackUPC's 2022 The Game CTF</h1></a>
-<br>
-<img alt="HTB" src="https://raw.githubusercontent.com/cakehonolulu/cakehonolulu/main/resources/images/thegame.png" />
-
-<a href="https://cakehonolulu.github.io/writeups/hackupc/2022/aoc.html"><h1>2022 Advent of HackUPC CTF (Prelude for The Game)</h1></a>
-<br>
-  <img alt="HTB" src="https://raw.githubusercontent.com/cakehonolulu/cakehonolulu/main/resources/images/advent.png" />
- 
-</details>
+<picture>
+  <img alt="Shows the stats in light/dark mode" src="https://api.githubtrends.io/user/svg/cakehonolulu/repos?time_range=one_year&theme=dark">
+</picture>
+  
