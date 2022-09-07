@@ -48,6 +48,7 @@ I have a *really* high interest towards Cybersecurity, that's why I plan on gett
 <img alt="Hibernate Framework" src="https://design.jboss.org/hibernate/logo/final/hibernate_logo_whitebkg_stacked_256px.png" width="35" height="35" />
 <img alt="Angular" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-plain.svg" width="35" height="35" />
 <img alt="AWS S3" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" width="35" height="35" />
+<img alt="TypeScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="35" height="35" />
 <br>
 <br>
 
