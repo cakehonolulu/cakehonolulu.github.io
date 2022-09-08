@@ -30,26 +30,26 @@ I have a *really* high interest towards Cybersecurity, that's why I plan on gett
 
 <br>
 
-<div class="abilities"> 
-<img alt="C23" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-plain.svg" width="35" height="35" />
-<img alt="RUST" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/rust/rust-plain.svg" width="35" height="35" />
-<img alt="PYTHON" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original-wordmark.svg" width="35" height="35" />
-<img alt="GIT" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" width="35" height="35" />
-<img alt="MARKDOWN" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/markdown/markdown-original.svg" width="35" height="35" />
-<img alt="BASH" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg" width="35" height="35" />
-<img alt="LINUX" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-plain.svg" width="35" height="35" />
-<img alt="HTML5" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original-wordmark.svg" width="35" height="35" />
-<img alt="CSS3" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original-wordmark.svg" width="35" height="35" />
-<img alt="JS" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="35" height="35" />
-<img alt="MySQL/MariaDB" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original-wordmark.svg" width="35" height="35" />
-<img alt="NoSQL/MongoDB" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original-wordmark.svg" width="35" height="35" />
-<img alt="Java" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="35" height="35" />
-<img alt="Spring Framework" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/spring/spring-original.svg" width="35" height="35" />
-<img alt="Hibernate Framework" src="https://design.jboss.org/hibernate/logo/final/hibernate_logo_whitebkg_stacked_256px.png" width="35" height="35" />
-<img alt="NodeJS" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="35" height="35" />
-<img alt="Angular" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-plain.svg" width="35" height="35" />
-<img alt="AWS S3" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" width="35" height="35" />
-<img alt="TypeScript" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" width="35" height="35" />
+<div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
+<i class="devicon-c-line-wordmark"></i>
+<i class="devicon-rust-plain"></i>
+<i class="devicon-python-plain-wordmark"></i>
+<i class="devicon-git-plain-wordmark"></i>
+<i class="devicon-markdown-original"></i>
+<i class="devicon-bash-plain"></i>
+<i class="devicon-linux-plain"></i>
+<i class="devicon-html5-plain-wordmark"></i>
+<i class="devicon-css3-plain-wordmark"></i>
+<i class="devicon-javascript-plain"></i>
+<i class="devicon-mysql-plain-wordmark"></i>
+<i class="devicon-mongodb-plain-wordmark"></i>
+<i class="devicon-java-plain-wordmark"></i>
+<i class="devicon-spring-plain-wordmark"></i>
+<img alt="Hibernate Framework" src="https://design.jboss.org/hibernate/logo/final/hibernate_icon_whitebkg_256px.png" width="35" height="35" />
+<i class="devicon-nodejs-plain"></i>
+<i class="devicon-angularjs-plain"></i>
+<i class="devicon-amazonwebservices-plain"></i>
+<i class="devicon-typescript-plain"></i>
 <br>
 <br>
 
