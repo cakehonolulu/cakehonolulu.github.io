@@ -23,6 +23,7 @@ mode = "dark-mode"
 
 # Sidebar: about/bio
 [params.about]
+description = "A simple blog for everything me"
 
 # Sidebar: about/bio
 [params.ctfs]
@@ -45,7 +46,7 @@ url = "https://twitter.com/cakehonolulu"
 [[params.socialLinks]]
 icon = "fa-brands fa-linkedin"
 title = "My LinkedIn"
-url = "https://www.linkedin.com/in/joel-bueno-39893a230"
+url = "https://www.linkedin.com/in/joel-bueno-calvache"
 
 [menu]
 
