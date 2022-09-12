@@ -1,0 +1,21 @@
+nav {
+    background-color: dodgerblue;
+}
+
+header {
+    background-color:lightgray;
+}
+
+#profile {
+   font-size: 1.5em;
+}
+
+.active {
+    background-color: white;
+    border-radius: 4px;
+}
+
+.networks a{
+    color: white;
+    display: inline-block;
+}
