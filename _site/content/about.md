@@ -1,14 +1,14 @@
 +++
 title = "About me"
 description = "About myself!"
-date = "2022-09-08"
+date = "2024-01-09"
 aliases = ["about-me", "about-hugo", "contact"]
 author = "cakehonolulu"
 +++
 
 <br>
 
-My name is Joel and I am a Spanish Software Developer that has loved everything-computers since I can remember.
+My name is Joel and I am a Spanish Software Developer that has loved everything-computers ever since I can remember.
 
 I'm always passionate about what I do, be it web development (Front, or back end), pure software developent (High or low level) or any other code-related task; if it's programmable, chances are that I'll love it.
 
@@ -28,30 +28,58 @@ I have a *really* high interest towards Cybersecurity, that's why I plan on gett
 
 # Current skillset
 
-<br>
+# Programming languages
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-c-line-wordmark"></i>
-<i class="devicon-rust-plain"></i>
+<i class="devicon-cplusplus-line"></i>
 <i class="devicon-python-plain-wordmark"></i>
-<i class="devicon-git-plain-wordmark"></i>
-<i class="devicon-markdown-original"></i>
-<i class="devicon-bash-plain"></i>
-<i class="devicon-linux-plain"></i>
+<i class="devicon-java-plain-wordmark"></i>
+<i class="devicon-rust-plain"></i>
 <i class="devicon-html5-plain-wordmark"></i>
 <i class="devicon-css3-plain-wordmark"></i>
 <i class="devicon-javascript-plain"></i>
+<i class="devicon-typescript-plain"></i>
+</div>
+
+# Cloud
+
+<div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;">
+<i class="devicon-amazonwebservices-plain"></i>
+</div>
+
+# Version control
+
+<div class="abilities" style="font-size: 40px; letter-spacing: -7.5px;">
+<i class="devicon-git-plain-wordmark"></i>
+<i class="devicon-subversion-original"></i>
+</div>
+
+# Scripting and Documentation
+
+<div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
+<i class="devicon-markdown-original"></i>
+<i class="devicon-bash-plain"></i>
+<i class="devicon-linux-plain"></i>
+</div>
+
+# Databases
+
+<div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-mysql-plain-wordmark"></i>
 <i class="devicon-mongodb-plain-wordmark"></i>
-<i class="devicon-java-plain-wordmark"></i>
+</div>
+
+# Frameworks
+
+<div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-spring-plain-wordmark"></i>
 <img alt="Hibernate Framework" src="https://design.jboss.org/hibernate/logo/final/hibernate_icon_whitebkg_256px.png" width="35" height="35" />
-<i class="devicon-nodejs-plain"></i>
 <i class="devicon-angularjs-plain"></i>
-<i class="devicon-amazonwebservices-plain"></i>
-<i class="devicon-typescript-plain"></i>
+<i class="devicon-nodejs-plain"></i>
 <br>
 <br>
+</div>
 
 <picture>
   <img alt="Shows the stats in light/dark mode" src="https://api.githubtrends.io/user/svg/cakehonolulu/langs?time_range=one_year&use_percent=True&theme=dark">
