@@ -19,7 +19,7 @@ I, as many more, grew up playing retro videogames on emulators (And the original
 _Metal Slug, an impressive 2D game; developed for SNK's Neo-Geo_
 </div>
 
-A few years ago, I started to ask myself how an emulator works; I initially belived it *had* to be some sort of magic, at the end of the day, code is just that, _code_.
+A few years ago, I started to ask myself how an emulator works; I initially believed it *had* to be some sort of magic, but at the end of the day, code is just that, _code_.
 
 There are no transistors or chips or CPUs you can design with code _per se_ (Well, if we ignore programs like LogiSim exist, of course) ... So how do they exactly work?
 
