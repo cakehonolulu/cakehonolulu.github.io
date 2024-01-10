@@ -21,15 +21,16 @@ _Metal Slug, an impressive 2D game; developed for SNK's Neo-Geo_
 
 A few years ago, I started to ask myself how an emulator works; I initially believed it *had* to be some sort of magic, but at the end of the day, code is just that, _code_.
 
-There are no transistors or chips or CPUs you can design with code _per se_ (Well, if we ignore programs like LogiSim exist, of course) ... So how do they exactly work?
+~~There are no transistors or chips or CPUs you can design with code per se  (Well, if we ignore programs like LogiSim exist, of course) ... So how do they exactly work?~~
+(Except there are, look-up [Verilog]())
 
 # What is an emulator?
 
 <br>
 
-Let's start by defining what an emulator (Not to be confused with Simulator) really is.
+Let's start by defining what an emulator (Not to be confused with simulator) really is.
 
-According to [Wikipedia](https://en.wikipedia.org/wiki/Emulator)'s definition for it:
+According to [Wikipedia](https://en.wikipedia.org/wiki/Emulator):
 
 {{< highlight html >}}
 In computing, an emulator is hardware or software that
@@ -42,7 +43,7 @@ Emulation refers to the ability of a computer program in
 an electronic device to emulate (or imitate) another program or device. 
 {{< /highlight >}}
 
-The key takeaway here, is the _ability_ to run code that is designed for another architecture on our host one.
+The key takeaway here, is the _ability_ to run code that is designed for one system on another one.
 
 Examples of this could be, running aarch64 code on your shiny new Intel/AMD PC (Playing a videogame designed for Android, for example); the technique Apple employs for their newer M-line of processors (Which are 64-bit ARM chips) but they are able to maintain backwards compatibility to a degree with macOS software designed for their older Intel machines (And doing so in a fast and efficient manner, using [Rosetta 2](https://en.wikipedia.org/wiki/Rosetta_(software)#Rosetta_2))...
 
@@ -341,7 +342,7 @@ void memory_write_byte(Bus *bus, Cpu *cpu, long address, byte value)
         case 0x0 ... 0x1000:
             bus->ram[address] = value;
             break;
-        
+        cd 
         // Memory-mapped I/O
         case 0xFF10:
             bus->set_sprite_a_register(value);
