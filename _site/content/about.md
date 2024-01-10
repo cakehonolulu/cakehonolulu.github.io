@@ -4,6 +4,7 @@ description = "About myself!"
 date = "2024-01-09"
 aliases = ["about-me", "about-hugo", "contact"]
 author = "cakehonolulu"
+toc = true
 +++
 
 <br>
@@ -42,9 +43,11 @@ If you want to further connect with me, don't hesitate to use any of the paths b
 * [Linkedin](https://www.linkedin.com/in/joel-bueno-calvache)
 * Email: cakehonolulu@protonmail.com
 
+---
+
 # Current skillset
 
-# Programming languages
+## Programming languages
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-c-line-wordmark"></i>
@@ -59,40 +62,40 @@ If you want to further connect with me, don't hesitate to use any of the paths b
 <i class="devicon-dot-net-plain-wordmark"></i>
 </div>
 
-# Graphics Stack
+## Graphics Stack
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;">
 <i class="devicon-opengl-plain"></i>
 <i class="devicon-sdl-plain"></i>
 </div>
 
-# Cloud
+## Cloud
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;">
 <i class="devicon-amazonwebservices-plain"></i>
 </div>
 
-# Version control
+## Version control
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -7.5px;">
 <i class="devicon-git-plain-wordmark"></i>
 <i class="devicon-subversion-original"></i>
 </div>
 
-# Build Systems
+## Build Systems
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -7.5px;">
 <i class="devicon-cmake-plain"></i>
 <i class="devicon-gradle-plain"></i>
 </div>
 
-# Containerization
+## Containerization
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -7.5px;">
 <i class="devicon-docker-plain-wordmark"></i>
 </div>
 
-# Scripting and Documentation
+## Scripting and Documentation
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-markdown-original"></i>
@@ -101,14 +104,14 @@ If you want to further connect with me, don't hesitate to use any of the paths b
 <i class="devicon-latex-original"></i>
 </div>
 
-# Databases
+## Databases
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-mysql-plain-wordmark"></i>
 <i class="devicon-mongodb-plain-wordmark"></i>
 </div>
 
-# Frameworks
+## Frameworks
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;"> 
 <i class="devicon-spring-plain-wordmark"></i>
@@ -120,14 +123,15 @@ If you want to further connect with me, don't hesitate to use any of the paths b
 <i class="devicon-bootstrap-plain-wordmark"></i>
 </div>
 
-# Miscellaneous
+## Miscellaneous
 
 <div class="abilities" style="font-size: 40px; letter-spacing: -11.5px;">
 <i class="devicon-jenkins-plain"></i>
 <i class="devicon-jira-plain-wordmark"></i>
 <br>
-<br>
 </div>
+
+---
 
 <picture>
   <img alt="Shows the stats in light/dark mode" src="https://api.githubtrends.io/user/svg/cakehonolulu/langs?time_range=one_year&use_percent=True&include_private=True&theme=dark">

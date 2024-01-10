@@ -18,7 +18,7 @@ sectionPagesMenu = "main"
 [params]
 
 [params.theme]
-palette = "gruvbox-dark"
+palette = "tender"
 mode = "dark-mode"
 
 # Sidebar: about/bio
@@ -64,6 +64,15 @@ series = "series"
 # For hugo >= 0.60.0, enable inline HTML
 [markup.goldmark.renderer]
 unsafe = true
+
+[markup]
+
+  # Table of contents
+  # Add toc = true to content front matter to enable
+  [markup.tableOfContents]
+    startLevel = 1
+    endLevel   = 3
+    ordered    = true
 
 [privacy]
 

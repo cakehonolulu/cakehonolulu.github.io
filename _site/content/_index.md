@@ -1,9 +1,10 @@
 +++
 title = ""
 description = "My site's $HOME"
-date = "2022-09-08"
+date = "2024-01-10"
 aliases = []
 author = "cakehonolulu"
+toc = true
 +++
 
 

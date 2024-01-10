@@ -6,6 +6,7 @@ description = "How emulators work"
 tags = [
     "emulator",
 ]
+toc = true
 +++
 
 <br>
