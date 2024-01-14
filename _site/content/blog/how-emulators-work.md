@@ -19,10 +19,7 @@ I, as many more, grew up playing retro videogames on emulators (And the original
 _Metal Slug, an impressive 2D game; developed for SNK's Neo-Geo_
 </div>
 
-A few years ago, I started to ask myself how an emulator works; I initially believed it *had* to be some sort of magic, but at the end of the day, code is just that, _code_.
-
-~~There are no transistors or chips or CPUs you can design with code per se  (Well, if we ignore programs like LogiSim exist, of course) ... So how do they exactly work?~~
-(Except there are, look-up [Verilog]())
+A few years ago, I started to ask myself how an emulator works; I initially believed it *had* to be some sort of magic, but at the end of the day, code is just that, _code_ (_Technically_, you _can_ develop an emulator from an ECE-perspective; look up [Verilog](https://en.wikipedia.org/wiki/Verilog) or really, any [Hardware-Description-Language](https://en.wikipedia.org/wiki/Hardware_description_language), but that's beyond the scope for this post).
 
 # What is an emulator?
 
@@ -55,11 +52,14 @@ Well, there's lots of ways of doing so.
 
 <br>
 
-The primary types of emulators that exist can be divided in 2 categories.
+The following paragraph contains information about a type of emulators that have lately emerged; they're more state-of-the-art in comparison with good-old already-existing emulators, it's meant to illustrate, it can be confusing for newbies so you can skip to the [HLE vs LLE](#hle-vs-lle) chapter if you want.
+
+
+---
 
 A brief paragraph: As of recent times, a new way to experience retro systems has appeared, not to confuse you, but I'll give a brief explanation as to what FPGA-based emulation is and not.
 
-[FPGAs](https://en.wikipedia.org/wiki/Field-programmable_gate_array) are ICs whose behaviour can be repgrogrammed at the logic level after manufacturing.
+[FPGAs](https://en.wikipedia.org/wiki/Field-programmable_gate_array) are integrated circuits whose behaviour can be repgrogrammed at the logic level after manufacturing, they can be programmed using HDL's (Hardware description languages) which goes through a series of steps before getting executed by the development board.
 
 <div style="text-align: center;">
 
@@ -68,13 +68,13 @@ A brief paragraph: As of recent times, a new way to experience retro systems has
 _The Xilinx Spartan FPGA_
 </div>
 
-What this basically means is, that you can effectively replicate any existing chip on an FPGA provided that you have the required schematics for it.
+What this basically means is, that you can effectively replicate any existing chip on an FPGA.
 
-But here comes the thing; is it really emulation if it yields the same 1:1 behaviour (Timings, instructions... wise) as the original chip?
+In comparison with traditional emulators (Which, run on top of an operating system), FPGA-based emulators have a bunch of neat advantages due do the nature of the technology itself.
 
-Well, this is a hot area of debate; but once you reprogram the FPGA to fit your needs, you don't have to think of it as an "alive" machine, it's _effectively_ the same as the chip it's trying to mimick; down to the pins and address lines, and it'll stay that way _physically_ unless reprogrammed.
+For example, operating systems tend not to give you a fine-grained scheduling; let's say your emulator wants to handle keypad inputs; you need to somehow interact with the underlying OS to perform such task, but the OS itself can then assign the priority it sees fitting so the latency (Normally in miliseconds) can fluctuate making accurate emulation really difficult. Worth mentioning, that normally, the more accurate it needs to be, the more power-hungry the emulator will end up.
 
-So in my opinion, no, it's not "emulation" _per se_ but still a cool technique that gives the utter best results.
+FPGAs benefit from the parallelism they can archieve due to their nature, and also can maintain the components clocked much more accurately again, due to their nature; doing so while not requiring as much power as a normal, PC emulator.
 
 Anyhow, back to the main topic.
 
@@ -147,6 +147,8 @@ syscall
 This basically would call syscall number 3 on the syscall table, which, for example, could be our previously explained ```libGfxInitFramebuffer()```.
 
 You'd then need to detect this behaviour whilst executing the target code, intercept it and redirect execution and adjust the emulation state accordingly (Maybe adjusting cycle count to account for the original length of the syscall function... etc).
+
+It's also important to note, that nowadays (Moreso with more recent consoles), there's a trend to mix both LLE and HLE techniques to get thehe benefits of both approaches. There's some components that you can HLE to reduce the processing hurdle of more complex subsystems a machine can have.
 
 # Defining the target
 
@@ -359,6 +361,8 @@ void memory_write_byte(Bus *bus, Cpu *cpu, long address, byte value)
 There's also some other considerations to have; think about how you want to plot graphics; or play audio, or read from a filesystem... there's some design choices to be made in order to properly handle the rest of the system aside from the CPU and presenting it to the user (Or letting him interact with the emulated environment!).
 
 # Bonus Track
+
+<br>
 
 ## AoT
 
