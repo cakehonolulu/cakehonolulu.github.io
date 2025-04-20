@@ -14,7 +14,7 @@ tags = ["retrotink", "retrotink4k", "retrotink-4k", "rt4k", "hdmi", "hdmi-cec", 
 links = [
     { name = "github", url = "https://github.com/cakehonolulu/RT4K-CEC" },
 ]
-image = "https://private-user-images.githubusercontent.com/5484552/351985206-01c244b4-b5af-4926-94d2-38306876485b.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDUxNjExMjcsIm5iZiI6MTc0NTE2MDgyNywicGF0aCI6Ii81NDg0NTUyLzM1MTk4NTIwNi0wMWMyNDRiNC1iNWFmLTQ5MjYtOTRkMi0zODMwNjg3NjQ4NWIucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MDQyMCUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTA0MjBUMTQ1MzQ3WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MjU3YTY2MmJkMzRkZjY1NDU1ZDY2NWFlMzRlNjhlMzgyNjAxMDU3MmQxMTI3NjhhZGFkYjZhOGQ2MGFlOGQxNCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.pzha-ZhhkYo4OCcAaVoWUfMSd_P_sQudZYlnYt8nyzk"
+image = "https://raw.githubusercontent.com/cakehonolulu/RT4K-CEC/refs/heads/main/351985391-c37bb127-409a-4ed1-acc1-4e83cf8a6d58.png"
 
 [[project]]
 name = "Neo2"
