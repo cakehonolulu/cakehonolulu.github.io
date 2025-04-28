@@ -68,6 +68,10 @@ name = "linkedin"
 url = "https://www.linkedin.com/in/joel-bueno-calvache/"
 
 [[extra.profile.social]]
+name = "kofi"
+url = "https://ko-fi.com/cakehonolulu"
+
+[[extra.profile.social]]
 name = "rss"
 url = "https://cakehonolulu.github.io/atom.xml"
 
