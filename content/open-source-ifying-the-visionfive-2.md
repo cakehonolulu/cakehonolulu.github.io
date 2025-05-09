@@ -236,6 +236,31 @@ _EDK2 running on updated VisionFive 2 board_
 
 It's worth noting that I had some issues regarding Linux booting, I had to customize the `EFI/BOOT/startup.nsh` file a good bit to make it log correctly and so on (Also, to no try and find a initrd in memory failing miserably because I don't have one...).
 
+## May 9 2025 2:11AM in the morning EDK2 and u-boot update
+
+### EDK2-wise
+
+I've been able to use more recent EDK2 version (Basically, up-to-date).
+
+[This](https://github.com/cakehonolulu/edk2_vf2) is the EDK2 base repository with all the changes from upstream until today May 9 2025, and [this other one](https://github.com/cakehonolulu/edk2-platforms_vf2) is the one for the EDK2 Platforms.
+
+I've made a few changes to the JH7110.dsc target description file to accomodate for new EDK2 changes, but all appears to be working just fine (Like the propietary, outdated fork, from StarFive).
+
+Here's a new screenshot (It's now being built as `RELEASE` instead of `DEBUG`!):
+
+
+<div style="text-align: center;">
+
+![edk2_upstream](https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2_upstream.png)
+_Upstream EDK2 running on updated VisionFive 2 board_
+</div>
+
+### U-boot wise
+
+So, I've also been battling with the hack I had to resort to to make U-boot launch EDK2 from flash in SPL mode for the VF2, but even though the config file is as [recommended by u-boot themselves](https://docs.u-boot.org/en/latest/develop/devicetree/control.html), which is either `CONFIG_OF_EMBED` or `CONFIG_OF_SEPARATE` (StarFive's downstream fork uses the prior) set to `y` in `starfive_visionfive2_defconfig` it still refuses to find the FDT on the SPL image in-memory somehow; not too sure if this is a config mishap or maybe some strange u-boot bug...
+
+For now, my cute little hack will do.
+
 ## Debian sid
 
 Debian Trixie appears to be supporting the `riscv64` arch so I figured, why not building an image out of it? `debootstrap` it was!
