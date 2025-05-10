@@ -236,6 +236,227 @@ _EDK2 running on updated VisionFive 2 board_
 
 It's worth noting that I had some issues regarding Linux booting, I had to customize the `EFI/BOOT/startup.nsh` file a good bit to make it log correctly and so on (Also, to no try and find a initrd in memory failing miserably because I don't have one...).
 
+## Debian sid
+
+Debian Trixie appears to be supporting the `riscv64` arch so I figured, why not building an image out of it? `debootstrap` it was!
+
+I built an ext4 image that I simply wrote over a partition on the NVME and Linux took care of it by specifying the `root=` and `rootwait` cmdline parameters on `startup.nsh`.
+
+But the end result was, very, very worth it, here's how to do it:
+
+## Building a EFI-capable Debian Trixie 13 sid image and adding GRUB
+
+We'll start by creating a disk image, making the partitions and formatting them:
+
+```bash
+$ dd if=/dev/zero of=debian-visionfive.img bs=1M count=1500
+
+$ fdisk debian-visionfive.img
+
+g (For gpt)
+
+n, default (enter), default (enter), +256MB, t, 1 # To change type from Linux filesystem to EFI System
+
+n, default (enter), default (enter), default (enter) # For the ext4 rootfs
+
+w # To flush the changes
+
+$ sudo losetup --partscan /dev/loopXX debian-visionfive.img
+
+$ sudo mkfs.fat /dev/loopXXp1
+mkfs.fat 4.2 (2021-01-31)
+
+$ sudo mkfs.ext4 /dev/loopXXp2
+mke2fs 1.47.2 (1-Jan-2025)
+Discarding device blocks: done                            
+Creating filesystem with 321024 4k blocks and 80320 inodes
+Filesystem UUID: 4146fe1f-6c1d-4668-b6c6-751ff316d35a
+Superblock backups stored on blocks: 
+	32768, 98304, 163840, 229376, 294912
+
+Allocating group tables: done                            
+Writing inode tables: done                            
+Creating journal (8192 blocks): done
+Writing superblocks and filesystem accounting information: done
+```
+
+Now, with the disk properly formatted and using GPT scheme, we can proceed to install Debian and chroot to it.
+
+First, we'll mount everything needed:
+
+```bash
+$ mkdir -p debian/boot/efi
+
+$ sudo mount /dev/loopXXp1 debian/boot/efi/
+
+$ sudo mount /dev/loopXXp2 debian/
+
+$ sudo mount --bind /dev debian/dev
+
+$ sudo mount -t devpts /dev/pts debian/dev/pts
+
+$ sudo mount -t proc proc debian/proc
+
+$ sudo mount -t sysfs sysfs debian/sys
+
+$ sudo mount -t tmpfs tmpfs debian/tmp
+```
+
+Now, we'll install Debian on it...
+
+```bash
+$ sudo debootstrap --arch=riscv64 sid debian/
+```
+
+...and we'll ```chroot``` into it:
+
+```bash
+$ sudo chroot debian
+```
+
+It's worth noting that, we'll have to compile Linux and get debian packages out of it; you can do so with:
+
+
+```bash
+$ make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- bindeb-pkg KBUILD_IMAGE='arch/riscv/boot/Image' -j$(nproc)
+```
+
+And then just copy the ```linux-headers*.deb``` and ```linux-image*.deb``` files inside the chroot.
+
+--------------------------
+
+We'll now install those packages:
+
+```bash
+root@RYZEN5:/# dpkg -i tmp/linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb tmp/linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb 
+Selecting previously unselected package linux-headers-6.14.0-dirty.
+(Reading database ... 8347 files and directories currently installed.)
+Preparing to unpack .../linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+Unpacking linux-headers-6.14.0-dirty (6.14.0-10) ...
+Selecting previously unselected package linux-image-6.14.0-dirty.
+Preparing to unpack .../linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+Unpacking linux-image-6.14.0-dirty (6.14.0-10) ...
+Setting up linux-headers-6.14.0-dirty (6.14.0-10) ...
+Setting up linux-image-6.14.0-dirty (6.14.0-10) ...
+root@RYZEN5:/# 
+```
+
+Now, we'll install some packages that will come in handy:
+
+```bash
+root@RYZEN5:/# apt install initramfs-tools systemd-timesyncd rsync bash-completion u-boot-menu wget binutils sudo network-manager net-tools fastfetch util-linux haveged openssh-server systemd kmod conntrack ebtables ethtool iproute2 iptables mount socat ifupdown iputils-ping pciutils
+```
+
+Let's also prepare the network interfaces:
+
+```bash
+cat << EOF >> /etc/network/interfaces
+auto lo
+iface lo inet loopback
+#setup network for starfive end0
+allow-hotplug end0
+#iface end0 inet dhcp
+#setup network for starfive end1
+allow-hotplug end1
+#iface end1 inet dhcp
+EOF
+```
+
+We're also going to need to add our hostname info, ```nano``` the ```/etc/hosts``` and under the ```127.0.0.1   localhost``` just add:
+
+```
+127.0.1.1	visionfive2
+```
+
+Or whichever hostname you want, really.
+
+Also add it to ```/etc/hostname```.
+
+--------------------------
+
+User management's turn now, set the root password:
+
+```bash
+root@RYZEN5:/# echo "root:root" | chpasswd
+```
+
+And create your regular user:
+
+```bash
+root@RYZEN5:/# useradd cakehonolulu -s /bin/bash -m
+root@RYZEN5:/# echo "cakehonolulu:super_secure_password" | chpasswd
+root@RYZEN5:/# usermod -aG sudo cakehonolulu
+```
+
+That's it! We're now missing the proper EFI enablement, GRUB will come to the rescue:
+
+```bash
+root@RYZEN5:/# apt install grub-efi
+
+root@RYZEN5:/# grub-install --target=riscv64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-nvram --removable
+```
+
+As a personal preference, I edit ```/etc/default/grub``` and modify ```GRUB_CMD_LINUX_DEFAULT``` from ```"quiet"``` to ```""``` to see the boot log.
+
+We also need to generate the ```/boot/grub/grub.cfg``` file, it's as easy as doing:
+
+```bash
+root@RYZEN5:/# grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+Though this is partly incorrect, just open the resulting file and rename all references to the ```loopXX``` medium to ```nvme0n1```. Also change the mount mode from ```ro``` to ```rw``` if you want a R/W root filesystem (You very much need to).
+
+We're set! Exit the chroot, unmount what we mounted at the start and copy the image over to your NVME drive:
+
+```bash
+$ sudo dd \
+          if=debian-visionfive.img \
+          of=/dev/your_drive \
+          bs=16M status=progress
+```
+
+It's now a good time to resize the root partition to accomodate the entire drive:
+
+```bash
+$ sudo parted /dev/your_drive
+
+GNU Parted 3.6
+Using /dev/your_drive
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) print                                                            
+Warning: Not all of the space available to /dev/your_drive appears to be used, you can
+fix the GPT to use all of the space (an extra 246997680 blocks) or continue with
+the current setting? 
+Fix/Ignore? fix
+Model: Realtek RTL9210B-CG (scsi)
+Disk /dev/your_drive: 128GB
+Sector size (logical/physical): 512B/16384B
+Partition Table: gpt
+Disk Flags: 
+
+Number  Start   End     Size    File system  Name  Flags
+ 1      1049kB  257MB   256MB   fat16              boot, esp
+ 2      257MB   1572MB  1315MB  ext4
+
+(parted) resizepart 2 100%                                                
+(parted) quit                                                             
+Information: You may need to update /etc/fstab.
+
+$ sudo e2fsck -f /dev/your_drive2
+e2fsck 1.47.2 (1-Jan-2025)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+/dev/your_drive2: 29531/80320 files (0.2% non-contiguous), 209820/321024 blocks
+
+$ sudo resize2fs /dev/your_drive2
+
+```
+
+With this, you can unplug the drive and re-install it back to the VF2. Assuming that you already installed my u-boot and edk2, it'll launch GRUB automatically.
+
 ## May 9 2025 2:11AM in the morning EDK2 and u-boot update
 
 ### EDK2-wise
@@ -261,25 +482,6 @@ So, I've also been battling with the hack I had to resort to to make U-boot laun
 
 For now, my cute little hack will do.
 
-## Debian sid
-
-Debian Trixie appears to be supporting the `riscv64` arch so I figured, why not building an image out of it? `debootstrap` it was!
-
-I built an ext4 image that I simply wrote over a partition on the NVME and Linux took care of it by specifying the `root=` and `rootwait` cmdline parameters on `startup.nsh`.
-
-I'll probably end up writing a blog regarding `debootstrap` because it also gave me quite the headache...
-
-But the end result was, very, very worth it:
-
-
-<div style="text-align: center;">
-
-![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/fastfetch.png)
-_SSH connection to the board, showcasing fastfetch, true EFI and Trixie Debian_
-</div>
-
-All in all, a frustrating-yet-insanely cool experience.
-
 ## May 10 2025 3:41AM in the morning EDK2 update
 
 I've finally got EDK2 firmware menu and boot selector to work for the VF2! Woohoo!
@@ -288,10 +490,12 @@ Bonus, we can now have GRUB to the loading for us and Debian is now fully EFI-aw
 
 <div style="text-align: center;">
 
-<script src="https://asciinema.org/a/H8qumTeIy4eR6StcUC9tCSEgj.js" id="asciicast-H8qumTeIy4eR6StcUC9tCSEgj" async="true"></script>
+<script src="https://asciinema.org/a/j9PMSxNgZdbgrpIAGQUCIzO0H.js" id="asciicast-j9PMSxNgZdbgrpIAGQUCIzO0H" async="true"></script>
 _Showcase of the EDK2 firmware menu, boot selection and GRUB booting Debian SID_
 </div>
 
 An EDK2 firmware menu static:
 
 ![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/menu.png)
+
+All in all, a frustrating-yet-insanely cool experience.
