@@ -279,3 +279,19 @@ _SSH connection to the board, showcasing fastfetch, true EFI and Trixie Debian_
 </div>
 
 All in all, a frustrating-yet-insanely cool experience.
+
+## May 10 2025 3:41AM in the morning EDK2 update
+
+I've finally got EDK2 firmware menu and boot selector to work for the VF2! Woohoo!
+
+Bonus, we can now have GRUB to the loading for us and Debian is now fully EFI-aware!
+
+<div style="text-align: center;">
+
+![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2.gif)
+_Showcase of the EDK2 firmware menu, boot selection and GRUB booting Debian SID_
+</div>
+
+The EDK2 firmware:
+
+![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/menu.png)
