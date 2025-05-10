@@ -288,10 +288,10 @@ Bonus, we can now have GRUB to the loading for us and Debian is now fully EFI-aw
 
 <div style="text-align: center;">
 
-![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2.gif)
+<script src="https://asciinema.org/a/H8qumTeIy4eR6StcUC9tCSEgj.js" id="asciicast-H8qumTeIy4eR6StcUC9tCSEgj" async="true"></script>
 _Showcase of the EDK2 firmware menu, boot selection and GRUB booting Debian SID_
 </div>
 
-The EDK2 firmware:
+An EDK2 firmware menu static:
 
 ![result](https://cakehonolulu.github.io/images/visionfive2_upstreaming/menu.png)
