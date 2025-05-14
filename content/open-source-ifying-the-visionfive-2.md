@@ -70,7 +70,9 @@ So there we had it, VF2 board running the latest and greatest Linux version! But
 
 *NOTE: This may have inaccuracies since I don't work for StarFive, it's based on my personal interpretations and findings/reverse engineering regarding the board whilst doing all the work on it.*
 
-When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) presumably off of an EEPROM or something similar, it's read-only and you can't access it's contents because it's unmapped as soon as the rest of the boot chain starts executing; you could probably try sniffing the contents out of it if provided it's not in the die package of the SoC an is located somewhere in the board; but considering the things it does it's probably best just to ignore it since it's unique task is bootstrapping the processor to the next stage (So most probably, boring assembly to do all of this; nothing interesting).
+When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) ~~presumably off of an EEPROM or something similar~~¹, it's read-only and you can't access it's contents because it's unmapped as soon as the rest of the boot chain starts executing; you could probably try sniffing the contents out of it if provided it's not in the die package of the SoC an is located somewhere in the board; but considering the things it does it's probably best just to ignore it since it's unique task is bootstrapping the processor to the next stage (So most probably, boring assembly to do all of this; nothing interesting).
+
+¹: [It's an on-chip diode rom mapped at physical address 0x2a000000](https://www.reddit.com/r/RISCV/s/s5WNFeJe3h)
 
 Then, it jumps to a cut-down u-boot that gets loaded off of flash storage. It's called **u-boot SPL** (**S**econd **P**rogram **L**oader), it basically exists to provide a bit of a richer environment to run code on; it has a few interesting things bootloader-wise (It can load things off of an SPI NOR/NAND for instance) but not much else; it's task is to bootstrap into OpenSBI to finally enter RISC-V's S (**S**upervisor) mode and act as a handler for a few "supervisor" calls launched from lower privilege levels.
 
