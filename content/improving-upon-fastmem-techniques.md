@@ -547,13 +547,134 @@ Whilst there's a few ways of doing so, I chose to have a different set of functi
 
 `hw_read8()`, `hw_read16()`, `hw_write32()`, `hw_write64()`... you get the gist.
 
-If the actual pointer dereference fails, we'll be on a function boundary, that is, it'll have it's own stack frame and such.
+The main reason as to why I use functions instead of inlining the pointer dereference is mainly because, while you could probably have a trampoline within JIT bounds and take it from there; it felt easier for me, conceptually-speaking; to patch `call` opcodes instead - so, if the actual pointer dereference fails, we'll be on a "function boundary", that is, it'll have it's own stack frame and such and it'll be easier to identify using less-obscure code; at least, personally speaking.
+
+```ascii
+                                                       ┌───────────────────────────────────────────┐
+                                                       │                  fn hw_write32            │
+                                                       │                                           │
+┌─────────────────────────────────────────┐            │ 0x7fff8dc1843df  mov     eax, [ebp+8]     │
+│ 0x7fff8dc1843df -> fn hw_write32(...) { │            │                                           │
+│                     ...                 ├───────────►│                                           │
+│ 0x7fff8dc18440e -> }                    │            │                  ...                      │
+└──────────────────┬──────────────────────┘            │                                           │
+                   │                                   │                                           │
+                   │ For all fn hw_xxXX                │                  inc     ecx              │
+                   ▼                                   │                  add     eax, ecx         │
+┌─────────────────────────────────────────┐            │                  mov     dword [rdi], eax │
+│SavedRanges.push({start, end, "hw_xxXX"})│            │                  mov     rsp, rbp         │
+└─────────────────────────────────────────┘            │                  pop     rbp              │
+                                                       │ 0x7fff8dc18440e  ret                      │
+                                                       └───────────────────────────────────────────┘
+                                                                                                    
+                                                        Populate REGISTER_PAIR table with           
+                                                                                                    
+                                                        src=rax                                     
+                                                        dst=rdi                                     
+```
+
+--------------
+
+```ascii
+┌───────────────────────┐             ┌────────────────────────────────────────────────────────┐
+│      JIT Context      │             │               Signal Handler Context                   │
+├───────────────────────┤             ├────────────────────────────────────────────────────────┤
+│                       │             │                                                        │
+│  JIT Block Execution  │             │      Get IP/PC pointing to faulting instruction        │
+│           │           │             │                        │                               │
+│           ▼           │     ┌──────►│                        ▼                               │
+│   Does memory access  │     │       │              Iterate frames backwards                  │
+│           │           │     │       │                        │                               │
+│           ▼           │     │       │                        ▼                               │
+│        Faults         │     │       │ Current frame's IP/PC falls between any of SavedRanges?│
+│                       │     │       │                                                        │
+└──────────┬────────────┘     │       └────────────────────────┬───────────────────────────────┘
+           │                  │                                │                                
+           │                  │                   ┌────────────┴──────────────────┐             
+           │                  │                   ▼                               ▼             
+           └──────────────────┘                  yes                              no            
+                                                  │                               │             
+                                                  │                               │             
+                                     ┌────────────▼────────────┐          ┌───────▼────────┐    
+                                     │We now know memory access│          │Shouldn't happen│    
+                                     │     type and length     │          └────────────────┘    
+                                     └─────────────────────────┘                                
+```
 
 What I do on the handler to figure out then to what memory access the one that triggered the fault belongs; is to, at the start of the emulator, I "precompute" the memory ranges of the aforementioned functions (I have a simple array that says: `hw_read8()` starts X and ends at Y, same for the rest of functions) so it's just a matter of capturing a backtrace of a small amount of frames (After all we should not be much more deep from the original callsite of the JIT) and I check each frame IP against the set of ranges; when I get a match, I immediately know if the access was a read or a write, and the length it tried to use.
 
-For each function of the ones above, I also (At startup) disassemble them with Capstone (I traverse in reverse from the function's `ret` until I find the register order for knowing which registers I have to get values out of to properly call the IO stub). For `x86_64` it's usually a `mov reg, (ptr)` so it's easy to distinguish what it's trying to write and where. You can get creative, mine is probably the most hacky solution but reliably works. Else you'd have to generate some sort of trampoline code from within the JIT realm that tries to get all of this on runtime which for my case, was a bit more difficult to grasp around.
+For each function of the ones above, I also (At startup) disassemble them with Capstone (I traverse in reverse from the function's `ret` until I find the register order for knowing which registers I have to get values out of to properly call the IO stub). I have to do this because of Rust's ABI (Or lack threreof).
+
+For `x86_64` it's usually a `mov reg, (ptr)` so it's easy to distinguish what it's trying to write and where. You can get creative, mine is probably the most hacky solution but reliably works. Else you'd have to generate some sort of trampoline code from within the JIT realm that tries to get all of this on runtime which for my case, was a bit more difficult to grasp around.
+
+So I end up building something like:
+
+```rust
+...
+fn init_hw_fastmem(...) -> ... {
+    ...
+    if let Some(reg) = find_memory_access_register(&cs, *func_ptr, *index) {
+        REGISTER_MAP[*index] = Some(reg);
+    }
+    ...
+}
+
+fn seghandler(...) {
+    ...
+    match (access.kind, access.width) {
+        (Write, B8) => {
+            let reg_id = REGISTER_MAP[0].expect("no register cached for write8");
+            let value = H::get_register_value(ctx, reg_id) as u8;
+            io_write8_stub(addr, value);
+        }
+        (Write, B128) => {
+            let (low_reg, high_reg) = REGISTER_PAIR.expect("no register pair cached");
+            let low_u64 = H::get_register_value(ctx, low_reg);
+            let high_u64 = H::get_register_value(ctx, high_reg);
+            io_write128_stub(bus_ptr, addr, low_u64, high_u64);
+        }
+        (Read, B8) => {
+            let value = io_read8_stub(bus_ptr, addr);
+            H::set_register_value(ctx, x86_64_impl::X86Register::Rax, value as u64);
+        }
+        ...
+    }
+}
+```
+
+--------------
 
 After we have the registers that hold the values that called the function that faulted, we can now proceed to patching. Again, here you can leave your imagination free as in to how to implement this, but what I do is I just get the IP out of the frame that triggered the fault (That means, effectively, the IP that points to the memory access itself) and you patch that. In my case, since it's a `movabs+call` pattern, I just modify the `movabs` address for the IO access one instead of the current `hw_readX()`/`hw_writeX()`; if you are the one emitting the assembly this is probably super easy because you don't probably need heuristics to patch the call. But since I rely on Cranelift (And usually has different emission of machine code depending on factors unrelated to the topic) I need a tiny tiny bit of heuristics to detect what I have to patch accurately.
+
+A simple, visual example:
+
+```ascii
+     JIT Block Prior Patch
+┌──────────────────────────────┐
+│ mov rax, 1                   │
+│ xor rbx, rbx                 │
+│ ...                          │
+│ movabs 0x7fff8dc1843df, r11  │
+│ call [r11]                   │
+└──────────────────────────────┘
+
+(r11 initially points to *0x7fff8dc1843df* -> hw_write32)
+```
+
+After patch:
+
+```ascii
+     JIT Block After Patch
+┌──────────────────────────────┐
+│ mov rax, 1                   │
+│ xor rbx, rbx                 │
+│ ...                          │
+│ movabs 0x7fff8dca42f14, r11  │
+│ call [r11]                   │
+└──────────────────────────────┘
+
+(r11 now points to *0x7fff8dca42f14* -> io_write32)
+```
 
 Be wary that you may need to change the permissions of the page where the machine code resides depending on how (Or the JIT framework) handles those before patching.
 
