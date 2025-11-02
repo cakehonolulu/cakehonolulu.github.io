@@ -8,6 +8,15 @@ links = [
 image = "https://raw.githubusercontent.com/cakehonolulu/RustEE/refs/heads/main/resources/banner.png"
 
 [[project]]
+name = "pciem"
+desc = "A Linux-based PCIe emulation framework to enable in-host driver development in conjunction with QEMU."
+tags = ["linux", "qemu", "driver", "pcie", "pci", "pciem", "synthetic"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/pciem" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/pciem/refs/heads/main/resources/icon.png"
+
+[[project]]
 name = "RT4K-CEC"
 desc = "A custom tailored firmware made for Raspberry Pi Pico's to control RetroTink 4K (CE) devices using HDMI-CEC (And your TVs Controller). Works by intercepting HDMI-CEC signals and sending appropiate responses to the RetroTink's RS232 serial device using an OTG Y splicer and the Pi Pico in USB Host mode (Using CDC spec for serial data)."
 tags = ["retrotink", "retrotink4k", "retrotink-4k", "rt4k", "hdmi", "hdmi-cec", "hdmicec", "cec_enabler", "pico-cec", "freertos"]
