@@ -1,0 +1,1324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>cakehonolulu&#x27;s blog</title>
+      <link>https://cakehonolulu.github.io</link>
+      <description>Get the latest language learning news.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="https://cakehonolulu.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sun, 02 Nov 2025 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Introducing PCIem</title>
+          <pubDate>Sun, 02 Nov 2025 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/introducing-pciem/</link>
+          <guid>https://cakehonolulu.github.io/introducing-pciem/</guid>
+          <description xml:base="https://cakehonolulu.github.io/introducing-pciem/">&lt;h2 id=&quot;preface&quot;&gt;Preface&lt;&#x2F;h2&gt;
+&lt;p&gt;PCIem exists solely thanks to countless hours of hacking around Linux (And finding out). This is not intended to be a show of any commercial-level framework or anything like that. This should be free knowledge and at no cost for anyone wants to try it.&lt;&#x2F;p&gt;
+&lt;p&gt;Author (Me, cakehonolulu) wanted to experiment with how much you can twist the untwistable to get this system working and here&#x27;s the rants and findings about exactly that process.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;first-of-all-why&quot;&gt;First of all, why?&lt;&#x2F;h2&gt;
+&lt;p&gt;So, aside from the technical challenge fun of it I also was interested on finding a way of developing drivers inside the host directly.&lt;&#x2F;p&gt;
+&lt;p&gt;From my limited knowledge, when we try to look at how companies&#x2F;groups&#x2F;whoever try to do PCIe driver development it usually goes in 2 possible ways:&lt;&#x2F;p&gt;
+&lt;p&gt;1.- They don&#x27;t care about PCIe&lt;&#x2F;p&gt;
+&lt;p&gt;Which is the sanest way. Honestly if you care about you and your teams sanity this is the way to go. Usually involves building a shim or some sort of abstraction layer that avoids the hassle of going down the driver level to do some general useability tests. This is probably sufficient for everything since there&#x27;s usually ways to attain more low-levelness if needed.&lt;&#x2F;p&gt;
+&lt;p&gt;2.- They care about PCIe&lt;&#x2F;p&gt;
+&lt;p&gt;This is great if you care about having as much of the development process covered as possible.&lt;&#x2F;p&gt;
+&lt;p&gt;Usually requires complex co-simulation&#x2F;co-emulation models. We&#x27;re talking multiple-people efforts (Maybe even teams) right here.&lt;&#x2F;p&gt;
+&lt;p&gt;Sometimes commercial solutions can be used but guess what, they&#x27;re pricey.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s also SimBricks (Which is open-source and works great!) but if you care a bit about speed and not so much about tight timings it can be costly.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Knowing this, I kinda wanted to do the full designing of a simple &quot;dumb framebuffer&quot; PCIe card (That can do zero-copy DMA and whatnot for it&#x27;s internal &quot;VRAM&quot; in conjunction with the kernel) inside QEMU and get a driver for it; and what a better way of writing a driver than directly on the host.&lt;&#x2F;p&gt;
+&lt;p&gt;Yeah, call me crazy.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;protopciem-card&quot;&gt;ProtoPCIem card&lt;&#x2F;h2&gt;
+&lt;p&gt;So, before actually writing drivers, we need to know our target.&lt;&#x2F;p&gt;
+&lt;p&gt;My idea was an early-to-mid-90s PCI card that had a simple state machine for issuing commands to it and maybe some DMA to speed things up a bit.&lt;&#x2F;p&gt;
+&lt;p&gt;I came up with the following register file:&lt;&#x2F;p&gt;
+&lt;p&gt;0x00 - &lt;code&gt;REG_CONTROL&lt;&#x2F;code&gt;: The main control register for the card; toggling bit 1 (&lt;code&gt;CTRL_RESET&lt;&#x2F;code&gt;) resets the card (Clears status, wipes memory...).&lt;&#x2F;p&gt;
+&lt;p&gt;0x04 - &lt;code&gt;REG_STATUS&lt;&#x2F;code&gt;: R&#x2F;O status register, &lt;code&gt;STATUS_BUSY&lt;&#x2F;code&gt; (Bit 0) if device is busy; &lt;code&gt;STATUS_DONE&lt;&#x2F;code&gt; (Bit 1), last command executed successfully; &lt;code&gt;STATUS_ERROR&lt;&#x2F;code&gt;, well, an error happened with the last command.&lt;&#x2F;p&gt;
+&lt;p&gt;0x08 - &lt;code&gt;REG_CMD&lt;&#x2F;code&gt;: The command register, writing here starts a command on the card.&lt;&#x2F;p&gt;
+&lt;p&gt;0x0C - &lt;code&gt;REG_DATA&lt;&#x2F;code&gt;: Simple operand for fixed-function operations on the card (Mainly leftover from when designing a much simpler version of PCIem)&lt;&#x2F;p&gt;
+&lt;p&gt;0x10 - &lt;code&gt;REG_RESULT_LO&lt;&#x2F;code&gt;: Low 32-bits of the command result register pair. Probably could do single 64-bit one but again, PoC so I did it like this.&lt;&#x2F;p&gt;
+&lt;p&gt;0x14 - &lt;code&gt;REG_RESULT_HI&lt;&#x2F;code&gt;: High 32-bits of the command result register pair.&lt;&#x2F;p&gt;
+&lt;p&gt;0x20 - &lt;code&gt;REG_DMA_SRC_LO&lt;&#x2F;code&gt;: Low 32-bits of the 64-bit DMA source address of the system memory.&lt;&#x2F;p&gt;
+&lt;p&gt;0x24 - &lt;code&gt;REG_DMA_SRC_HI&lt;&#x2F;code&gt;: High 32-bits &quot;&quot; &quot;&quot; &quot;&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;0x28 - &lt;code&gt;REG_DMA_DST_LO&lt;&#x2F;code&gt;: Low 32-bits of the destination (As offset within the PCI internal memory).&lt;&#x2F;p&gt;
+&lt;p&gt;0x2C - &lt;code&gt;REG_DMA_DST_HI&lt;&#x2F;code&gt;: High 32-bits &quot;&quot; &quot;&quot; &quot;&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;0x30 - &lt;code&gt;REG_DMA_LEN&lt;&#x2F;code&gt;: Length in bytes of the DMA transfer.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;As for the commands, I have a fixed-function pipeline for now:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;CMD_ADD&lt;&#x2F;code&gt; (0x01): Does &lt;code&gt;REG_DATA&lt;&#x2F;code&gt; + 42&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;CMD_MULTIPLY&lt;&#x2F;code&gt; (0x02): Does &lt;code&gt;REG_DATA&lt;&#x2F;code&gt; * 3&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;CMD_XOR&lt;&#x2F;code&gt; (0x03): Does &lt;code&gt;REG_DATA&lt;&#x2F;code&gt; ^ 0xABCD1234&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;RESERVED&lt;&#x2F;code&gt; (0x04)&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;CMD_DMA_FRAME&lt;&#x2F;code&gt; (0x05): Performs DMA transfer basically&lt;&#x2F;p&gt;
+&lt;p&gt;Now that we know the card&#x27;s definition, I modeled it under QEMU.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;hw-museum.cz&#x2F;data&#x2F;vga&#x2F;pic&#x2F;3dfx_Voodoo3_3000_PCI_SDR_F.jpg&quot; alt=&quot;Voodoo 3&quot; &#x2F;&gt;
+&lt;em&gt;Voodoo 3 PCI card (Voodoo in general served as personal inspiration)&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;pciem-or-a-speedrun-on-getting-linus-mad&quot;&gt;PCIem (or a speedrun on getting Linus mad)&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;ve been experimenting for a while on how to convince Linux&#x27;s PCI subsystem functions that there&#x27;s a PCI device attached to the host bus without one being attached. Sounds crazy but I thought it could be something worth experimenting.&lt;&#x2F;p&gt;
+&lt;p&gt;My initial impression was that I would have to go and hack Linux &quot;from within&quot; and have custom kernels and whatnot to have this (Mainly getting rid of sanity checks and whatnot to let this work) but it turns out you can do one trick that&#x27;ll let you do that from a kernel module w&#x2F;o ever touching the kernel&#x27;s source code.&lt;&#x2F;p&gt;
+&lt;p&gt;But it turns out you can without touching it at all.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;memmap-cmdline-argument&quot;&gt;memmap cmdline argument&lt;&#x2F;h2&gt;
+&lt;p&gt;Turns out you can provide a commandline argument to Linux so that it &quot;reserves&quot; a physical memory chunk from the &lt;code&gt;&quot;System RAM&quot;&lt;&#x2F;code&gt; resource node.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s say your &lt;code&gt;&#x2F;proc&#x2F;iomem&lt;&#x2F;code&gt; tells you that your &quot;System RAM&quot; node is &lt;code&gt;0x10000000-0x1FFFFFFF&lt;&#x2F;code&gt;. If we instruct Linux to boot with: &lt;code&gt;memmap=64K$0x1FFEFFFF&lt;&#x2F;code&gt; it&#x27;ll carve the last &lt;code&gt;0x10000&lt;&#x2F;code&gt; and not assign it to &lt;code&gt;&quot;System RAM&quot;&lt;&#x2F;code&gt;. This means that we have a &quot;free&quot; and &quot;unused&quot; region we can work with. This is, in part, the root of the mechanism we &quot;exploit&quot; for PCIem.&lt;&#x2F;p&gt;
+&lt;p&gt;It turns out that when the PCI subsystem tries to &quot;claim&quot; the region it first checks if it already belongs somewhere (System RAM, other PCI memory...), so by manually carving some of it during boot time we ensure that the PCI subsystem won&#x27;t complain about it.&lt;&#x2F;p&gt;
+&lt;p&gt;I had 2 other ideas to try and get this working before this approach, main one was doing &lt;code&gt;alloc_pages()&lt;&#x2F;code&gt; and crossing my fingers that it&#x27;d work (But it didn&#x27;t).&lt;&#x2F;p&gt;
+&lt;p&gt;The second one was much worse, I would manually split one of (If not the only) &quot;System RAM&quot; node at runtime (As dangerous as that sounds) and it&#x27;d make the &lt;code&gt;memmap&lt;&#x2F;code&gt; requirement not exist at all; but I won&#x27;t go into the details of why splicing a &quot;System RAM&quot; node is a bad idea... (It is)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;adding-a-synthetic-pcie-device&quot;&gt;Adding a Synthetic PCIe device&lt;&#x2F;h2&gt;
+&lt;p&gt;Using &lt;code&gt;pci_scan_root_bus()&lt;&#x2F;code&gt; and having a specially-prepared &lt;code&gt;struct pci_ops&lt;&#x2F;code&gt; with the &lt;code&gt;read&lt;&#x2F;code&gt; and &lt;code&gt;write&lt;&#x2F;code&gt; handlers containing some cool code makes it so that Linux props up a new PCI device on the bus as if it physically existed there.&lt;&#x2F;p&gt;
+&lt;p&gt;I also use &lt;code&gt;pci_bus_add_devices()&lt;&#x2F;code&gt; and the &lt;code&gt;pci_bus_assign_resources()&lt;&#x2F;code&gt; to populate the card.&lt;&#x2F;p&gt;
+&lt;p&gt;When the kernel probes the new device, it ends up calling those functions on the struct; by carefully setting the parameters, we can specify the PCI device properties. From &lt;code&gt;VENDOR_ID&lt;&#x2F;code&gt; to &lt;code&gt;DEVICE_ID&lt;&#x2F;code&gt;, to extended capabilities, to &lt;code&gt;MSI&lt;&#x2F;code&gt; configuration, &lt;code&gt;DMA&lt;&#x2F;code&gt;... and whatnot.&lt;&#x2F;p&gt;
+&lt;p&gt;You can take a closer look on the source code of &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;pciem&#x2F;blob&#x2F;main&#x2F;pciem.c&quot;&gt;pciem.c&lt;&#x2F;a&gt; (&lt;code&gt;vph_read_config()&lt;&#x2F;code&gt;, &lt;code&gt;vph_write_config()&lt;&#x2F;code&gt;, &lt;code&gt;vph_fill_config()&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;bar-remapping&quot;&gt;BAR remapping&lt;&#x2F;h2&gt;
+&lt;p&gt;When we have to back the BAR0 memory we can use the carved region from &lt;code&gt;memmap&lt;&#x2F;code&gt; because when it tries to take ownership of it the PCI subsystem won&#x27;t complain as it won&#x27;t see it belonging to &lt;code&gt;&quot;System RAM&quot;&lt;&#x2F;code&gt; and thus won&#x27;t return &lt;code&gt;&quot;-EBUSY&quot;&lt;&#x2F;code&gt;, as we mentioned before.&lt;&#x2F;p&gt;
+&lt;p&gt;This enables your usual PCIe driver to do &lt;code&gt;&quot;pci_iomap()&quot;&lt;&#x2F;code&gt; as if nothing.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;&quot;ioreadX()&quot;&lt;&#x2F;code&gt; and &lt;code&gt;&quot;iowriteX()&quot;&lt;&#x2F;code&gt; functions also work just fine (Which was kinda expected since it basically works at the memory-barrier levels and whatnot).&lt;&#x2F;p&gt;
+&lt;p&gt;This is crucial for driver development as it enables us to make them work.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s a separate talk on how to handle the different ways of &lt;code&gt;iomap()&lt;&#x2F;code&gt;-ing from the driver (Mainly the uncached, write-combining and all that) and how we could detect those to match the driver but that&#x27;s for another day (If it even matters, I haven&#x27;t had the time to actually dwelve into it).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;msis&quot;&gt;MSIs&lt;&#x2F;h2&gt;
+&lt;p&gt;For MSIs, what I did was find the assigned synthetic PCIe MSI number and I queued the handler with &lt;code&gt;irq_work_queue()&lt;&#x2F;code&gt;. From the safe(r) kernel context where &lt;code&gt;&quot;pciem_msi_irq_work_func&quot;&lt;&#x2F;code&gt; gets called it just does &lt;code&gt;&quot;generic_handle_irq(num)&quot;&lt;&#x2F;code&gt; which should run all the registered handlers. Which in turn runs the actual PCIe driver&#x27;s &lt;code&gt;&quot;pci_irq_handler&quot;&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;So if your hardware registers a &lt;code&gt;pci_irq_handler&lt;&#x2F;code&gt; it&#x27;ll work here just fine thanks to this.&lt;&#x2F;p&gt;
+&lt;p&gt;Based on my testing it&#x27;s completely indistinguishable from a real, hardware-triggered MSI for the driver; but feel free to try and make it explode :)&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dma&quot;&gt;DMA&lt;&#x2F;h2&gt;
+&lt;p&gt;The gist of it is to basically setup a communication flow between the userspace proxy that handles kernel&amp;lt;-&amp;gt;proxy&amp;lt;-&amp;gt;QEMU transactions so that when actual DMA needs to happen (Writes from and to DMA allocated buffers) everything gets proxied.&lt;&#x2F;p&gt;
+&lt;p&gt;The real driver usually does &lt;code&gt;&quot;dma_alloc_coherent()&quot;&lt;&#x2F;code&gt; which returns both a virtual address and a physical address (&lt;code&gt;dma_addr_t&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;Those values move across the framework, when QEMU &quot;initiates&quot; the DMA it has to ask PCIem to do the reading from the &lt;code&gt;dma_addr_t&lt;&#x2F;code&gt; (Since we can&#x27;t do that from userspace...), it effectively proxies the DMA request up to the kernel basically.&lt;&#x2F;p&gt;
+&lt;p&gt;PCIem then becomes sort of a &quot;DMA engine&quot;; when the IOMMU is off, we&#x27;re just a &lt;code&gt;phys_to_virt()&lt;&#x2F;code&gt; call away to be able to copy the data directly to the proxy&#x27;s &quot;virtual DMA buffer&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;If the IOMMU is on, &lt;code&gt;dma_addr_t&lt;&#x2F;code&gt; is an &lt;strong&gt;IOVA&lt;&#x2F;strong&gt; (I&#x2F;O Virtual Address), not a physical one. I found out about this doing lots of debugging and observing that the phys address returned by &lt;code&gt;dma_alloc_coherent()&lt;&#x2F;code&gt; being &lt;code&gt;0xFFFF0000&lt;&#x2F;code&gt; always (Without &lt;code&gt;amd_iommu=off&lt;&#x2F;code&gt;). Is it some sort of software-controlled trampoline?&lt;&#x2F;p&gt;
+&lt;p&gt;Anyhow, for IOVA handling, I had to loop page-by-page for the DMA&#x27;s &lt;code&gt;len&lt;&#x2F;code&gt; doing &lt;code&gt;iommy_iova_to_phys()&lt;&#x2F;code&gt; to get the IOMMU to handle the translations for me. Then the &lt;code&gt;phys_to_virt()&lt;&#x2F;code&gt; and subsequent &lt;code&gt;copy_to_user()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;handling-pci-commands&quot;&gt;Handling PCI commands&lt;&#x2F;h2&gt;
+&lt;p&gt;I had to resort to a poller (Which runs on a kernel thread monitoring for a changed value in the BAR)... yeah, less than optimal but hey, it works!&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve been experimenting with &quot;sequential&quot; ways of handling this, but couldn&#x27;t figure something that works good enough and doesn&#x27;t look ugly (I tried memory watchpoints but they apparently don&#x27;t work on physical addresses which we use for BAR stuff).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;pciem-uproxy-and-pciem-s-kernel-thread&quot;&gt;pciem_uproxy and pciem&#x27;s kernel thread&lt;&#x2F;h2&gt;
+&lt;p&gt;I would go about and explain how I made a model for communication between the userspace component of pciem and qemu and whatnot but I feel like those parts are actually not-so-interesting; you can freely look at the code for some of the stuff I did to try and avoid race conditions (Not sure I fixed them all but it seems stable from what I can see after leaving DOOM running for a few hours).&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;d say this is probably (Alongside the polling) the area that should be improved as it&#x27;d let me get rid of much of the code I have, but again; we&#x27;ll see down the road.&lt;&#x2F;p&gt;
+&lt;p&gt;Anyhow, I can get stable output from DOOM and Quake at 640x480@120 (8BPP).&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;pciem&#x2F;doom.png&quot; alt=&quot;doom&quot; &#x2F;&gt;
+&lt;em&gt;DOOM&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;pciem&#x2F;quake.png&quot; alt=&quot;quake&quot; &#x2F;&gt;
+&lt;em&gt;Quake&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</description>
+      </item>
+      <item>
+          <title>Hardware Fastmem 101</title>
+          <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/improving-upon-fastmem-techniques/</link>
+          <guid>https://cakehonolulu.github.io/improving-upon-fastmem-techniques/</guid>
+          <description xml:base="https://cakehonolulu.github.io/improving-upon-fastmem-techniques/">&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;media.geeksforgeeks.org&#x2F;wp-content&#x2F;uploads&#x2F;20250115142221545470&#x2F;virtual_memory.webp&quot; alt=&quot;virtual_memory&quot; &#x2F;&gt;
+&lt;em&gt;Slightly simplified virtual memory diagram - Courtesy of GeeksForGeeks&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h1 id=&quot;preface&quot;&gt;Preface&lt;&#x2F;h1&gt;
+&lt;p&gt;The following blog entry is more geared towards enthusiasts who may want to optimize their emulation platform
+to squeeze some more performance out of it in comparison with more traditional bus designs.&lt;&#x2F;p&gt;
+&lt;p&gt;If you already know about the usual ways memory accesses are implemented, you can skip over to &lt;a href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;#hardware-fastmem&quot;&gt;Hardware Fastmem&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;refresher-for-memory-access-patterns-in-emulation&quot;&gt;Refresher for memory access patterns in emulation&lt;&#x2F;h1&gt;
+&lt;p&gt;When we talk about memory access patterns, what we usually mean is, how the emulator handles (Emulated) memory
+accesses.&lt;&#x2F;p&gt;
+&lt;p&gt;That means, how the target system behaves when it comes to accessing its memory; be it physical memory,
+virtual memory, I&#x2F;D Caches, IO...&lt;&#x2F;p&gt;
+&lt;p&gt;There are usually a few ways of emulating those, usually memory accesses are delegated to certain opcodes.&lt;&#x2F;p&gt;
+&lt;p&gt;On MIPS they&#x27;re &lt;strong&gt;lb&lt;&#x2F;strong&gt;&#x2F;&lt;strong&gt;lh&lt;&#x2F;strong&gt;&#x2F;&lt;strong&gt;lw&lt;&#x2F;strong&gt;&#x2F;&lt;em&gt;et al&lt;&#x2F;em&gt; for memory loads, &lt;strong&gt;sb&lt;&#x2F;strong&gt;&#x2F;&lt;strong&gt;sh&lt;&#x2F;strong&gt;&#x2F;&lt;strong&gt;sw&lt;&#x2F;strong&gt;&#x2F;&lt;em&gt;et al&lt;&#x2F;em&gt; for stores.&lt;&#x2F;p&gt;
+&lt;p&gt;For ARM, &lt;strong&gt;ldr&lt;&#x2F;strong&gt;&#x2F;&lt;strong&gt;str&lt;&#x2F;strong&gt; pairs for loads&#x2F;stores respectively... and so on for other ISAs.&lt;&#x2F;p&gt;
+&lt;p&gt;So, one, has to properly emulate those opcodes and in turn, call the required function to do the access in order
+for the execution to be successful.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s 3 &quot;mainstream&quot; ways of handling these accesses.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;ranged-accesses&quot;&gt;Ranged accesses&lt;&#x2F;h2&gt;
+&lt;p&gt;This type of access is usually the most common denominator when it comes to popularity. It tends to be simple, effective,
+and whilst not super-fast, easy to grasp.&lt;&#x2F;p&gt;
+&lt;p&gt;The main idea is to define a predefined amount of memory ranges and use a big if-else chain or a big switch.&lt;&#x2F;p&gt;
+&lt;p&gt;Then, based on what each opcode asks for to be accessed, you make the memory handlers check against that value and return
+the accessed value accordingly:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;strong&gt;bus.rs:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Reads a byte from memory
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;readb&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;addr&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u16&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x2000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.ram[addr as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; index = (addr - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x2000&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.ppu_registers[index as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4020 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; index = (addr - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4000&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.apu_io_registers[index as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x8000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; index = (addr - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x8000&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.rom[index as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;]
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        unreachable!();
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Writes a byte to memory
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;writeb&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;addr&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u16&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x2000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.ram[addr as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;] = data;
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; index = (addr - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x2000&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.ppu_registers[index as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;] = data;
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4020 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; index = (addr - &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x4000&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.apu_io_registers[index as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;] = data;
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else if&lt;&#x2F;span&gt;&lt;span&gt; addr &amp;gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x8000 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ROM is read only
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;This is for systems that have no MMU, when systems have an MMU, you first have to do the virtual-to-physical
+address translation to get the physical address so you can properly access the correct memory location.&lt;&#x2F;p&gt;
+&lt;p&gt;That means that you may need to emulate enough of the MMU to get it to spew the correct PA&#x27;s (For MIPS-based consoles,
+you can usually &lt;strong&gt;&amp;amp;&lt;&#x2F;strong&gt; the high bits and that gives you the PA due to how they &quot;mirror&quot; memory).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;software-fastmem&quot;&gt;Software fastmem&lt;&#x2F;h2&gt;
+&lt;p&gt;The main idea behind software fastmem is to have an array of pointers point (&lt;em&gt;duh&lt;&#x2F;em&gt;) whose sole objective is mimicking
+a page-table structure.&lt;&#x2F;p&gt;
+&lt;p&gt;That is, if we were to divide the address space of the target system into pages; we&#x27;d have to populate both the read
+and the write arrays with pointers to page-size-aligned entries (For RAM, scratchpad...).&lt;&#x2F;p&gt;
+&lt;p&gt;So, we&#x27;d be effectively &quot;mapping&quot; those addresses to our array, simple example (Assuming the pointer array has been built):&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;p&gt;&lt;strong&gt;bus.rs:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;sw_readb&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;va&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; page = (va as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_BITS&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; offset = (va as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) &amp;amp; (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_SIZE &lt;&#x2F;span&gt;&lt;span&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; host = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.page_read[page];
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; host != &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            (host as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*const u8&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;                .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(offset)
+&lt;&#x2F;span&gt;&lt;span&gt;                .cast::&amp;lt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;                .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;read_unaligned&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; IO access
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;sw_writeb&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;va&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; page = (va as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) &amp;gt;&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_BITS&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; offset = (va as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) &amp;amp; (&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_SIZE &lt;&#x2F;span&gt;&lt;span&gt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; host = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.page_write[page];
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if&lt;&#x2F;span&gt;&lt;span&gt; host != &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;            (host as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut u8&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;                .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(offset)
+&lt;&#x2F;span&gt;&lt;span&gt;                .&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;write_unaligned&lt;&#x2F;span&gt;&lt;span&gt;(value)
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;    } &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;else &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; IO access
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;As you can see, this approach is much, much more faster; since we &quot;delegate&quot; the costly part on startup (The actual filling
+of the page table arrays for reads&#x2F;writes) and then we just have to index the corresponding page entry (Else we assume it&#x27;s unmapped
+and that means it&#x27;s usually an IO access for simpler systems or that you may need to update the mappings because a TLB entry was modified f.e.).&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s a great article by wheremyfoodat, &lt;a href=&quot;https:&#x2F;&#x2F;wheremyfoodat.github.io&#x2F;software-fastmem&#x2F;&quot;&gt;on which it explains perfectly how to achieve this system&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;So, this already cuts down lots of the cost of memory addressing, but we still have one more trick on our sleeves.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;hardware-fastmem&quot;&gt;Hardware fastmem&lt;&#x2F;h1&gt;
+&lt;p&gt;Out of all the methods we&#x27;ve already seen, this one was the most difficult one for me to grasp.&lt;&#x2F;p&gt;
+&lt;p&gt;Turns out we can get native-speed (That means, host-level performance) accesses for memory reads&#x2F;writes for an emulated system.&lt;&#x2F;p&gt;
+&lt;p&gt;The way to do this is really tied to what Operating System we want to target and how the emulated system&#x27;s memory subsystem behaves.&lt;&#x2F;p&gt;
+&lt;p&gt;Approach itself should be relatively simple for systems without virtual memory (But you&#x27;ll have to make some considerations as to how
+worth it is to implement hardware fastmem for simpler systems), but complexity increases based on how target system memory access patterns (Because
+one may encounter an MMU and the need to remap memory ranges and that by itself, can become a hassle to do depending on how we tackle it).&lt;&#x2F;p&gt;
+&lt;p&gt;This system is also really unsuitable for anything that&#x27;s not a JIT. Since we kind of need to jump to exception handlers, doing this on a per-memory-access
+basis will tank our performance, so from now on, we&#x27;ll assume that this is targeted for a dynamic recompiler-based emulator.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;allocating-a-virtual-memory-pool&quot;&gt;Allocating a virtual memory pool&lt;&#x2F;h2&gt;
+&lt;p&gt;First and foremost, we need to ask the host operating system for a pool of free and usable virtual memory chunk.&lt;&#x2F;p&gt;
+&lt;p&gt;The approach varies between Windows and Linux (Other operating systems may also have its own quirks but won&#x27;t be covered here) varies.&lt;&#x2F;p&gt;
+&lt;p&gt;For instance, under Linux, one would issue a call to &lt;code&gt;mmap()&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; size = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; base = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;mmap&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;    size,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PROT_NONE&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MAP_PRIVATE &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MAP_ANONYMOUS&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;For this specific case, we ask the kernel for a chunk of &lt;code&gt;size&lt;&#x2F;code&gt;, mapped wherever it wants (&lt;code&gt;ptr::null_mut()&lt;&#x2F;code&gt;), initially w&#x2F;o any access to it (&lt;code&gt;PROT_NONE&lt;&#x2F;code&gt;) and
+not backed by a file, we4 also don&#x27;t specify a file descriptor (&lt;code&gt;-1&lt;&#x2F;code&gt;) since the second flag we specified to &lt;code&gt;mmap()&lt;&#x2F;code&gt; is &lt;code&gt;MAP_ANONYMOUS&lt;&#x2F;code&gt;. Changes are also private to
+the process thanks to &lt;code&gt;MAP_PRIVATE&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Thanks to &lt;code&gt;PROT_MODE&lt;&#x2F;code&gt; (Not physically backed with anything) we gain a crucial ability for hardware fastmem (Which we&#x27;ll explain later), faulting on unmapped accesses.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;For Windows, we&#x27;ll use &lt;code&gt;VirtualAlloc2()&lt;&#x2F;code&gt; (Which means that we&#x27;ll need version Windows 10 v1803 &amp;gt;=, from 2018) because Windows memory management was bound to 64K alignment
+&lt;a href=&quot;https:&#x2F;&#x2F;devblogs.microsoft.com&#x2F;oldnewthing&#x2F;20031008-00&#x2F;?p=42223&quot;&gt;for legacy reasons&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(windows)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; size = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; base = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    VirtualAlloc2(
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        size,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MEM_RESERVE &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MEM_RESERVE_PLACEHOLDER&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_NOACCESS&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;Again, &lt;code&gt;ptr::null_mut()&lt;&#x2F;code&gt;&#x27;s are, in order, to let the kernel choose the base address, and then so we don&#x27;t specify extended parameters.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;MEM_RESERVE | MEM_RESERVE_PLACEHOLDER&lt;&#x2F;code&gt;, the crucial bit is &lt;code&gt;MEM_RESERVE_PLACEHOLDER&lt;&#x2F;code&gt;, since that&#x27;s why we use &lt;code&gt;VirtualAlloc2()&lt;&#x2F;code&gt; in the first place.&lt;&#x2F;p&gt;
+&lt;p&gt;This creates a reservation that can be split and replaced, working around Windows&#x27; legacy 64K allocation granularity that made precise memory layout control impossible with the regular &lt;code&gt;VirtualAlloc()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;And then, same as with Linux; &lt;code&gt;PAGE_NOACCESS&lt;&#x2F;code&gt; to make unmapped accesses fault.&lt;&#x2F;p&gt;
+&lt;p&gt;For hardware fastmem, placeholders are essential because you need contiguous virtual address space where different regions map to different backing stores (BootROM, RAM, MMIO...) without being constrained by the legacy 64K granularity of the old model.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;devblogs.microsoft.com&#x2F;oldnewthing&#x2F;20240201-00&#x2F;?p=109346&quot;&gt;More valuable information&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;adding-mappings&quot;&gt;Adding mappings&lt;&#x2F;h2&gt;
+&lt;p&gt;To do this under Linux, my way of doing it was using shared memory files. There could be better ways but this one worked for my PS2 Emulator, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;RustEE&quot;&gt;RustEE&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;First, we open a shared memory file:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; name = c&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;...&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; fd = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;shm_open&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    name,
+&lt;&#x2F;span&gt;&lt;span&gt;    OFlag::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;O_CREAT &lt;&#x2F;span&gt;&lt;span&gt;| OFlag::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;O_RDWR&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    Mode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;S_IRUSR &lt;&#x2F;span&gt;&lt;span&gt;| Mode::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;S_IWUSR&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;When we have the file descriptor for it, we truncate the size of the fd itself; we can use &lt;code&gt;ftruncate()&lt;&#x2F;code&gt; for that:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; fd_size = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;ftruncate&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;fd, fd_size);
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;(Worth noting I&#x27;m omitting error handling and stuff not to clutter the post with that).&lt;&#x2F;p&gt;
+&lt;p&gt;After this, it&#x27;s a matter of actually adding the mapping to our &quot;base&quot; pointer of virtual addresses:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; target = base.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(...);
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; map_sz = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; prot = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PROT_READ &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PROT_WRITE&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;mmap&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    target as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut c_void&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    size,
+&lt;&#x2F;span&gt;&lt;span&gt;    prot,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MAP_SHARED &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MAP_FIXED&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    &amp;amp;fd.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;as_raw_fd&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* offset *&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;This would suffice to have the region mapped. You can also map R&#x2F;O regions by doing: &lt;code&gt;PROT_READ&lt;&#x2F;code&gt; instead of &lt;code&gt;PROT_READ | PROT_WRITE&lt;&#x2F;code&gt; (Think
+BootROMs and such).&lt;&#x2F;p&gt;
+&lt;p&gt;If you need to copy a BootROM&#x2F;BIOS&#x2F;proprietary binary over the mapping, you can do it by &lt;code&gt;mmap()&lt;&#x2F;code&gt;-ing (Or the Windows alternative) with &lt;code&gt;PROT_READ | PROT_WRITE&lt;&#x2F;code&gt;,
+then copying the bytes to it and finally remapping it correctly as R&#x2F;O (Using &lt;code&gt;mprotect()&lt;&#x2F;code&gt;&#x2F;&lt;code&gt;VirtualProtect&#x2F;()&lt;&#x2F;code&gt;):&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; binary: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* Vec&amp;lt;u8&amp;gt; *&#x2F; &lt;&#x2F;span&gt;&lt;span&gt;...;
+&lt;&#x2F;span&gt;&lt;span&gt;std::ptr::copy_nonoverlapping(
+&lt;&#x2F;span&gt;&lt;span&gt;    binary.bytes.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;as_ptr&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;    ptr as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut u8&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    binary.bytes.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(),
+&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;mprotect&lt;&#x2F;span&gt;&lt;span&gt;(ptr, binary.bytes.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;len&lt;&#x2F;span&gt;&lt;span&gt;(), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PROT_READ&lt;&#x2F;span&gt;&lt;span&gt;)?;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;On the Windows side of things, we&#x27;ll use &lt;code&gt;CreateFileMapping2()&lt;&#x2F;code&gt; to achieve similar results.&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(windows)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; sz = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; fd = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    CreateFileMapping2(
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;INVALID_HANDLE_VALUE&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;FILE_MAP_READ &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;FILE_MAP_WRITE&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_READWRITE&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        sz,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;* OsStr *&#x2F;&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;This grants us a memory mapped file.&lt;&#x2F;p&gt;
+&lt;p&gt;We then &quot;initialize&quot; the region we&#x27;ll place the mapping on the pool by issuing a &lt;code&gt;VirtualFree()&lt;&#x2F;code&gt; with a special bit set...&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(windows)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; sz = ...;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; addr = ...;
+&lt;&#x2F;span&gt;&lt;span&gt;VirtualFree(addr, sz, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MEM_RELEASE &lt;&#x2F;span&gt;&lt;span&gt;| &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MEM_PRESERVE_PLACEHOLDER&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;...and we map the fd to the virtual address pool using &lt;code&gt;MapViewOfFile3()&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(windows)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; res = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    MapViewOfFile3(
+&lt;&#x2F;span&gt;&lt;span&gt;        fd,
+&lt;&#x2F;span&gt;&lt;span&gt;        GetCurrentProcess(),
+&lt;&#x2F;span&gt;&lt;span&gt;        base.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(offset) as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*const c_void&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        sz,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;MEM_REPLACE_PLACEHOLDER&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;PAGE_READWRITE&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;        ptr::null_mut(),
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;    )
+&lt;&#x2F;span&gt;&lt;span&gt;};
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;Again, if you need to copy any proprietary binary to those sections; the approach is similar to that of Linux&#x27;s.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;handling-accesses&quot;&gt;Handling accesses&lt;&#x2F;h2&gt;
+&lt;p&gt;Thanks to leveraging the host&#x27;s MMU we can now do memory accesses as follows:&lt;&#x2F;p&gt;
+&lt;details&gt;
+  &lt;summary&gt;&lt;b&gt;Code snippet&lt;&#x2F;b&gt;&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;hw_read32&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;addr&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32&lt;&#x2F;span&gt;&lt;span&gt;) -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32 &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; host_ptr = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.base.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(addr as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*const u32&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        *host_ptr
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;hw_write32&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;mut &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;addr&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;val&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u32&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; host_ptr = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;self&lt;&#x2F;span&gt;&lt;span&gt;.base.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;add&lt;&#x2F;span&gt;&lt;span&gt;(addr as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;usize&lt;&#x2F;span&gt;&lt;span&gt;) as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut u32&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        *host_ptr = val;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;As you can see, this is a vast improvement in comparison with what we had for previous methods.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;segmentation-fault-handler&quot;&gt;Segmentation fault handler&lt;&#x2F;h2&gt;
+&lt;p&gt;This pretty much covers memory-backed regions (RAM, ROM, Scratchpad...) but, what about IO accesses for instance? Or TLB exceptions that
+may require actually mapping pages or things akin?&lt;&#x2F;p&gt;
+&lt;p&gt;Here come custom &lt;em&gt;signal handlers!&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The requisite for a JIT for this is explained now, when catching this faults, one can go and patch the emitted memory access machine code (Proven that
+it can be easily identified by heuristics in the case of not being the one responsible for the emission, think LLVM IR or Cranelift; or because you know
+the exact bytes to look for) by the function call to the slower, IO handler.&lt;&#x2F;p&gt;
+&lt;p&gt;Imagine your emulator has to wait some time waiting for some IO stuff to happen; for instance, waiting for a VBlank bit on hardware to be untoggled:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;On a JIT, it&#x27;ll patch the load instruction with the io handler and subsequent block executions will be just as fast.&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;li&gt;
+&lt;p&gt;On an interpreter, each time the load happens it&#x27;ll jump to the sighandler... and that&#x27;s a lot of context switching overhead per many times the load happens per second...&lt;&#x2F;p&gt;
+&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;general-flow&quot;&gt;General flow&lt;&#x2F;h2&gt;
+&lt;pre class=&quot;mermaid bg-inherit&quot;&gt;
+  %%{init: { &amp;#x27;themeVariables&amp;#x27;: { &amp;#x27;fontSize&amp;#x27;: &amp;#x27;20px&amp;#x27;}, &amp;#x27;flowchart&amp;#x27;: {&amp;#x27;subGraphTitleMargin&amp;#x27;: {&amp;#x27;bottom&amp;#x27;: 35}} }}%%
+flowchart TD
+  subgraph JIT [&amp;quot;JIT context&amp;quot;]
+    A[Machine code] --&amp;gt; B[Memory access]
+    B --&amp;gt; C[Continue execution]
+    B --&amp;gt; S[Fault SIGSEGV]
+  end
+  subgraph SIG [&amp;quot;Signal handler context&amp;quot;]
+    S --&amp;gt; D[Retrieve fault address]
+    D --&amp;gt; E[Retrieve memory access length and type]
+    E --&amp;gt; F[&amp;quot;Patch callsite on JIT (Block) context&amp;quot;]
+    F --&amp;gt; G[Return to JIT]
+  end
+  G --&amp;gt; C
+&lt;&#x2F;pre&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;i&gt;General flow schema for patching the JIT callsite&lt;&#x2F;i&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The general idea is to install a signal handler (&lt;code&gt;sigaction()&lt;&#x2F;code&gt; for Linux, &lt;code&gt;AddVectoredExceptionHandler()&lt;&#x2F;code&gt; for Windows) for &lt;code&gt;SIGSEGV&lt;&#x2F;code&gt; (Linux) or look for &lt;code&gt;0xC0000005&lt;&#x2F;code&gt; (Windows) exceptions inside the handler.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;b&gt;(Mix of real and pseudocode from now on!)&lt;&#x2F;b&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;signal-handler-installation&quot;&gt;Signal handler installation&lt;&#x2F;h2&gt;
+&lt;p&gt;After you enter the signal handler, you can retrieve the faulting address (Linux: &lt;code&gt;(*info).si_addr()&lt;&#x2F;code&gt;, Windows: &lt;code&gt;record.ExceptionInformation[1]&lt;&#x2F;code&gt;) and based on your preferred
+method of action, patch the access accordingly.&lt;&#x2F;p&gt;
+&lt;p&gt;At this stage, you may want to try and encapsulate the logic to abstract the OSs underneath. Let&#x27;s assume you have a per-OS structure.&lt;&#x2F;p&gt;
+&lt;p&gt;For Linux, we need to install the sighandlers as previously mentioned:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(unix)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;C&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;segv_handler&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;signum&lt;&#x2F;span&gt;&lt;span&gt;: c_int, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;info&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut &lt;&#x2F;span&gt;&lt;span&gt;libc::siginfo_t, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut&lt;&#x2F;span&gt;&lt;span&gt; c_void) {
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; ctx = ctx as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut ucontext_t&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;generic_segv_handler&lt;&#x2F;span&gt;&lt;span&gt;(signum, info, ctx)
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;generic_segv_handler&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;signum&lt;&#x2F;span&gt;&lt;span&gt;: c_int,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;info&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut &lt;&#x2F;span&gt;&lt;span&gt;libc::siginfo_t,
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ctx&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut H::&lt;&#x2F;span&gt;&lt;span&gt;Context,
+&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;install_linux_handler&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; Result&amp;lt;()&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; handler = SigHandler::SigAction(segv_handler as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;C&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn&lt;&#x2F;span&gt;&lt;span&gt;(_, _, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut c_void&lt;&#x2F;span&gt;&lt;span&gt;));
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; flags = SaFlags::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;SA_SIGINFO&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; mask = SigSet::empty();
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; action = SigAction::new(handler, flags, mask);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;sigaction&lt;&#x2F;span&gt;&lt;span&gt;(Signal::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;SIGSEGV&lt;&#x2F;span&gt;&lt;span&gt;, &amp;amp;action).&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;map_err&lt;&#x2F;span&gt;&lt;span&gt;(|&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e&lt;&#x2F;span&gt;&lt;span&gt;| io::Error::new(io::ErrorKind::Other, e))?;
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And similarly for Windows, but using &lt;code&gt;AddVectoredExceptionHandler()&lt;&#x2F;code&gt; instead:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;#[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cfg&lt;&#x2F;span&gt;&lt;span&gt;(windows)]
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;extern &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;system&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;veh_handler&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;info&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut&lt;&#x2F;span&gt;&lt;span&gt; EXCEPTION_POINTERS) -&amp;gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;i32 &lt;&#x2F;span&gt;&lt;span&gt;{ &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;generic_segv_handler&lt;&#x2F;span&gt;&lt;span&gt;(info)
+&lt;&#x2F;span&gt;&lt;span&gt;}}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;generic_segv_handler&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;info&lt;&#x2F;span&gt;&lt;span&gt;: &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;*mut&lt;&#x2F;span&gt;&lt;span&gt; EXCEPTION_POINTERS
+&lt;&#x2F;span&gt;&lt;span&gt;) {
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;install_windows_handler&lt;&#x2F;span&gt;&lt;span&gt;() -&amp;gt; Result&amp;lt;()&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; handle = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;unsafe &lt;&#x2F;span&gt;&lt;span&gt;{ AddVectoredExceptionHandler(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, Some(veh_handler)) };
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;detecting-where-and-what-to-patch&quot;&gt;Detecting where and what to patch&lt;&#x2F;h2&gt;
+&lt;p&gt;The objective inside the sighandler, is to patch the JIT callsite that triggered the access fault.&lt;&#x2F;p&gt;
+&lt;p&gt;Whilst there&#x27;s a few ways of doing so, I chose to have a different set of functions that do the general memory accesses:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;hw_read8()&lt;&#x2F;code&gt;, &lt;code&gt;hw_read16()&lt;&#x2F;code&gt;, &lt;code&gt;hw_write32()&lt;&#x2F;code&gt;, &lt;code&gt;hw_write64()&lt;&#x2F;code&gt;... you get the gist.&lt;&#x2F;p&gt;
+&lt;p&gt;The main reason as to why I use functions instead of inlining the pointer dereference is mainly because, while you could probably have a trampoline within JIT bounds and take it from there; it felt easier for me, conceptually-speaking; to patch &lt;code&gt;call&lt;&#x2F;code&gt; opcodes instead - so, if the actual pointer dereference fails, we&#x27;ll be on a &quot;function boundary&quot;, that is, it&#x27;ll have it&#x27;s own stack frame and such and it&#x27;ll be easier to identify using less-obscure code; at least, personally speaking.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ascii&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ascii &quot;&gt;&lt;code class=&quot;language-ascii&quot; data-lang=&quot;ascii&quot;&gt;&lt;span&gt;                                                       ┌───────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       │                  fn hw_write32            │
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       │                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐            │ 0x7fff8dc1843df  mov     eax, [ebp+8]     │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 0x7fff8dc1843df -&amp;gt; fn hw_write32(...) { │            │                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│                     ...                 ├───────────►│                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;│ 0x7fff8dc18440e -&amp;gt; }                    │            │                  ...                      │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────┬──────────────────────┘            │                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;                   │                                   │                                           │
+&lt;&#x2F;span&gt;&lt;span&gt;                   │ For all fn hw_xxXX                │                  inc     ecx              │
+&lt;&#x2F;span&gt;&lt;span&gt;                   ▼                                   │                  add     eax, ecx         │
+&lt;&#x2F;span&gt;&lt;span&gt;┌─────────────────────────────────────────┐            │                  mov     dword [rdi], eax │
+&lt;&#x2F;span&gt;&lt;span&gt;│SavedRanges.push({start, end, &amp;quot;hw_xxXX&amp;quot;})│            │                  mov     rsp, rbp         │
+&lt;&#x2F;span&gt;&lt;span&gt;└─────────────────────────────────────────┘            │                  pop     rbp              │
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       │ 0x7fff8dc18440e  ret                      │
+&lt;&#x2F;span&gt;&lt;span&gt;                                                       └───────────────────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;                                                                                                    
+&lt;&#x2F;span&gt;&lt;span&gt;                                                        Populate REGISTER_PAIR table with           
+&lt;&#x2F;span&gt;&lt;span&gt;                                                                                                    
+&lt;&#x2F;span&gt;&lt;span&gt;                                                        src=rax                                     
+&lt;&#x2F;span&gt;&lt;span&gt;                                                        dst=rdi                                     
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;pre data-lang=&quot;ascii&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ascii &quot;&gt;&lt;code class=&quot;language-ascii&quot; data-lang=&quot;ascii&quot;&gt;&lt;span&gt;┌───────────────────────┐             ┌────────────────────────────────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│      JIT Context      │             │               Signal Handler Context                   │
+&lt;&#x2F;span&gt;&lt;span&gt;├───────────────────────┤             ├────────────────────────────────────────────────────────┤
+&lt;&#x2F;span&gt;&lt;span&gt;│                       │             │                                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;│  JIT Block Execution  │             │      Get IP&#x2F;PC pointing to faulting instruction        │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │           │             │                        │                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│           ▼           │     ┌──────►│                        ▼                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│   Does memory access  │     │       │              Iterate frames backwards                  │
+&lt;&#x2F;span&gt;&lt;span&gt;│           │           │     │       │                        │                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│           ▼           │     │       │                        ▼                               │
+&lt;&#x2F;span&gt;&lt;span&gt;│        Faults         │     │       │ Current frame&amp;#39;s IP&#x2F;PC falls between any of SavedRanges?│
+&lt;&#x2F;span&gt;&lt;span&gt;│                       │     │       │                                                        │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────┬────────────┘     │       └────────────────────────┬───────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;           │                  │                                │                                
+&lt;&#x2F;span&gt;&lt;span&gt;           │                  │                   ┌────────────┴──────────────────┐             
+&lt;&#x2F;span&gt;&lt;span&gt;           │                  │                   ▼                               ▼             
+&lt;&#x2F;span&gt;&lt;span&gt;           └──────────────────┘                  yes                              no            
+&lt;&#x2F;span&gt;&lt;span&gt;                                                  │                               │             
+&lt;&#x2F;span&gt;&lt;span&gt;                                                  │                               │             
+&lt;&#x2F;span&gt;&lt;span&gt;                                     ┌────────────▼────────────┐          ┌───────▼────────┐    
+&lt;&#x2F;span&gt;&lt;span&gt;                                     │We now know memory access│          │Shouldn&amp;#39;t happen│    
+&lt;&#x2F;span&gt;&lt;span&gt;                                     │     type and length     │          └────────────────┘    
+&lt;&#x2F;span&gt;&lt;span&gt;                                     └─────────────────────────┘                                
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;What I do on the handler to figure out then to what memory access the one that triggered the fault belongs; is to, at the start of the emulator, I &quot;precompute&quot; the memory ranges of the aforementioned functions (I have a simple array that says: &lt;code&gt;hw_read8()&lt;&#x2F;code&gt; starts X and ends at Y, same for the rest of functions) so it&#x27;s just a matter of capturing a backtrace of a small amount of frames (After all we should not be much more deep from the original callsite of the JIT) and I check each frame IP against the set of ranges; when I get a match, I immediately know if the access was a read or a write, and the length it tried to use.&lt;&#x2F;p&gt;
+&lt;p&gt;For each function of the ones above, I also (At startup) disassemble them with Capstone (I traverse in reverse from the function&#x27;s &lt;code&gt;ret&lt;&#x2F;code&gt; until I find the register order for knowing which registers I have to get values out of to properly call the IO stub). I have to do this because of Rust&#x27;s ABI (Or lack threreof).&lt;&#x2F;p&gt;
+&lt;p&gt;For &lt;code&gt;x86_64&lt;&#x2F;code&gt; it&#x27;s usually a &lt;code&gt;mov reg, (ptr)&lt;&#x2F;code&gt; so it&#x27;s easy to distinguish what it&#x27;s trying to write and where. You can get creative, mine is probably the most hacky solution but reliably works. Else you&#x27;d have to generate some sort of trampoline code from within the JIT realm that tries to get all of this on runtime which for my case, was a bit more difficult to grasp around.&lt;&#x2F;p&gt;
+&lt;p&gt;So I end up building something like:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rust&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-rust &quot;&gt;&lt;code class=&quot;language-rust&quot; data-lang=&quot;rust&quot;&gt;&lt;span&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;init_hw_fastmem&lt;&#x2F;span&gt;&lt;span&gt;(...) -&amp;gt; ... {
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if let &lt;&#x2F;span&gt;&lt;span&gt;Some(reg) = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;find_memory_access_register&lt;&#x2F;span&gt;&lt;span&gt;(&amp;amp;cs, *func_ptr, *index) {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;REGISTER_MAP&lt;&#x2F;span&gt;&lt;span&gt;[*index] = Some(reg);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;fn &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;seghandler&lt;&#x2F;span&gt;&lt;span&gt;(...) {
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;match &lt;&#x2F;span&gt;&lt;span&gt;(access.kind, access.width) {
+&lt;&#x2F;span&gt;&lt;span&gt;        (Write, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;B8&lt;&#x2F;span&gt;&lt;span&gt;) =&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; reg_id = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;REGISTER_MAP&lt;&#x2F;span&gt;&lt;span&gt;[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;].&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;expect&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;no register cached for write8&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; value = H::get_register_value(ctx, reg_id) as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u8&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;io_write8_stub&lt;&#x2F;span&gt;&lt;span&gt;(addr, value);
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;        (Write, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;B128&lt;&#x2F;span&gt;&lt;span&gt;) =&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let &lt;&#x2F;span&gt;&lt;span&gt;(low_reg, high_reg) = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;REGISTER_PAIR&lt;&#x2F;span&gt;&lt;span&gt;.&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;expect&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;no register pair cached&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; low_u64 = H::get_register_value(ctx, low_reg);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; high_u64 = H::get_register_value(ctx, high_reg);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;io_write128_stub&lt;&#x2F;span&gt;&lt;span&gt;(bus_ptr, addr, low_u64, high_u64);
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;        (Read, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;B8&lt;&#x2F;span&gt;&lt;span&gt;) =&amp;gt; {
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;let&lt;&#x2F;span&gt;&lt;span&gt; value = &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;io_read8_stub&lt;&#x2F;span&gt;&lt;span&gt;(bus_ptr, addr);
+&lt;&#x2F;span&gt;&lt;span&gt;            H::set_register_value(ctx, x86_64_impl::X86Register::Rax, value as &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;u64&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;        }
+&lt;&#x2F;span&gt;&lt;span&gt;        ...
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;After we have the registers that hold the values that called the function that faulted, we can now proceed to patching. Again, here you can leave your imagination free as in to how to implement this, but what I do is I just get the IP out of the frame that triggered the fault (That means, effectively, the IP that points to the memory access itself) and you patch that. In my case, since it&#x27;s a &lt;code&gt;movabs+call&lt;&#x2F;code&gt; pattern, I just modify the &lt;code&gt;movabs&lt;&#x2F;code&gt; address for the IO access one instead of the current &lt;code&gt;hw_readX()&lt;&#x2F;code&gt;&#x2F;&lt;code&gt;hw_writeX()&lt;&#x2F;code&gt;; if you are the one emitting the assembly this is probably super easy because you don&#x27;t probably need heuristics to patch the call. But since I rely on Cranelift (And usually has different emission of machine code depending on factors unrelated to the topic) I need a tiny tiny bit of heuristics to detect what I have to patch accurately.&lt;&#x2F;p&gt;
+&lt;p&gt;A simple, visual example:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ascii&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ascii &quot;&gt;&lt;code class=&quot;language-ascii&quot; data-lang=&quot;ascii&quot;&gt;&lt;span&gt;     JIT Block Prior Patch
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ mov rax, 1                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│ xor rbx, rbx                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│ ...                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│ movabs 0x7fff8dc1843df, r11  │
+&lt;&#x2F;span&gt;&lt;span&gt;│ call [r11]                   │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;(r11 initially points to *0x7fff8dc1843df* -&amp;gt; hw_write32)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;After patch:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;ascii&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-ascii &quot;&gt;&lt;code class=&quot;language-ascii&quot; data-lang=&quot;ascii&quot;&gt;&lt;span&gt;     JIT Block After Patch
+&lt;&#x2F;span&gt;&lt;span&gt;┌──────────────────────────────┐
+&lt;&#x2F;span&gt;&lt;span&gt;│ mov rax, 1                   │
+&lt;&#x2F;span&gt;&lt;span&gt;│ xor rbx, rbx                 │
+&lt;&#x2F;span&gt;&lt;span&gt;│ ...                          │
+&lt;&#x2F;span&gt;&lt;span&gt;│ movabs 0x7fff8dca42f14, r11  │
+&lt;&#x2F;span&gt;&lt;span&gt;│ call [r11]                   │
+&lt;&#x2F;span&gt;&lt;span&gt;└──────────────────────────────┘
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;(r11 now points to *0x7fff8dca42f14* -&amp;gt; io_write32)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Be wary that you may need to change the permissions of the page where the machine code resides depending on how (Or the JIT framework) handles those before patching.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;returning-from-the-exception&quot;&gt;Returning from the exception&lt;&#x2F;h2&gt;
+&lt;p&gt;Again, depending on the method, this may be more convoluted (For instance, I initially tried to parse the stack to find the return address of the function for the JIT call and patched it to re-execute the call but that proved to be difficult due to Cranelift not always doing the same pattern for the call to the general memory handler) so I instead opted for doing the first io call myself manually (Thanks to the registers and stuff I mentioned before) and then just return as usual from exception skipping the instruction that failed (So that it doesn&#x27;t fault again).&lt;&#x2F;p&gt;
+&lt;p&gt;Once we have all of this, we&#x27;re set.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s a myriad more ways of doing this more sanely probably, but this should get you going :)&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;results&quot;&gt;Results&lt;&#x2F;h1&gt;
+&lt;p&gt;Reference:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;AMD Ryzen 5 5600G
+&lt;&#x2F;span&gt;&lt;span&gt;32 GB RAM DDR4 3200MHz (No XMP, purely JEDEC)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;With &lt;code&gt;sw_fastmem&lt;&#x2F;code&gt; on my PS2 emulator (Built with &lt;code&gt;--release&lt;&#x2F;code&gt;) I get on the ballpark of 250~ FPSs.&lt;&#x2F;p&gt;
+&lt;p&gt;The following image is with &lt;code&gt;hw_fastmem&lt;&#x2F;code&gt;:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;hw_fastmem&#x2F;hw_fastmem.png&quot; alt=&quot;jit_hw_fastmem&quot; &#x2F;&gt;
+&lt;em&gt;610~ FPSs&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Pretty worth.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Pushing VisionFive 2 RISC-V board into 2025</title>
+          <pubDate>Mon, 05 May 2025 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/</link>
+          <guid>https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/</guid>
+          <description xml:base="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/">&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cdn.armbian.com&#x2F;wp-content&#x2F;uploads&#x2F;2023&#x2F;03&#x2F;vision-five2.png&quot; alt=&quot;vf2_board&quot; &#x2F;&gt;
+&lt;em&gt;StarFive&#x27;s VisionFive 2 RISC-V Board&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;trip-down-the-memory-lane&quot;&gt;Trip down the memory lane&lt;&#x2F;h2&gt;
+&lt;p&gt;Bit of a preface:&lt;&#x2F;p&gt;
+&lt;p&gt;I bought this board somewhere in June 2024; I plugged it in to verify it worked and that was pretty much it; I remember
+interfacing it through UART and it came with a super custom Debian-based distro on an SD Card. It also came with a 128GB eMMC
+module (I had never seen removable eMMC module until that point!) which kinda increased the cool factor for me.&lt;&#x2F;p&gt;
+&lt;p&gt;It felt super cool to start seeing &quot;mainstream&quot; adoption of RISC-V, this new and open-source ISA that had started
+powering electronics all around the globe; but how was the software stack?&lt;&#x2F;p&gt;
+&lt;p&gt;It was &lt;em&gt;okay&lt;&#x2F;em&gt;...&lt;em&gt;-ish&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s start by saying that considering how costly it is to develop the ecosystem, we, the users, can&#x27;t really expect upstream
+support from day one; heck, sometimes even after years in production, products still are closed source and are pretty much destined
+to die off slowly without the help of the Open Source community!&lt;&#x2F;p&gt;
+&lt;p&gt;So yes, it was okay-ish but it served good; hardware accelerated graphics, external displays, a network stack... It was and &lt;strong&gt;still is&lt;&#x2F;strong&gt;,
+usable, but we can make it even better.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-hardware&quot;&gt;The hardware&lt;&#x2F;h2&gt;
+&lt;p&gt;The VisionFive 2, is powered by a JH7110 SoC, containing 1.5GHz quad-core 64-bit RISC-V Scalar Processor implementing &lt;strong&gt;RV64IMAFDCSUZicsr_Zifencei_Zba_Zbb&lt;&#x2F;strong&gt; features (It&#x27;s basically &lt;strong&gt;RV64GC&lt;&#x2F;strong&gt; plus &lt;strong&gt;Zba&lt;&#x2F;strong&gt; and &lt;strong&gt;Zbb&lt;&#x2F;strong&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;It has a few other goodies, such as an Imagination GPU and so on; but this are irrelevant for us right now.&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s by no means fast, but it doesn&#x27;t pretend to be; it&#x27;s sole prupose was&#x2F;is being an early-adoption board so that the enthusiasts&#x2F;companies can run their tests on to gauge how it may look like on actual hardware; so that by itself, is quite the feat already.&lt;&#x2F;p&gt;
+&lt;p&gt;At some point in late &#x27;24 the (Supposed) successor to the 7110, the 8100, was mentioned on a Linux Kernel Mailing List; but it hasn&#x27;t been officially announced&#x2F;released as of May 2025.&lt;&#x2F;p&gt;
+&lt;p&gt;Now that we understand the basics of our SoC...&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-much-has-been-already-upstreamed&quot;&gt;How much has been already upstreamed?&lt;&#x2F;h2&gt;
+&lt;p&gt;I started looking at probably the easiest place to check for mainline support...&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;linux&quot;&gt;Linux!&lt;&#x2F;h3&gt;
+&lt;p&gt;Lo-and-behold, there&#x27;s patches that have already been upstreamed to support the SoC and it&#x27;s peripherals; as of May 2025 there&#x27;s still some that haven&#x27;t
+been merged yet (Most important one, being the HDMI controller logic, DRM... and whatnot) and I personally think they probably won&#x27;t be merged because
+it&#x27;s been a bit of a while since last activity on patchwork; but you can easily download the patches in .mbox format if needed and apply them manually into
+your tree.&lt;&#x2F;p&gt;
+&lt;p&gt;I only had to search for a defconfig, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;starfive-tech&#x2F;linux&#x2F;&quot;&gt;thankfully the cool people over at StarFive already have a Linux tree with one&lt;&#x2F;a&gt; (&lt;code&gt;starfive_visionfive2_defconfig&lt;&#x2F;code&gt;), clone the project and target that config; it all compiled fine and booted first try. All the major things I mainly need the board to have working (Ethernet, NVME, SD Slot and eMMC), worked first try.&lt;&#x2F;p&gt;
+&lt;p&gt;It is worth noting I have not personally tried the GPU on it&#x27;s own (Haven&#x27;t connected the board to a monitor nor have tested the hardware acceleration, video encoding&#x2F;decoding...) so if that&#x27;s a feature you actually need, it&#x27;s a bit of a mistery for me. I planned on using this as a headless homelab-esque machine to run some stuff on.&lt;&#x2F;p&gt;
+&lt;p&gt;So there we had it, VF2 board running the latest and greatest Linux version! But... I figured I may as well not stop there...&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;visionfive-2-boot-process&quot;&gt;VisionFive 2 Boot Process&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;risc-v-machine-mode-stage&quot;&gt;RISC-V Machine-mode stage&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;em&gt;NOTE: This may have inaccuracies since I don&#x27;t work for StarFive, it&#x27;s based on my personal interpretations and findings&#x2F;reverse engineering regarding the board whilst doing all the work on it.&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) &lt;del&gt;presumably off of an EEPROM or something similar&lt;&#x2F;del&gt;¹, it&#x27;s read-only and you can&#x27;t access it&#x27;s contents because it&#x27;s unmapped as soon as the rest of the boot chain starts executing; you could probably try sniffing the contents out of it if provided it&#x27;s not in the die package of the SoC an is located somewhere in the board; but considering the things it does it&#x27;s probably best just to ignore it since it&#x27;s unique task is bootstrapping the processor to the next stage (So most probably, boring assembly to do all of this; nothing interesting).&lt;&#x2F;p&gt;
+&lt;p&gt;¹: &lt;a href=&quot;https:&#x2F;&#x2F;www.reddit.com&#x2F;r&#x2F;RISCV&#x2F;s&#x2F;s5WNFeJe3h&quot;&gt;It&#x27;s an on-chip diode rom mapped at physical address 0x2a000000&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Then, it jumps to a cut-down u-boot that gets loaded off of flash storage. It&#x27;s called &lt;strong&gt;u-boot SPL&lt;&#x2F;strong&gt; (&lt;strong&gt;S&lt;&#x2F;strong&gt;econd &lt;strong&gt;P&lt;&#x2F;strong&gt;rogram &lt;strong&gt;L&lt;&#x2F;strong&gt;oader), it basically exists to provide a bit of a richer environment to run code on; it has a few interesting things bootloader-wise (It can load things off of an SPI NOR&#x2F;NAND for instance) but not much else; it&#x27;s task is to bootstrap into OpenSBI to finally enter RISC-V&#x27;s S (&lt;strong&gt;S&lt;&#x2F;strong&gt;upervisor) mode and act as a handler for a few &quot;supervisor&quot; calls launched from lower privilege levels.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;mermaid bg-inherit&quot;&gt;
+  graph LR
+    ZSBL[&amp;quot;ZSBL&amp;lt;br&amp;#x2F;&amp;gt;(Zero stage bootloader)&amp;quot;] --&amp;gt; SPL[&amp;quot;u‑boot SPL&amp;lt;br&amp;#x2F;&amp;gt;(Second program loader)&amp;quot;]
+    SPL --&amp;gt; OpenSBI[&amp;quot;OpenSBI&amp;quot;]
+    ZSBL -.-&amp;gt; M[&amp;quot;Machine mode&amp;quot;]
+    SPL -.-&amp;gt; M
+    OpenSBI -.-&amp;gt; S[&amp;quot;Supervisor mode&amp;quot;]
+
+    %% -- node colour classes with contrasting text color
+    classDef m_mode fill:#FF9A00,stroke:#333,stroke-width:1px,color:#000;
+    classDef s_mode fill:#FF0000,stroke:#333,stroke-width:1px,color:#000;
+
+    %% -- assign nodes to classes
+    class M m_mode
+    class S s_mode
+&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;risc-v-supervisor-mode-stage&quot;&gt;RISC-V Supervisor-mode stage&lt;&#x2F;h3&gt;
+&lt;p&gt;Now we&#x27;re on supervisor mode thanks to OpenSBI, what happens now is that it tries loading the actual u-boot (Not the cut-down SPL) from the flash and jumps to it.&lt;&#x2F;p&gt;
+&lt;p&gt;This is where things start getting interesting because it&#x27;s where the gates really open up to anything; but to keep it simple, we just need to know that u-boot is autoconfigured to load a &quot;DTB&quot; (&lt;strong&gt;D&lt;&#x2F;strong&gt;evice &lt;strong&gt;T&lt;&#x2F;strong&gt;ree &lt;strong&gt;B&lt;&#x2F;strong&gt;inary, think of it of a &lt;strong&gt;much&lt;&#x2F;strong&gt; saner ACPI without the x86 ugliness) that contains the board&#x27;s required information that Linux needs to parse in order to load itself and init the board&#x27;s components; then Linux and finally jumping to it, but it can do so &lt;em&gt;officially&lt;&#x2F;em&gt; from 3 different places:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;eMMC storage&lt;&#x2F;li&gt;
+&lt;li&gt;Micro SD Card&lt;&#x2F;li&gt;
+&lt;li&gt;NVME drive&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;(The unofficial way would be to store it on the flash the board has, it&#x27;s 16MiB after all, but that means you&#x27;ll need to do some memory juggling because the SPL and the rest of u-boot&#x2F;OpenSBI have predefined memory ranges on the flash and must not overlap for obvious reasons).&lt;&#x2F;p&gt;
+&lt;p&gt;So once the boot media is decided, it does the exciting &lt;code&gt;jmp&lt;&#x2F;code&gt; (Or should I say &lt;code&gt;j&lt;&#x2F;code&gt;...?) to Linux.&lt;&#x2F;p&gt;
+&lt;p&gt;Incidentally, Linux also &lt;em&gt;technically&lt;&#x2F;em&gt; runs in S-mode; so we&#x27;re missing one last stage; current event horizon is as follows:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;mermaid bg-inherit&quot;&gt;
+  graph LR
+    UBOOT[&amp;quot;u‑boot&amp;quot;] --&amp;gt; eMMC[&amp;quot;eMMC&amp;quot;]
+    UBOOT --&amp;gt; SDIO[&amp;quot;SDIO&amp;lt;br&amp;#x2F;&amp;gt;(SD Card)&amp;quot;]
+    UBOOT --&amp;gt; NVME[&amp;quot;m.2 NVME&amp;quot;]
+    
+    eMMC --&amp;gt; Linux[&amp;quot;Linux&amp;quot;]
+    SDIO --&amp;gt; Linux
+    NVME --&amp;gt; Linux
+&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;risc-v-user-mode-stage&quot;&gt;RISC-V User-mode stage&lt;&#x2F;h3&gt;
+&lt;p&gt;Right after Linux finishes bootstraping all the required things for it, proceeds to setup user-mode registers (CSRs) and delegates the control to the least-privilged mode sometime after loading the required system services. So in a way, Linux &lt;em&gt;kinda&lt;&#x2F;em&gt; lives in 2 separate privilege levels at the same time (Not that different from what you&#x27;d see on x86 &lt;em&gt;technically&lt;&#x2F;em&gt;).&lt;&#x2F;p&gt;
+&lt;pre class=&quot;mermaid bg-inherit&quot;&gt;
+  graph LR
+  %% -- Machine mode group
+  subgraph &amp;quot;Machine mode&amp;quot;
+    direction TB
+    ZSBL[&amp;quot;ZSBL&amp;lt;br&amp;#x2F;&amp;gt;(Zero stage bootloader)&amp;quot;]
+    SPL[&amp;quot;u‑boot SPL&amp;lt;br&amp;#x2F;&amp;gt;(Second program loader)&amp;quot;]
+  end
+
+  %% -- Supervisor mode group
+  subgraph &amp;quot;Supervisor mode&amp;quot;
+    direction TB
+    OpenSBI[&amp;quot;OpenSBI&amp;quot;]
+    UBOOT2[&amp;quot;u‑boot&amp;quot;]
+    eMMC[&amp;quot;eMMC&amp;quot;]
+    SDIO[&amp;quot;SDIO&amp;lt;br&amp;#x2F;&amp;gt;(SD Card)&amp;quot;]
+    NVME[&amp;quot;m.2 NVME&amp;quot;]
+    LinuxSup[&amp;quot;Linux supervisor mode&amp;quot;]
+  end
+
+  %% -- User mode group
+  subgraph &amp;quot;User mode&amp;quot;
+    direction TB
+    LinuxUser[&amp;quot;Linux user mode&amp;quot;]
+  end
+
+  %% -- flow arrows
+  ZSBL    --&amp;gt; SPL
+  SPL     --&amp;gt; OpenSBI
+  OpenSBI --&amp;gt; UBOOT2
+  UBOOT2  --&amp;gt; eMMC
+  UBOOT2  --&amp;gt; SDIO
+  UBOOT2  --&amp;gt; NVME
+  eMMC    --&amp;gt; LinuxSup
+  SDIO    --&amp;gt; LinuxSup
+  NVME    --&amp;gt; LinuxSup
+  LinuxSup--&amp;gt; LinuxUser
+
+  %% -- styling
+  classDef machine    fill:#FF9A00,stroke:#333,stroke-width:1px,color:#000
+  classDef supervisor fill:#FF0000,stroke:#333,stroke-width:1px,color:#fff
+  classDef device     fill:#B3E6B3,stroke:#333,stroke-width:1px,color:#000
+  classDef usermode   fill:#A3CEF1,stroke:#333,stroke-width:1px,color:#000
+
+  %% -- assign nodes to classes
+  class ZSBL machine
+  class SPL machine
+  class OpenSBI device
+  class UBOOT2 device
+  class LinuxSup device
+  class eMMC device
+  class SDIO device
+  class NVME device
+  class LinuxUser usermode
+&lt;&#x2F;pre&gt;
+&lt;p&gt;That&#x27;s it, that&#x27;s the full chain.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s been some developments lately that I had been following closely; but that&#x27;ll also come later.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;updating-u-boot&quot;&gt;Updating u-boot&lt;&#x2F;h2&gt;
+&lt;p&gt;In a similar fashion as Linux, u-boot also has the VisionFive 2&#x27;s tidbits upstreamed; so you can pretty much download the source code, compile it and flash it (Both the SPL and u-boot itself) and you&#x27;ll automatically have a much updated version; no big deal here...&lt;&#x2F;p&gt;
+&lt;p&gt;...except if you want the VisionFive 2 to run UEFI.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;fixing-u-boot-spl-to-boot-edk2&quot;&gt;Fixing u-boot SPL to boot EDK2&lt;&#x2F;h2&gt;
+&lt;p&gt;StarFive employees pointed in the forums that a preview of EDK2 could be installed on our boards. It works well, but there&#x27;s 2 minor catches for me:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;You must run their old u-boot fork with the SPL patches to get it to load EDK2&lt;&#x2F;li&gt;
+&lt;li&gt;You must run their old edk2 fork with VF2 patches&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;It&#x27;s worth noting that even after 3 days of work I haven&#x27;t had the time to upgrade the EDK2 version, but this&#x27;ll do for the meantime (I&#x27;m actually working on that as of writing this blog, if I succeed I promise a future entry here!).&lt;&#x2F;p&gt;
+&lt;p&gt;So I got my hands to work...&lt;&#x2F;p&gt;
+&lt;p&gt;...though I couldn&#x27;t progress much; apparently for some reason I&#x27;ve not had the time to investigate further (Other than finding the root issue) but the SPL can&#x27;t figure out the FDT location inside the SPL binary and crashes on NULL address...&lt;&#x2F;p&gt;
+&lt;p&gt;I made what is &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;u-boot_vf2&#x2F;commit&#x2F;7c47c5c85bd0db430deae63eeb56bcd7cdbf0f0e#diff-434931895d55117620bd7f8ab9f55ada1d4510572a9750b6d13e985d93548bfaR778&quot;&gt;probably one of my worst hacks ever&lt;&#x2F;a&gt;, I calculate the address in advance and just offset the base address accordingly; this is stupid (It means you have to &lt;code&gt;hexdump&lt;&#x2F;code&gt; the resulting binary searching where the the FDT header is to fix the offset everytime code size changes or different compilers... etc). But hey, it works; once I have the time to investigate this it&#x27;ll probably end up somewhere in the u-boot code.&lt;&#x2F;p&gt;
+&lt;p&gt;With this, we have StarFive&#x27;s EDK2 running again, but I wasn&#x27;t still satisfied; I wanted to be the one provisioning the board with my own binaries (Not that I don&#x27;t trust StarFive or things you may be thinking, it&#x27;s just personal preference purely for the funzies).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;crying-over-edk2-and-fixing-it&quot;&gt;Crying over EDK2 and fixing it&lt;&#x2F;h2&gt;
+&lt;p&gt;EDK2 sucks. Literally.&lt;&#x2F;p&gt;
+&lt;p&gt;I cannot withstand how it&#x27;s organized, but even less, how it&#x27;s compiled.&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s reminiscent of my old days (2014~, I was barely 13 years old) when I started doing Linux kernel hacking to get a more recent version running on an old phone I had that used a MediaTek SoC.&lt;&#x2F;p&gt;
+&lt;p&gt;They had a custom build system built around the kernel that was outdated by the time I tried to compile it (I even had to download 5~ year old Ubuntu versions at that time, 9.04, to satisfy the scripts...).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;(It&#x27;s great actually, impressive project; but I wanted to vent).&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;So yeah, expect environment variable &lt;em&gt;shenanigans&lt;&#x2F;em&gt; and lots of trial and error; I&#x27;ve built EDK2 about 100~ times in the weekend I&#x27;m writing this entry and yet sometimes I still can&#x27;t figure out what I&#x27;m missing to get it to compile.&lt;&#x2F;p&gt;
+&lt;p&gt;Long story short; to make EDK2 work with my upstreamed u-boot SPL, I&#x27;ve had to update all the device tree information and misc. regarding the board else it wouldn&#x27;t do anything. You can see the required changes &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;starfive-tech&#x2F;edk2-platforms&#x2F;commit&#x2F;523d36a471dc7f7238176330e4cd38ebfa1e623a&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;At some point EDK2 started booting again so I got all excited...&lt;&#x2F;p&gt;
+&lt;p&gt;...but then it failed again (It always does).&lt;&#x2F;p&gt;
+&lt;p&gt;This remains to be fixed, but since I personally don&#x27;t use SDIO&#x2F;eMMC anymore to boot the board (I just use an NVME I had laying around) I just went in and &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;starfive-tech&#x2F;edk2-platforms&#x2F;commit&#x2F;02294fd40e46378b8050f8a0c19ffafcf7a8d6f5&quot;&gt;disabled the MmcDxe from running&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;visionfive2_upstreaming&#x2F;edk2.png&quot; alt=&quot;edk2&quot; &#x2F;&gt;
+&lt;em&gt;EDK2 running on updated VisionFive 2 board&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;It&#x27;s worth noting that I had some issues regarding Linux booting, I had to customize the &lt;code&gt;EFI&#x2F;BOOT&#x2F;startup.nsh&lt;&#x2F;code&gt; file a good bit to make it log correctly and so on (Also, to no try and find a initrd in memory failing miserably because I don&#x27;t have one...).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;debian-sid&quot;&gt;Debian sid&lt;&#x2F;h2&gt;
+&lt;p&gt;Debian Trixie appears to be supporting the &lt;code&gt;riscv64&lt;&#x2F;code&gt; arch so I figured, why not building an image out of it? &lt;code&gt;debootstrap&lt;&#x2F;code&gt; it was!&lt;&#x2F;p&gt;
+&lt;p&gt;I built an ext4 image that I simply wrote over a partition on the NVME and Linux took care of it by specifying the &lt;code&gt;root=&lt;&#x2F;code&gt; and &lt;code&gt;rootwait&lt;&#x2F;code&gt; cmdline parameters on &lt;code&gt;startup.nsh&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;But the end result was, very, very worth it, here&#x27;s how to do it:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub&quot;&gt;Building a EFI-capable Debian Trixie 13 sid image and adding GRUB&lt;&#x2F;h2&gt;
+&lt;p&gt;We&#x27;ll start by creating a disk image, making the partitions and formatting them:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; dd if=&#x2F;dev&#x2F;zero of=debian-visionfive.img bs=1M count=1500
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; fdisk debian-visionfive.img
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;g&lt;&#x2F;span&gt;&lt;span&gt; (For gpt)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;n,&lt;&#x2F;span&gt;&lt;span&gt; default (enter)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt; default (enter)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt; +256MB, t, 1 &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# To change type from Linux filesystem to EFI System
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;n,&lt;&#x2F;span&gt;&lt;span&gt; default (enter)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt; default (enter)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt; default (enter) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# For the ext4 rootfs
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;w &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# To flush the changes
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo losetup&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --partscan&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;loopXX debian-visionfive.img
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mkfs.fat &#x2F;dev&#x2F;loopXXp1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mkfs.fat&lt;&#x2F;span&gt;&lt;span&gt; 4.2 (2021-01-31)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mkfs.ext4 &#x2F;dev&#x2F;loopXXp2
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mke2fs&lt;&#x2F;span&gt;&lt;span&gt; 1.47.2 (1-Jan-2025)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Discarding&lt;&#x2F;span&gt;&lt;span&gt; device blocks: done                            
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Creating&lt;&#x2F;span&gt;&lt;span&gt; filesystem with 321024 4k blocks and 80320 inodes
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Filesystem&lt;&#x2F;span&gt;&lt;span&gt; UUID: 4146fe1f-6c1d-4668-b6c6-751ff316d35a
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Superblock&lt;&#x2F;span&gt;&lt;span&gt; backups stored on blocks: 
+&lt;&#x2F;span&gt;&lt;span&gt;	&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;32768,&lt;&#x2F;span&gt;&lt;span&gt; 98304, 163840, 229376, 294912
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Allocating&lt;&#x2F;span&gt;&lt;span&gt; group tables: done                            
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Writing&lt;&#x2F;span&gt;&lt;span&gt; inode tables: done                            
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Creating&lt;&#x2F;span&gt;&lt;span&gt; journal (8192 blocks)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span&gt; done
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Writing&lt;&#x2F;span&gt;&lt;span&gt; superblocks and filesystem accounting information: done
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, with the disk properly formatted and using GPT scheme, we can proceed to install Debian and chroot to it.&lt;&#x2F;p&gt;
+&lt;p&gt;First, we&#x27;ll mount everything needed:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; mkdir&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -p&lt;&#x2F;span&gt;&lt;span&gt; debian&#x2F;boot&#x2F;efi
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount &#x2F;dev&#x2F;loopXXp1 debian&#x2F;boot&#x2F;efi&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount &#x2F;dev&#x2F;loopXXp2 debian&#x2F;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --bind&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev debian&#x2F;dev
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; devpts &#x2F;dev&#x2F;pts debian&#x2F;dev&#x2F;pts
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; proc proc debian&#x2F;proc
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; sysfs sysfs debian&#x2F;sys
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo mount&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -t&lt;&#x2F;span&gt;&lt;span&gt; tmpfs tmpfs debian&#x2F;tmp
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, we&#x27;ll install Debian on it...&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo debootstrap&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --arch&lt;&#x2F;span&gt;&lt;span&gt;=riscv64 sid debian&#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;...and we&#x27;ll &lt;code&gt;chroot&lt;&#x2F;code&gt; into it:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo chroot debian
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;It&#x27;s worth noting that, we&#x27;ll have to compile Linux and get debian packages out of it; you can do so with:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- bindeb-pkg KBUILD_IMAGE=&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;arch&#x2F;riscv&#x2F;boot&#x2F;Image&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -j&lt;&#x2F;span&gt;&lt;span&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;(nproc)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And then just copy the &lt;code&gt;linux-headers*.deb&lt;&#x2F;code&gt; and &lt;code&gt;linux-image*.deb&lt;&#x2F;code&gt; files inside the chroot.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;We&#x27;ll now install those packages:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; dpkg&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -i&lt;&#x2F;span&gt;&lt;span&gt; tmp&#x2F;linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb tmp&#x2F;linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Selecting&lt;&#x2F;span&gt;&lt;span&gt; previously unselected package linux-headers-6.14.0-dirty.
+&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Reading&lt;&#x2F;span&gt;&lt;span&gt; database ... 8347 files and directories currently installed.)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Preparing&lt;&#x2F;span&gt;&lt;span&gt; to unpack ...&#x2F;linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Unpacking&lt;&#x2F;span&gt;&lt;span&gt; linux-headers-6.14.0-dirty (6.14.0-10) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Selecting&lt;&#x2F;span&gt;&lt;span&gt; previously unselected package linux-image-6.14.0-dirty.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Preparing&lt;&#x2F;span&gt;&lt;span&gt; to unpack ...&#x2F;linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Unpacking&lt;&#x2F;span&gt;&lt;span&gt; linux-image-6.14.0-dirty (6.14.0-10) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Setting&lt;&#x2F;span&gt;&lt;span&gt; up linux-headers-6.14.0-dirty (6.14.0-10) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Setting&lt;&#x2F;span&gt;&lt;span&gt; up linux-image-6.14.0-dirty (6.14.0-10) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;...
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;# 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, we&#x27;ll install some packages that will come in handy:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; apt install initramfs-tools systemd-timesyncd rsync bash-completion u-boot-menu wget binutils sudo network-manager net-tools fastfetch util-linux haveged openssh-server systemd kmod conntrack ebtables ethtool iproute2 iptables mount socat ifupdown iputils-ping pciutils
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Let&#x27;s also prepare the network interfaces:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cat &lt;&#x2F;span&gt;&lt;span&gt;&amp;lt;&amp;lt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;EOF &lt;&#x2F;span&gt;&lt;span&gt;&amp;gt;&amp;gt; &#x2F;etc&#x2F;network&#x2F;interfaces
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;auto lo
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;iface lo inet loopback
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#setup network for starfive end0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;allow-hotplug end0
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#iface end0 inet dhcp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#setup network for starfive end1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;allow-hotplug end1
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;#iface end1 inet dhcp
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;EOF
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We&#x27;re also going to need to add our hostname info, &lt;code&gt;nano&lt;&#x2F;code&gt; the &lt;code&gt;&#x2F;etc&#x2F;hosts&lt;&#x2F;code&gt; and under the &lt;code&gt;127.0.0.1   localhost&lt;&#x2F;code&gt; just add:&lt;&#x2F;p&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;127.0.1.1	visionfive2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Or whichever hostname you want, really.&lt;&#x2F;p&gt;
+&lt;p&gt;Also add it to &lt;code&gt;&#x2F;etc&#x2F;hostname&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;User management&#x27;s turn now, set the root password:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; echo &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;root:root&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chpasswd
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And create your regular user:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; useradd cakehonolulu&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -s&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;bin&#x2F;bash&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -m
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; echo &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;cakehonolulu:super_secure_password&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot; | &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;chpasswd
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; usermod&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -aG&lt;&#x2F;span&gt;&lt;span&gt; sudo cakehonolulu
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;That&#x27;s it! We&#x27;re now missing the proper EFI enablement, GRUB will come to the rescue:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; apt install grub-efi
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; grub-install&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --target&lt;&#x2F;span&gt;&lt;span&gt;=riscv64-efi&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --efi-directory&lt;&#x2F;span&gt;&lt;span&gt;=&#x2F;boot&#x2F;efi&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --bootloader-id&lt;&#x2F;span&gt;&lt;span&gt;=debian&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; --recheck --no-nvram --removable
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;As a personal preference, I edit &lt;code&gt;&#x2F;etc&#x2F;default&#x2F;grub&lt;&#x2F;code&gt; and modify &lt;code&gt;GRUB_CMD_LINUX_DEFAULT&lt;&#x2F;code&gt; from &lt;code&gt;&quot;quiet&quot;&lt;&#x2F;code&gt; to &lt;code&gt;&quot;&quot;&lt;&#x2F;code&gt; to see the boot log.&lt;&#x2F;p&gt;
+&lt;p&gt;We also need to generate the &lt;code&gt;&#x2F;boot&#x2F;grub&#x2F;grub.cfg&lt;&#x2F;code&gt; file, it&#x27;s as easy as doing:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;root@RYZEN5:&#x2F;#&lt;&#x2F;span&gt;&lt;span&gt; grub-mkconfig&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -o&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;boot&#x2F;grub&#x2F;grub.cfg
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Though this is partly incorrect, just open the resulting file and rename all references to the &lt;code&gt;loopXX&lt;&#x2F;code&gt; medium to &lt;code&gt;nvme0n1&lt;&#x2F;code&gt;. Also change the mount mode from &lt;code&gt;ro&lt;&#x2F;code&gt; to &lt;code&gt;rw&lt;&#x2F;code&gt; if you want a R&#x2F;W root filesystem (You very much need to).&lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;re set! Exit the chroot, unmount what we mounted at the start and copy the image over to your NVME drive:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo dd \
+&lt;&#x2F;span&gt;&lt;span&gt;          if=debian-visionfive.img \
+&lt;&#x2F;span&gt;&lt;span&gt;          of=&#x2F;dev&#x2F;your_drive \
+&lt;&#x2F;span&gt;&lt;span&gt;          bs=16M status=progress
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;It&#x27;s now a good time to resize the root partition to accomodate the entire drive:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-bash &quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo parted &#x2F;dev&#x2F;your_drive
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;GNU&lt;&#x2F;span&gt;&lt;span&gt; Parted 3.6
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Using&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;your_drive
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Welcome&lt;&#x2F;span&gt;&lt;span&gt; to GNU Parted! Type &amp;#39;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;help&lt;&#x2F;span&gt;&lt;span&gt;&amp;#39; to view a list of commands.
+&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt;) print                                                            
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Warning:&lt;&#x2F;span&gt;&lt;span&gt; Not all of the space available to &#x2F;dev&#x2F;your_drive appears to be used, you can
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fix&lt;&#x2F;span&gt;&lt;span&gt; the GPT to use all of the space (an extra 246997680 blocks) &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;or&lt;&#x2F;span&gt;&lt;span&gt; continue with
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;the&lt;&#x2F;span&gt;&lt;span&gt; current setting? 
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Fix&#x2F;Ignore?&lt;&#x2F;span&gt;&lt;span&gt; fix
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Model:&lt;&#x2F;span&gt;&lt;span&gt; Realtek RTL9210B-CG (scsi)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Disk&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;your_drive: 128GB
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Sector&lt;&#x2F;span&gt;&lt;span&gt; size (logical&#x2F;physical)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span&gt; 512B&#x2F;16384B
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Partition&lt;&#x2F;span&gt;&lt;span&gt; Table: gpt
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Disk&lt;&#x2F;span&gt;&lt;span&gt; Flags: 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Number&lt;&#x2F;span&gt;&lt;span&gt;  Start   End     Size    File system  Name  Flags
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;      1049kB  257MB   256MB   fat16              boot, esp
+&lt;&#x2F;span&gt;&lt;span&gt; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;      257MB   1572MB  1315MB  ext4
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt;) resizepart 2 100%                                                
+&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;parted&lt;&#x2F;span&gt;&lt;span&gt;) quit                                                             
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Information:&lt;&#x2F;span&gt;&lt;span&gt; You may need to update &#x2F;etc&#x2F;fstab.
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo e2fsck&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt; -f&lt;&#x2F;span&gt;&lt;span&gt; &#x2F;dev&#x2F;your_drive2
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;e2fsck&lt;&#x2F;span&gt;&lt;span&gt; 1.47.2 (1-Jan-2025)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Pass&lt;&#x2F;span&gt;&lt;span&gt; 1: Checking inodes, blocks, and sizes
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Pass&lt;&#x2F;span&gt;&lt;span&gt; 2: Checking directory structure
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Pass&lt;&#x2F;span&gt;&lt;span&gt; 3: Checking directory connectivity
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Pass&lt;&#x2F;span&gt;&lt;span&gt; 4: Checking reference counts
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;Pass&lt;&#x2F;span&gt;&lt;span&gt; 5: Checking group summary information
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;&#x2F;dev&#x2F;your_drive2:&lt;&#x2F;span&gt;&lt;span&gt; 29531&#x2F;80320 files (0.2% non-contiguous)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;,&lt;&#x2F;span&gt;&lt;span&gt; 209820&#x2F;321024 blocks
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt; sudo resize2fs &#x2F;dev&#x2F;your_drive2
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;With this, you can unplug the drive and re-install it back to the VF2. Assuming that you already installed my u-boot and edk2, it&#x27;ll launch GRUB automatically.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update&quot;&gt;May 9 2025 2:11AM in the morning EDK2 and u-boot update&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;edk2-wise&quot;&gt;EDK2-wise&lt;&#x2F;h3&gt;
+&lt;p&gt;I&#x27;ve been able to use more recent EDK2 version (Basically, up-to-date).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;edk2_vf2&quot;&gt;This&lt;&#x2F;a&gt; is the EDK2 base repository with all the changes from upstream until today May 9 2025, and &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;edk2-platforms_vf2&quot;&gt;this other one&lt;&#x2F;a&gt; is the one for the EDK2 Platforms.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve made a few changes to the JH7110.dsc target description file to accomodate for new EDK2 changes, but all appears to be working just fine (Like the propietary, outdated fork, from StarFive).&lt;&#x2F;p&gt;
+&lt;p&gt;Here&#x27;s a new screenshot (It&#x27;s now being built as &lt;code&gt;RELEASE&lt;&#x2F;code&gt; instead of &lt;code&gt;DEBUG&lt;&#x2F;code&gt;!):&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;visionfive2_upstreaming&#x2F;edk2_upstream.png&quot; alt=&quot;edk2_upstream&quot; &#x2F;&gt;
+&lt;em&gt;Upstream EDK2 running on updated VisionFive 2 board&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;u-boot-wise&quot;&gt;U-boot wise&lt;&#x2F;h3&gt;
+&lt;p&gt;So, I&#x27;ve also been battling with the hack I had to resort to to make U-boot launch EDK2 from flash in SPL mode for the VF2, but even though the config file is as &lt;a href=&quot;https:&#x2F;&#x2F;docs.u-boot.org&#x2F;en&#x2F;latest&#x2F;develop&#x2F;devicetree&#x2F;control.html&quot;&gt;recommended by u-boot themselves&lt;&#x2F;a&gt;, which is either &lt;code&gt;CONFIG_OF_EMBED&lt;&#x2F;code&gt; or &lt;code&gt;CONFIG_OF_SEPARATE&lt;&#x2F;code&gt; (StarFive&#x27;s downstream fork uses the prior) set to &lt;code&gt;y&lt;&#x2F;code&gt; in &lt;code&gt;starfive_visionfive2_defconfig&lt;&#x2F;code&gt; it still refuses to find the FDT on the SPL image in-memory somehow; not too sure if this is a config mishap or maybe some strange u-boot bug...&lt;&#x2F;p&gt;
+&lt;p&gt;For now, my cute little hack will do.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;may-10-2025-3-41am-in-the-morning-edk2-update&quot;&gt;May 10 2025 3:41AM in the morning EDK2 update&lt;&#x2F;h2&gt;
+&lt;p&gt;I&#x27;ve finally got EDK2 firmware menu and boot selector to work for the VF2! Woohoo!&lt;&#x2F;p&gt;
+&lt;p&gt;Bonus, we can now have GRUB to the loading for us and Debian is now fully EFI-aware!&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;script src=&quot;https:&#x2F;&#x2F;asciinema.org&#x2F;a&#x2F;j9PMSxNgZdbgrpIAGQUCIzO0H.js&quot; id=&quot;asciicast-j9PMSxNgZdbgrpIAGQUCIzO0H&quot; async=&quot;true&quot;&gt;&lt;&#x2F;script&gt;
+&lt;p&gt;&lt;em&gt;Showcase of the EDK2 firmware menu, boot selection and GRUB booting Debian SID&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;An EDK2 firmware menu static:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;visionfive2_upstreaming&#x2F;menu.png&quot; alt=&quot;result&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;All in all, a frustrating-yet-insanely cool experience.&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>Migrating my blog from Hugo to Zola</title>
+          <pubDate>Sun, 20 Apr 2025 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/hugo-to-zola-migration/</link>
+          <guid>https://cakehonolulu.github.io/hugo-to-zola-migration/</guid>
+          <description xml:base="https://cakehonolulu.github.io/hugo-to-zola-migration/">&lt;h2 id=&quot;to-blog-or-to-not-blog&quot;&gt;To blog or to not blog...&lt;&#x2F;h2&gt;
+&lt;p&gt;So... there&#x27;s some point in time where you, as a software developer, you may face the urge to go on unedited rants regarding whatever project you
+may be doing&#x2F;participating.&lt;&#x2F;p&gt;
+&lt;p&gt;Then you somehow think (&quot;&lt;em&gt;The collective intellect that resteth in our mortal frames.&lt;&#x2F;em&gt;&quot;, &quot;&lt;em&gt;Our brain&lt;&#x2F;em&gt;&quot; from now on)...&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;communication-excerpt&quot;&gt;Communication excerpt&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;strong&gt;(Our brain)&lt;&#x2F;strong&gt; - Hey, it could be cool to write and document for the posteriority whatever &lt;em&gt;niche&lt;&#x2F;em&gt; thing we may be doing right now.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;(Ours)&lt;&#x2F;strong&gt; - Hey, yeah! &lt;em&gt;Totally&lt;&#x2F;em&gt;. This is a cool way to preserve this (&lt;strong&gt;Insert super esoteric tech fact&#x2F;rant here&lt;&#x2F;strong&gt;) for posteriority! You know, if, for some
+unknown reason a future intelligent life (&lt;strong&gt;Before humanity collapse or thereafter, provided somehow this piece of binary data ends up somewhere
+accessible and hopefully in clear-text¹&lt;&#x2F;strong&gt;) or maybe some random person over the internet finds this useful!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;(Our brain)&lt;&#x2F;strong&gt; - Well, we &lt;em&gt;musteth&lt;&#x2F;em&gt; find a way then...&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;[¹] Sorry extra-terrestial beings! Hopefully you know the latin alphabet and it&#x27;s basic meaning (Which I assume so proven you&#x27;ve gotten this far to get
+ahold of this piece!)&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;available-technologies&quot;&gt;Available technologies&lt;&#x2F;h2&gt;
+&lt;p&gt;You know, in a sea of technologies it&#x27;s sometimes hard to try and choose... you could always...&lt;&#x2F;p&gt;
+&lt;p&gt;You could always go ahead and make a frontend engine based on &lt;a href=&quot;https:&#x2F;&#x2F;lhartikk.github.io&#x2F;ArnoldC&#x2F;&quot;&gt;ArnoldC&lt;&#x2F;a&gt; --&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;my_coolblog.arnoldc:&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;nix&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-nix &quot;&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;IT&amp;#39;S SHOWTIME
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TALK TO THE HAND &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;hello blog&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;TALK TO THE HAND &lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;hasta la vista baby&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;YOU HAVE BEEN TERMINATED
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Kidding.... (&lt;em&gt;or not?&lt;&#x2F;em&gt;)&lt;&#x2F;p&gt;
+&lt;p&gt;But yes, choosing what and how you want it to be tends to be increasingly difficult because for certain things you may want some features only available
+in certain engines and some others not available... not to get started on where to host it.&lt;&#x2F;p&gt;
+&lt;p&gt;Fortunately for me, I learned years ago about GitHub offering *.github.io subdomains &quot;linked&quot; to your username (There&#x27;s probably a vastly more technical way of explaining
+how this actually works in GitHub but this&#x27;ll do for now) so I went down that route (Could be cool to have shadow copies on other code sharing services, or straight up
+ditching this platform as a whole &lt;a href=&quot;https:&#x2F;&#x2F;sfconservancy.org&#x2F;blog&#x2F;2022&#x2F;jun&#x2F;30&#x2F;give-up-github-launch&#x2F;&quot;&gt;due to an already long list of enshittification practises&lt;&#x2F;a&gt;) (You know
+this may actually be the time to actually learn in a practical way about networking and whatnot by building a local homelab instead of those pesky long hours staring at
+Wireshark dumps at university and self-host while I&#x27;m at it).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;with-great-power-comes-great-responsibility&quot;&gt;With great power comes great responsibility&lt;&#x2F;h2&gt;
+&lt;p&gt;So, we got the &quot;hosting&quot; service... now we must choose something that fits our (My) needs. Again, we discussed this above but no, we&#x27;re not doing it in ArnoldC (Or are we?) so
+we&#x27;ll have to settle for something more practical.&lt;&#x2F;p&gt;
+&lt;p&gt;GitHub kinda limits you to have &quot;static&quot; HTML files. That is, there&#x27;s many limits as what you can do; and before you ask, no, you can&#x27;t have a pesky database on it or this cool flashy frontend&#x2F;whatever the new coolest boy in the block is today, I should&#x27;ve added a disclaimer on the start of the entry in retrospective...&lt;&#x2F;p&gt;
+&lt;p&gt;While there are a few candidates, Github&#x27;s default one tends to be Jekyll if my memory serves me right; but it&#x27;s not uncommon for users to ditch it altogether (You know, I kinda feel bad for the poor fellow that wanted to be the coolest one at Github by doing a static-site-generator using Ruby...) for another alternative.&lt;&#x2F;p&gt;
+&lt;p&gt;That&#x27;s what I personally did, and went with Hugo, which is written in Go and it&#x27;s more tolerable for me.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;oxidizing-backend&quot;&gt;Oxidizing backend&lt;&#x2F;h2&gt;
+&lt;p&gt;It&#x27;s not that I&#x27;ve never ever dealt with Rust, but the times I tried in the past (Pre-2025) have been fun but not heart-touching enough for me to justify switching my religious beliefs from C (More precisely, &lt;a href=&quot;https:&#x2F;&#x2F;holyc-lang.com&#x2F;&quot;&gt;HolyC&lt;&#x2F;a&gt;) (Before someone in the audience (&lt;em&gt;hello???&lt;&#x2F;em&gt;) asks, &lt;strong&gt;yes&lt;&#x2F;strong&gt; I was kidding) to it&#x27;s &lt;em&gt;crusted&lt;&#x2F;em&gt; counterpart.&lt;&#x2F;p&gt;
+&lt;p&gt;That is, until some rainy day around January 2025 (Wasn&#x27;t rainy but else it wouldn&#x27;t have had the dramatic impact this has had, right? right...? oh no, I&#x27;m talking by myself again; sorry I must&#x27;ve forgotten my &lt;em&gt;Celexa&lt;&#x2F;em&gt;&#x27;s).&lt;&#x2F;p&gt;
+&lt;p&gt;So I just kinda got this (un)necessary urge to Rust-ify myself. It&#x27;s as closest to a spiritual awakening I&#x27;ll probably ever get probably.&lt;&#x2F;p&gt;
+&lt;p&gt;So there I went, looking for Rust alternatives for my programs (Shoutout to fish-shell for converting it&#x27;s core engine to Rust!); and of course, converting some of mine to it.&lt;&#x2F;p&gt;
+&lt;p&gt;I kinda started with the usuals, the projects you usually love more (&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;Neo2&quot;&gt;Neo2&lt;&#x2F;a&gt; I love you but understand that &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;RustEE&quot;&gt;RustEE&lt;&#x2F;a&gt; is the &lt;em&gt;cooler Daniel&lt;&#x2F;em&gt; right now).&lt;&#x2F;p&gt;
+&lt;p&gt;And then, I got a bit of an enlightment; what if there&#x27;s a SSG made with Rust already?&lt;&#x2F;p&gt;
+&lt;p&gt;It so does happen that there is, was going to ask for a slow drum roll but I kinda forgot I was alone here writing with a coffee and I&#x27;m not a percussionist so you&#x27;ll have to imagine:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.getzola.org&#x2F;&quot;&gt;Zola&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;So yeah, there it is. Considering you could also write the pages using Markdown (Well, actually a custom Markdown derivative that&#x27;s also compatible with Markdown) I chose the first theme I could see and just used it, then it&#x27;s been a matter of porting the general structure of the blog in Hugo here and ta-da!&lt;&#x2F;p&gt;
+&lt;p&gt;Now we have a Rust-powered SSG for my blog.&lt;&#x2F;p&gt;
+&lt;p&gt;I can also do cool math finally:&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+\varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;And cool diagrams:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;mermaid bg-inherit&quot;&gt;
+  graph TD
+    A[(I start a blog)] --&amp;gt; B(I try not to forget about it)
+    B --&amp;gt; C{I learn a new technology}
+    C --&amp;gt; D[I write a new entry]
+    C --&amp;gt; E[I implement the technology]
+    E --&amp;gt; B
+    D --&amp;gt; F[I try not to forget about it????]
+    F --&amp;gt; B
+&lt;&#x2F;pre&gt;
+&lt;p&gt;So yeah, a lot of cool stuff, and it&#x27;s super fast (And secure, &lt;em&gt;duh&lt;&#x2F;em&gt;!) (&lt;em&gt;Take that Meta!&lt;&#x2F;em&gt;)&lt;&#x2F;p&gt;
+</description>
+      </item>
+      <item>
+          <title>How Emulators Work?</title>
+          <pubDate>Tue, 09 Jan 2024 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/how-emulators-work/</link>
+          <guid>https://cakehonolulu.github.io/how-emulators-work/</guid>
+          <description xml:base="https://cakehonolulu.github.io/how-emulators-work/">&lt;p&gt;I, as many more, grew up playing retro videogames on emulators (And the original hardware!): from sprite-based machines, to more complex, 3D-capable monsters.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;i.blogs.es&#x2F;juegos&#x2F;9648&#x2F;metal_slug_2&#x2F;fotos&#x2F;noticias&#x2F;metal_slug_2-5218501.jpg&quot; alt=&quot;Metal Slug&quot; &#x2F;&gt;
+&lt;em&gt;Metal Slug, an impressive 2D game; developed for SNK&#x27;s Neo-Geo&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;A few years ago, I started to ask myself how an emulator works; I initially believed it &lt;em&gt;had&lt;&#x2F;em&gt; to be some sort of magic, but at the end of the day, code is just that, &lt;em&gt;code&lt;&#x2F;em&gt; (&lt;em&gt;Technically&lt;&#x2F;em&gt;, you &lt;em&gt;can&lt;&#x2F;em&gt; develop an emulator from an ECE-perspective; look up &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Verilog&quot;&gt;Verilog&lt;&#x2F;a&gt; or really, any &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Hardware_description_language&quot;&gt;Hardware-Description-Language&lt;&#x2F;a&gt;, but that&#x27;s beyond the scope for this post).&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;what-is-an-emulator&quot;&gt;What is an emulator?&lt;&#x2F;h1&gt;
+&lt;p&gt;Let&#x27;s start by defining what an emulator (Not to be confused with simulator) really is.&lt;&#x2F;p&gt;
+&lt;p&gt;According to &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Emulator&quot;&gt;Wikipedia&lt;&#x2F;a&gt;:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;html&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-html &quot;&gt;&lt;code class=&quot;language-html&quot; data-lang=&quot;html&quot;&gt;&lt;span&gt;In computing, an emulator is hardware or software that
+&lt;&#x2F;span&gt;&lt;span&gt;enables one computer  system (called the host) to behave
+&lt;&#x2F;span&gt;&lt;span&gt;like another computer system (called the guest).
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;An emulator typically enables the host system to run software or 
+&lt;&#x2F;span&gt;&lt;span&gt;use peripheral devices designed for the guest system.
+&lt;&#x2F;span&gt;&lt;span&gt;Emulation refers to the ability of a computer program in
+&lt;&#x2F;span&gt;&lt;span&gt;an electronic device to emulate (or imitate) another program or device. 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The key takeaway here, is the &lt;em&gt;ability&lt;&#x2F;em&gt; to run code that is designed for one system on another one.&lt;&#x2F;p&gt;
+&lt;p&gt;Examples of this could be, running aarch64 code on your shiny new Intel&#x2F;AMD PC (Playing a videogame designed for Android, for example); the technique Apple employs for their newer M-line of processors (Which are 64-bit ARM chips) but they are able to maintain backwards compatibility to a degree with macOS software designed for their older Intel machines (And doing so in a fast and efficient manner, using &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Rosetta_(software)#Rosetta_2&quot;&gt;Rosetta 2&lt;&#x2F;a&gt;)...&lt;&#x2F;p&gt;
+&lt;p&gt;But how can &lt;em&gt;we&lt;&#x2F;em&gt;, as individuals, tackle this problem?&lt;&#x2F;p&gt;
+&lt;p&gt;Well, there&#x27;s lots of ways of doing so.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;types-of-emulation&quot;&gt;Types of emulation&lt;&#x2F;h1&gt;
+&lt;p&gt;The following paragraph contains information about a type of emulators that have lately emerged; they&#x27;re more state-of-the-art in comparison with good-old already-existing emulators, it&#x27;s meant to illustrate, it can be confusing for newbies so you can skip to the &lt;a href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;#hle-vs-lle&quot;&gt;HLE vs LLE&lt;&#x2F;a&gt; chapter if you want.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;A brief paragraph: As of recent times, a new way to experience retro systems has appeared, not to confuse you, but I&#x27;ll give a brief explanation as to what FPGA-based emulation is and not.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Field-programmable_gate_array&quot;&gt;FPGAs&lt;&#x2F;a&gt; are integrated circuits whose behaviour can be repgrogrammed at the logic level after manufacturing, they can be programmed using HDL&#x27;s (Hardware description languages) which goes through a series of steps before getting executed by the development board.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;thumb&#x2F;a&#x2F;a1&#x2F;Xerox_ColorQube_8570_-_Main_controller_-_Xilinx_Spartan_XC3S400A-0205.jpg&#x2F;220px-Xerox_ColorQube_8570_-_Main_controller_-_Xilinx_Spartan_XC3S400A-0205.jpg&quot; alt=&quot;Spartan FPGA&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;The Xilinx Spartan FPGA&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;What this basically means is, that you can effectively replicate any existing chip on an FPGA.&lt;&#x2F;p&gt;
+&lt;p&gt;In comparison with traditional emulators (Which, run on top of an operating system), FPGA-based emulators have a bunch of neat advantages due do the nature of the technology itself.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, operating systems tend not to give you a fine-grained scheduling; let&#x27;s say your emulator wants to handle keypad inputs; you need to somehow interact with the underlying OS to perform such task, but the OS itself can then assign the priority it sees fitting so the latency (Normally in miliseconds) can fluctuate making accurate emulation really difficult. Worth mentioning, that normally, the more accurate it needs to be, the more power-hungry the emulator will end up.&lt;&#x2F;p&gt;
+&lt;p&gt;FPGAs benefit from the parallelism they can archieve due to their nature, and also can maintain the components clocked much more accurately again, due to their nature; doing so while not requiring as much power as a normal, PC emulator.&lt;&#x2F;p&gt;
+&lt;p&gt;Anyhow, back to the main topic.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;hle-vs-lle&quot;&gt;HLE vs LLE&lt;&#x2F;h1&gt;
+&lt;p&gt;There&#x27;s two ways to understand emulation; and this varies by the level of closeness to the hardware you decide to entangle yourself with.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;lle&quot;&gt;LLE&lt;&#x2F;h2&gt;
+&lt;p&gt;LLE stands for Low-level Emulation. What this means is, closely replicating the target hardware at the bare-metal level.&lt;&#x2F;p&gt;
+&lt;p&gt;You must emulate every bit of the system to make it work; that means implementing a CPU core that can execute the foreign instructions; providing an interface for it to send&#x2F;recieve data to&#x2F;from peripherals and respecting the timings of all the components to make it as accurate as possible (You can read further on this topic if you look up &lt;a href=&quot;https:&#x2F;&#x2F;retrocomputing.stackexchange.com&#x2F;a&#x2F;1195&quot;&gt;Cycle Accuracy&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;hle&quot;&gt;HLE&lt;&#x2F;h2&gt;
+&lt;p&gt;HLE on the other hand, can be understood as a MITM between the target library calls and mapping them to host-compatible ones; let&#x27;s say we have &lt;em&gt;System A&lt;&#x2F;em&gt; which, somewhere on it&#x27;s code, does this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; System A function responsible of init-ing the FB
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;libGfxInitFramebuffer&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libGfxSetupFramebuffer&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;goto&lt;&#x2F;span&gt;&lt;span&gt; fail;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;if &lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libGfxClearFramebuffer&lt;&#x2F;span&gt;&lt;span&gt;())
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;goto&lt;&#x2F;span&gt;&lt;span&gt; fail;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;fail:
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;libDebugPrint&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Failed to initialize the framebuffer!&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;return &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If we&#x27;re trying to HLE System A, we need to figure out a way to first, detect that this function is being called (Normally, there&#x27;s a piece of code responsible for intercepting, for example, syscalls) and instead of executing the target code, executing a function written for the host architecture that archieves the same but without relying on the target-specific hardware details.&lt;&#x2F;p&gt;
+&lt;p&gt;We could for example, intercept it and call the following code in a PC:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Host system function responsible of init-ing the FB
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Assuming we&amp;#39;re using SDL and renderer is a SDL_Renderer
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;int &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;libGfxInitFramebuffer&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SDL_SetRenderDrawColor&lt;&#x2F;span&gt;&lt;span&gt;(renderer, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;255&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SDL_RenderClear&lt;&#x2F;span&gt;&lt;span&gt;(renderer);
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;SDL_RenderPresent&lt;&#x2F;span&gt;&lt;span&gt;(renderer);
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; We do not handle error-checking for simplicity&amp;#39;s sake
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;And that&#x27;s the basic principle behind HLE. You also need a way to intercept those library calls; for example, let&#x27;s say we&#x27;re interpreting target (System A) CPU instructions, and suddenly, we encounter a &lt;code&gt;syscall&lt;&#x2F;code&gt; instruction.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s assume this &lt;code&gt;syscall&lt;&#x2F;code&gt; instruction in System A works by specifying the &lt;code&gt;syscall&lt;&#x2F;code&gt; type on register &lt;code&gt;A&lt;&#x2F;code&gt; and the required arguments on registers &lt;code&gt;B&lt;&#x2F;code&gt; and &lt;code&gt;C&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Imagine we find this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;asm&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-asm &quot;&gt;&lt;code class=&quot;language-asm&quot; data-lang=&quot;asm&quot;&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;move &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;A
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;syscall
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This basically would call syscall number 3 on the syscall table, which, for example, could be our previously explained &lt;code&gt;libGfxInitFramebuffer()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;You&#x27;d then need to detect this behaviour whilst executing the target code, intercept it and redirect execution and adjust the emulation state accordingly (Maybe adjusting cycle count to account for the original length of the syscall function... etc).&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s also important to note, that nowadays (Moreso with more recent consoles), there&#x27;s a trend to mix both LLE and HLE techniques to get thehe benefits of both approaches. There&#x27;s some components that you can HLE to reduce the processing hurdle of more complex subsystems a machine can have.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;defining-the-target&quot;&gt;Defining the target&lt;&#x2F;h1&gt;
+&lt;p&gt;Now that we finally have laid down the concepts related to emulation; let&#x27;s find a target that has a CPU that has a relatively easy implementation in software.&lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;ll focus for example on the Amstrad GX4000. A 3rd generation, PAL home console that was launched in the 80s.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;thumb&#x2F;a&#x2F;af&#x2F;Amstrad-GX4000-Console-Set.png&#x2F;1280px-Amstrad-GX4000-Console-Set.png&quot; alt=&quot;Amstrad GX000&quot; &#x2F;&gt;
+&lt;em&gt;The Amstrad GX4000&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The specs are very straightforward; an 8-bit Zilog Z80A at 4 MHz a custom chip that handled sprites, Sound DMAs and Interrupts.&lt;&#x2F;p&gt;
+&lt;p&gt;Sound-wise; a 3-channel stereo, AY-3-8912 chip.&lt;&#x2F;p&gt;
+&lt;p&gt;As for space, 64 KiB of RAM, 16 KiB of Video RAM and 32 KiB of ROM.&lt;&#x2F;p&gt;
+&lt;p&gt;Really simple.&lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;ll focus on CPU emulation and we&#x27;ll ignore the rest of the peripherals for now.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;emulation-loop&quot;&gt;Emulation loop&lt;&#x2F;h1&gt;
+&lt;p&gt;Once you find the detailed specs for the machine you want to target; it&#x27;s time to work.&lt;&#x2F;p&gt;
+&lt;p&gt;The usual recommendation is to find on the Internet as much documentation as you can; but depending on the target, you may find less stuff; so be prepared to reverse-engineer if needed.&lt;&#x2F;p&gt;
+&lt;p&gt;For the major players in the market, there&#x27;s popular resources online that give a very detailed explanation of the entire system; but again, your mileage may vary.&lt;&#x2F;p&gt;
+&lt;p&gt;The basics for emulating a CPU are, knowing how a CPU works, here&#x27;s a pretty simple diagram:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;i.pinimg.com&#x2F;originals&#x2F;d7&#x2F;f0&#x2F;29&#x2F;d7f0297a06f5f6e36f8cbd50a77a1fc9.png&quot; alt=&quot;FDE Cycle&quot; &#x2F;&gt;
+&lt;em&gt;The fetch-decode-execute cycle&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Basically, we need to fetch data from the memory, decode it and execute it; profit.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;i.kym-cdn.com&#x2F;photos&#x2F;images&#x2F;newsfeed&#x2F;000&#x2F;572&#x2F;078&#x2F;d6d.jpg&quot; alt=&quot;Owl&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;2 simple steps!&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;In all seriousness; it&#x27;s really that &lt;em&gt;simple&lt;&#x2F;em&gt;¹&lt;&#x2F;p&gt;
+&lt;p style=&quot;font-size: 0.7rem&quot;&gt; ¹.- Depending on the CPU, it may be less simple (Think of possible address modes, the straightforward-ness of the opcode decoding, the pipeline it may have, the timings...) &lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s get down&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;cpu-emulation-techniques&quot;&gt;CPU emulation techniques&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;interpreter&quot;&gt;Interpreter&lt;&#x2F;h2&gt;
+&lt;p&gt;We&#x27;ll start with the more easier type of technique; an Interpreter.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s have some pseudocode explain the rest, we&#x27;ll do some assumptions that don&#x27;t map to the real Z80A, to simplify the explanation and the code (We assume opcode size == 1 byte, no addressing modes, no banked register set...):&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Ignoring the boilerplate code, such as headers, irrelevant functions and such
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Bus {
+&lt;&#x2F;span&gt;&lt;span&gt;    byte ram[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;64&lt;&#x2F;span&gt;&lt;span&gt; KiB];
+&lt;&#x2F;span&gt;&lt;span&gt;    ....
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;struct &lt;&#x2F;span&gt;&lt;span&gt;Cpu {
+&lt;&#x2F;span&gt;&lt;span&gt;    byte A, B, C, D, E, H, L; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; General-Prupose Registers
+&lt;&#x2F;span&gt;&lt;span&gt;    byte F; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Special Flags Register
+&lt;&#x2F;span&gt;&lt;span&gt;    byte IX, IY; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Index Registers
+&lt;&#x2F;span&gt;&lt;span&gt;    byte SP; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Stack Pointer Register
+&lt;&#x2F;span&gt;&lt;span&gt;    byte PC; &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Program Counter Register
+&lt;&#x2F;span&gt;&lt;span&gt;    ...
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;*
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    Bus and Cpu are initialized by main() or another function,
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    the ram array has the target binary already loaded at a
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    specific offset and the PC (Which effectively acts as a
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    pointer to memory) is set to that memory offset.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    That way once we read from ram we can just do ram[cpu-&amp;gt;PC]
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    to get the opcode.
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;*&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;cpu_fde&lt;&#x2F;span&gt;&lt;span&gt;(Bus *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bus&lt;&#x2F;span&gt;&lt;span&gt;, Cpu *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cpu&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Get the cpu instruction from memory pointed by the PC register
+&lt;&#x2F;span&gt;&lt;span&gt;    byte opcode = bus-&amp;gt;ram[cpu-&amp;gt;PC];
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;switch&lt;&#x2F;span&gt;&lt;span&gt;(opcode)
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; ADD A, B Instruction
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;case &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x00&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Add B to A
+&lt;&#x2F;span&gt;&lt;span&gt;            cpu-&amp;gt;A += cpu-&amp;gt;B;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Increment PC
+&lt;&#x2F;span&gt;&lt;span&gt;            cpu-&amp;gt;PC++;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;case &lt;&#x2F;span&gt;&lt;span&gt;...:
+&lt;&#x2F;span&gt;&lt;span&gt;            ...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        ...
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;printf&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Opcode unimplemented! 0x&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%02X&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, opcode);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This is the skeleton for an emulator; think of the PC (Program Counter, sometimes also called IP, Instruction Pointer) register as a pointer to memory from where we&#x27;ll read instructions from.&lt;&#x2F;p&gt;
+&lt;p&gt;Normally, the PC then will get incremented by 1 at the end of the opcode processing (But some opcodes that handle PC relocation, such as JUMPs or CALLs may add an offset to it or straight up setting it to a determinate value).&lt;&#x2F;p&gt;
+&lt;p&gt;In reality, PC will increment &lt;code&gt;sizeof(opcode)&lt;&#x2F;code&gt;, but there may be some exceptions to that in some architectures; be always mindful when designing the main loop.&lt;&#x2F;p&gt;
+&lt;p&gt;And that&#x27;s it, you&#x27;ve just designed a primitive interpreter loop.&lt;&#x2F;p&gt;
+&lt;p&gt;This is one of the many ways to implement the fetch-decode-execute loop; and one of the slowest ones too; think the amount of instructions per second you need to decode and execute in 8MHz&#x27;s worth of time.&lt;&#x2F;p&gt;
+&lt;p&gt;It adds up.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;cached-interpreter&quot;&gt;Cached Interpreter&lt;&#x2F;h2&gt;
+&lt;p&gt;So far we&#x27;ve covered the basis for an Interpreter; but there&#x27;s other techniques to gain an advantage, speed-wise.&lt;&#x2F;p&gt;
+&lt;p&gt;For instance, you could cache the instructions you&#x27;re translating in blocks so that it alleviates the fetch-decode hotspot a bit; as it&#x27;d only need to process it once (Ignoring that code can be self-modifying and in that case you&#x27;d need to invalidate and recompile the affected block; but that&#x27;s for another day).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;dynamic-recompiler&quot;&gt;Dynamic Recompiler&lt;&#x2F;h2&gt;
+&lt;p&gt;By far, one of the most efficient ways to tackle emulation is by developing a Dynamic Recompiler (Just-in-Time compiler); which interprets the target, arch-uncompatible instructions; and translates them to host instructions. For example, &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Rosetta_(software)#Rosetta_2&quot;&gt;Rosetta 2&lt;&#x2F;a&gt; converts x86_64 instructions to aarch64 ones and runs them in a efficient and fast manner.&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s one of the most complex ones, but also, one of the most rewarding ones; there&#x27;s several challenges to tackle when developing a Dynamic Recompiler; such as deciding how to to the actual recompilation:&lt;&#x2F;p&gt;
+&lt;p&gt;Do we want an emitter that directly translates the instructions? Maybe we want instead to use some sort of IL (Intermediate language) so that a compiler backend (Think, LLVM) can introduce code optimizations and do the translation? How do we handle self-modifying code? And what about register spilling (Imagine targetting an arch that has more registers than your host one, you may need to use some stack trickery or another technique to decide the least used registers and swap them into the host ones as needed)?&lt;&#x2F;p&gt;
+&lt;p&gt;As you can see, there are many more challenges when trying to go the Dynamic Recompilation route; but it&#x27;s a really interesting path to go down.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;static.wixstatic.com&#x2F;media&#x2F;0ca71f_1a3d7cffee16433db44fb5155c7e225a.png&#x2F;v1&#x2F;fill&#x2F;w_1132,h_818,al_c,q_90,usm_0.66_1.00_0.01,enc_auto&#x2F;0ca71f_1a3d7cffee16433db44fb5155c7e225a.png&quot; alt=&quot;JIT&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;em&gt;A simple JIT diagram, it also needs a cache for the compiled blocks&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h1 id=&quot;peripherals&quot;&gt;Peripherals&lt;&#x2F;h1&gt;
+&lt;p&gt;There&#x27;s also the added challenge of handling peripherals; there&#x27;s cases where you&#x27;ll find I&#x2F;O operations CPU-wise that interact with the peripherals on the system; or some other times, they can be memory-mapped.&lt;&#x2F;p&gt;
+&lt;p&gt;In any case, there&#x27;s some food for thought involved into deciding the best way to tackle both of the systems.&lt;&#x2F;p&gt;
+&lt;p&gt;A simple, pseudocode example that explains the memory-mapped approach:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;c&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-c &quot;&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;*
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    This can be called with opcodes like LOAD ($A), $0x20
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;    (Loads 0x20 to the address pointed by A)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;*&#x2F;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;void &lt;&#x2F;span&gt;&lt;span style=&quot;color:#8fa1b3;&quot;&gt;memory_write_byte&lt;&#x2F;span&gt;&lt;span&gt;(Bus *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;bus&lt;&#x2F;span&gt;&lt;span&gt;, Cpu *&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;cpu&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;long &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;address&lt;&#x2F;span&gt;&lt;span&gt;, byte &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;value&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;{
+&lt;&#x2F;span&gt;&lt;span&gt;    &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;switch &lt;&#x2F;span&gt;&lt;span&gt;(address)
+&lt;&#x2F;span&gt;&lt;span&gt;    {
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Main RAM
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;case &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x0 &lt;&#x2F;span&gt;&lt;span&gt;... &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0x1000&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            bus-&amp;gt;ram[address] = value;
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;        cd 
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;&#x2F;&#x2F; Memory-mapped I&#x2F;O
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;case &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0xFF10&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            bus-&amp;gt;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;set_sprite_a_register&lt;&#x2F;span&gt;&lt;span&gt;(value);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;break&lt;&#x2F;span&gt;&lt;span&gt;;
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;        &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;default&lt;&#x2F;span&gt;&lt;span&gt;:
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;printf&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Unhandled address! 0x&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;%04X&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;\n&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, address);
+&lt;&#x2F;span&gt;&lt;span&gt;            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;exit&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;);
+&lt;&#x2F;span&gt;&lt;span&gt;    }
+&lt;&#x2F;span&gt;&lt;span&gt;}
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;There&#x27;s also some other considerations to have; think about how you want to plot graphics; or play audio, or read from a filesystem... there&#x27;s some design choices to be made in order to properly handle the rest of the system aside from the CPU and presenting it to the user (Or letting him interact with the emulated environment!).&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;bonus-track&quot;&gt;Bonus Track&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;aot&quot;&gt;AoT&lt;&#x2F;h2&gt;
+&lt;p&gt;There&#x27;s also a thing called Ahead-of-Time recompilation which, as you have probably already guessed; recompiles the entire target binary before running it to host-compatible machine code.&lt;&#x2F;p&gt;
+&lt;p&gt;It&#x27;s not purely emulation, but it&#x27;s still a form of recompilation; it&#x27;s incredibly difficult because it shares a problem that Dynamic Recompilators have; self-modifying code. If you AoT recompile a target code but it ends up self modifying, you can end up with some interesting results.&lt;&#x2F;p&gt;
+&lt;h1 id=&quot;credits&quot;&gt;Credits&lt;&#x2F;h1&gt;
+&lt;p&gt;With all this being said, I hope the reader finds some understanding in what emulation is about!&lt;&#x2F;p&gt;
+&lt;p&gt;Feel free to reach out to me in case you need more resources!&lt;&#x2F;p&gt;
+&lt;p&gt;You can also join us @ the &lt;a href=&quot;https:&#x2F;&#x2F;discord.gg&#x2F;7nuaqZ2&quot;&gt;EmuDev&lt;&#x2F;a&gt; Discord; there&#x27;s plenty of knowledgeable people that will help you in your journey!&lt;&#x2F;p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

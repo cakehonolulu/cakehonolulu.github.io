@@ -1,0 +1,618 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>
+    Introducing PCIem - cakehonolulu&#x27;s blog
+  </title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  <meta name="description" content="A framework enabling in-host driver development thanks to Linux and QEMU" />
+  <meta name="author" content="cakehonolulu" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Introducing PCIem" />
+  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:description" content="A framework enabling in-host driver development thanks to Linux and QEMU" />
+  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://cakehonolulu.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>
+    renderMathInElement(document.body, {
+      // customised options
+      // • auto-render specific keys, e.g.:
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      // • rendering keys, e.g.:
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Mermaid -->
+  
+  <!---->
+  <script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const initMermaid = (isDark) => {
+    mermaid.initialize({
+      theme: isDark ? "dark" : "default",
+      startOnLoad: false,
+    });
+    mermaid.run();
+  };
+
+  // Add data-mermaid-code attribute on all mermaid block.
+  document.querySelectorAll(".mermaid").forEach((element) => {
+    element.setAttribute("data-mermaid-code", element.innerHTML);
+  });
+
+  // Re-render mermaid when theme changed.
+  document.body.addEventListener("set-theme", (e) => {
+    document.querySelectorAll(".mermaid").forEach((element) => {
+      const mermaidCode = element.getAttribute("data-mermaid-code");
+      if (mermaidCode != null) {
+        element.removeAttribute("data-processed");
+        element.innerHTML = mermaidCode;
+      }
+    });
+    initMermaid(e.detail === "dark");
+  });
+
+  // The es module script will load defer, so the localStorage should already be set by script in header.
+  // If this script is loaded first, the script in header will dispatch an event to re-render mermaid, it's works too.
+  initMermaid(localStorage.getItem("dark") === "true");
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://cakehonolulu.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+  <!---->
+  
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title="Atom"
+    href="https://cakehonolulu.github.io/atom.xml"
+  />
+   
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="https://cakehonolulu.github.io/rss.xml"
+  />
+  
+  <!---->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;" />
+
+  <!-- Head inject -->
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+      <div
+        class="btn-menu relative z-50 flex h-8 w-8 shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+        role="button"
+        aria-label="Menu"
+      ></div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
+          htmlClass.add("dark");
+        } else {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
+          htmlClass.remove("dark");
+        }
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/about"
+            >About</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/projects"
+            >Projects</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/blog"
+            >Blog</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/archive"
+            >Archive</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/tags"
+            >Tags</a
+          >
+        </li>
+        
+      </ul>
+      <!-- Header Nav inject -->
+      
+    </nav>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
+    >
+      
+<article>
+  <!-- Page Start inject -->
+  
+
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Introducing PCIem</h1>
+    <div class="text-sm antialiased opacity-60">
+  
+  <time>2025-11-02</time>
+  <span class="mx-1">&middot;</span>
+  <span>9min</span>
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <span class="mx-1">&middot;</span>
+  <span>cakehonolulu</span>
+  
+  <!-- Page Info inject -->
+  
+</div>
+
+  </header>
+
+  
+
+  <!-- TOC -->
+  <!---->
+<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  <details>
+    <summary class="cursor-pointer py-1 pl-4">
+      <span>Table of Contents</span>
+    </summary>
+    <div class="px-2">
+      <ul>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#preface"
+            >Preface</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#first-of-all-why"
+            >First of all, why?</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#protopciem-card"
+            >ProtoPCIem card</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#pciem-or-a-speedrun-on-getting-linus-mad"
+            >PCIem (or a speedrun on getting Linus mad)</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#memmap-cmdline-argument"
+            >memmap cmdline argument</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#adding-a-synthetic-pcie-device"
+            >Adding a Synthetic PCIe device</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#bar-remapping"
+            >BAR remapping</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#msis"
+            >MSIs</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#dma"
+            >DMA</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#handling-pci-commands"
+            >Handling PCI commands</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#pciem-uproxy-and-pciem-s-kernel-thread"
+            >pciem_uproxy and pciem&#x27;s kernel thread</a
+          >
+          
+        </li>
+        
+      </ul>
+    </div>
+  </details>
+</div>
+
+<!---->
+
+  <!-- Content -->
+  <section><h2 id="preface">Preface</h2>
+<p>PCIem exists solely thanks to countless hours of hacking around Linux (And finding out). This is not intended to be a show of any commercial-level framework or anything like that. This should be free knowledge and at no cost for anyone wants to try it.</p>
+<p>Author (Me, cakehonolulu) wanted to experiment with how much you can twist the untwistable to get this system working and here's the rants and findings about exactly that process.</p>
+<h2 id="first-of-all-why">First of all, why?</h2>
+<p>So, aside from the technical challenge fun of it I also was interested on finding a way of developing drivers inside the host directly.</p>
+<p>From my limited knowledge, when we try to look at how companies/groups/whoever try to do PCIe driver development it usually goes in 2 possible ways:</p>
+<p>1.- They don't care about PCIe</p>
+<p>Which is the sanest way. Honestly if you care about you and your teams sanity this is the way to go. Usually involves building a shim or some sort of abstraction layer that avoids the hassle of going down the driver level to do some general useability tests. This is probably sufficient for everything since there's usually ways to attain more low-levelness if needed.</p>
+<p>2.- They care about PCIe</p>
+<p>This is great if you care about having as much of the development process covered as possible.</p>
+<p>Usually requires complex co-simulation/co-emulation models. We're talking multiple-people efforts (Maybe even teams) right here.</p>
+<p>Sometimes commercial solutions can be used but guess what, they're pricey.</p>
+<p>There's also SimBricks (Which is open-source and works great!) but if you care a bit about speed and not so much about tight timings it can be costly.</p>
+<hr />
+<p>Knowing this, I kinda wanted to do the full designing of a simple "dumb framebuffer" PCIe card (That can do zero-copy DMA and whatnot for it's internal "VRAM" in conjunction with the kernel) inside QEMU and get a driver for it; and what a better way of writing a driver than directly on the host.</p>
+<p>Yeah, call me crazy.</p>
+<h2 id="protopciem-card">ProtoPCIem card</h2>
+<p>So, before actually writing drivers, we need to know our target.</p>
+<p>My idea was an early-to-mid-90s PCI card that had a simple state machine for issuing commands to it and maybe some DMA to speed things up a bit.</p>
+<p>I came up with the following register file:</p>
+<p>0x00 - <code>REG_CONTROL</code>: The main control register for the card; toggling bit 1 (<code>CTRL_RESET</code>) resets the card (Clears status, wipes memory...).</p>
+<p>0x04 - <code>REG_STATUS</code>: R/O status register, <code>STATUS_BUSY</code> (Bit 0) if device is busy; <code>STATUS_DONE</code> (Bit 1), last command executed successfully; <code>STATUS_ERROR</code>, well, an error happened with the last command.</p>
+<p>0x08 - <code>REG_CMD</code>: The command register, writing here starts a command on the card.</p>
+<p>0x0C - <code>REG_DATA</code>: Simple operand for fixed-function operations on the card (Mainly leftover from when designing a much simpler version of PCIem)</p>
+<p>0x10 - <code>REG_RESULT_LO</code>: Low 32-bits of the command result register pair. Probably could do single 64-bit one but again, PoC so I did it like this.</p>
+<p>0x14 - <code>REG_RESULT_HI</code>: High 32-bits of the command result register pair.</p>
+<p>0x20 - <code>REG_DMA_SRC_LO</code>: Low 32-bits of the 64-bit DMA source address of the system memory.</p>
+<p>0x24 - <code>REG_DMA_SRC_HI</code>: High 32-bits "" "" "".</p>
+<p>0x28 - <code>REG_DMA_DST_LO</code>: Low 32-bits of the destination (As offset within the PCI internal memory).</p>
+<p>0x2C - <code>REG_DMA_DST_HI</code>: High 32-bits "" "" "".</p>
+<p>0x30 - <code>REG_DMA_LEN</code>: Length in bytes of the DMA transfer.</p>
+<hr />
+<p>As for the commands, I have a fixed-function pipeline for now:</p>
+<p><code>CMD_ADD</code> (0x01): Does <code>REG_DATA</code> + 42</p>
+<p><code>CMD_MULTIPLY</code> (0x02): Does <code>REG_DATA</code> * 3</p>
+<p><code>CMD_XOR</code> (0x03): Does <code>REG_DATA</code> ^ 0xABCD1234</p>
+<p><code>RESERVED</code> (0x04)</p>
+<p><code>CMD_DMA_FRAME</code> (0x05): Performs DMA transfer basically</p>
+<p>Now that we know the card's definition, I modeled it under QEMU.</p>
+<div style="text-align: center;">
+<p><img src="https://hw-museum.cz/data/vga/pic/3dfx_Voodoo3_3000_PCI_SDR_F.jpg" alt="Voodoo 3" />
+<em>Voodoo 3 PCI card (Voodoo in general served as personal inspiration)</em></p>
+</div>
+<h2 id="pciem-or-a-speedrun-on-getting-linus-mad">PCIem (or a speedrun on getting Linus mad)</h2>
+<p>I've been experimenting for a while on how to convince Linux's PCI subsystem functions that there's a PCI device attached to the host bus without one being attached. Sounds crazy but I thought it could be something worth experimenting.</p>
+<p>My initial impression was that I would have to go and hack Linux "from within" and have custom kernels and whatnot to have this (Mainly getting rid of sanity checks and whatnot to let this work) but it turns out you can do one trick that'll let you do that from a kernel module w/o ever touching the kernel's source code.</p>
+<p>But it turns out you can without touching it at all.</p>
+<h2 id="memmap-cmdline-argument">memmap cmdline argument</h2>
+<p>Turns out you can provide a commandline argument to Linux so that it "reserves" a physical memory chunk from the <code>"System RAM"</code> resource node.</p>
+<p>Let's say your <code>/proc/iomem</code> tells you that your "System RAM" node is <code>0x10000000-0x1FFFFFFF</code>. If we instruct Linux to boot with: <code>memmap=64K$0x1FFEFFFF</code> it'll carve the last <code>0x10000</code> and not assign it to <code>"System RAM"</code>. This means that we have a "free" and "unused" region we can work with. This is, in part, the root of the mechanism we "exploit" for PCIem.</p>
+<p>It turns out that when the PCI subsystem tries to "claim" the region it first checks if it already belongs somewhere (System RAM, other PCI memory...), so by manually carving some of it during boot time we ensure that the PCI subsystem won't complain about it.</p>
+<p>I had 2 other ideas to try and get this working before this approach, main one was doing <code>alloc_pages()</code> and crossing my fingers that it'd work (But it didn't).</p>
+<p>The second one was much worse, I would manually split one of (If not the only) "System RAM" node at runtime (As dangerous as that sounds) and it'd make the <code>memmap</code> requirement not exist at all; but I won't go into the details of why splicing a "System RAM" node is a bad idea... (It is)</p>
+<h2 id="adding-a-synthetic-pcie-device">Adding a Synthetic PCIe device</h2>
+<p>Using <code>pci_scan_root_bus()</code> and having a specially-prepared <code>struct pci_ops</code> with the <code>read</code> and <code>write</code> handlers containing some cool code makes it so that Linux props up a new PCI device on the bus as if it physically existed there.</p>
+<p>I also use <code>pci_bus_add_devices()</code> and the <code>pci_bus_assign_resources()</code> to populate the card.</p>
+<p>When the kernel probes the new device, it ends up calling those functions on the struct; by carefully setting the parameters, we can specify the PCI device properties. From <code>VENDOR_ID</code> to <code>DEVICE_ID</code>, to extended capabilities, to <code>MSI</code> configuration, <code>DMA</code>... and whatnot.</p>
+<p>You can take a closer look on the source code of <a href="https://github.com/cakehonolulu/pciem/blob/main/pciem.c">pciem.c</a> (<code>vph_read_config()</code>, <code>vph_write_config()</code>, <code>vph_fill_config()</code>).</p>
+<h2 id="bar-remapping">BAR remapping</h2>
+<p>When we have to back the BAR0 memory we can use the carved region from <code>memmap</code> because when it tries to take ownership of it the PCI subsystem won't complain as it won't see it belonging to <code>"System RAM"</code> and thus won't return <code>"-EBUSY"</code>, as we mentioned before.</p>
+<p>This enables your usual PCIe driver to do <code>"pci_iomap()"</code> as if nothing.</p>
+<p><code>"ioreadX()"</code> and <code>"iowriteX()"</code> functions also work just fine (Which was kinda expected since it basically works at the memory-barrier levels and whatnot).</p>
+<p>This is crucial for driver development as it enables us to make them work.</p>
+<p>There's a separate talk on how to handle the different ways of <code>iomap()</code>-ing from the driver (Mainly the uncached, write-combining and all that) and how we could detect those to match the driver but that's for another day (If it even matters, I haven't had the time to actually dwelve into it).</p>
+<h2 id="msis">MSIs</h2>
+<p>For MSIs, what I did was find the assigned synthetic PCIe MSI number and I queued the handler with <code>irq_work_queue()</code>. From the safe(r) kernel context where <code>"pciem_msi_irq_work_func"</code> gets called it just does <code>"generic_handle_irq(num)"</code> which should run all the registered handlers. Which in turn runs the actual PCIe driver's <code>"pci_irq_handler"</code>.</p>
+<p>So if your hardware registers a <code>pci_irq_handler</code> it'll work here just fine thanks to this.</p>
+<p>Based on my testing it's completely indistinguishable from a real, hardware-triggered MSI for the driver; but feel free to try and make it explode :)</p>
+<h2 id="dma">DMA</h2>
+<p>The gist of it is to basically setup a communication flow between the userspace proxy that handles kernel&lt;-&gt;proxy&lt;-&gt;QEMU transactions so that when actual DMA needs to happen (Writes from and to DMA allocated buffers) everything gets proxied.</p>
+<p>The real driver usually does <code>"dma_alloc_coherent()"</code> which returns both a virtual address and a physical address (<code>dma_addr_t</code>).</p>
+<p>Those values move across the framework, when QEMU "initiates" the DMA it has to ask PCIem to do the reading from the <code>dma_addr_t</code> (Since we can't do that from userspace...), it effectively proxies the DMA request up to the kernel basically.</p>
+<p>PCIem then becomes sort of a "DMA engine"; when the IOMMU is off, we're just a <code>phys_to_virt()</code> call away to be able to copy the data directly to the proxy's "virtual DMA buffer".</p>
+<p>If the IOMMU is on, <code>dma_addr_t</code> is an <strong>IOVA</strong> (I/O Virtual Address), not a physical one. I found out about this doing lots of debugging and observing that the phys address returned by <code>dma_alloc_coherent()</code> being <code>0xFFFF0000</code> always (Without <code>amd_iommu=off</code>). Is it some sort of software-controlled trampoline?</p>
+<p>Anyhow, for IOVA handling, I had to loop page-by-page for the DMA's <code>len</code> doing <code>iommy_iova_to_phys()</code> to get the IOMMU to handle the translations for me. Then the <code>phys_to_virt()</code> and subsequent <code>copy_to_user()</code>.</p>
+<h2 id="handling-pci-commands">Handling PCI commands</h2>
+<p>I had to resort to a poller (Which runs on a kernel thread monitoring for a changed value in the BAR)... yeah, less than optimal but hey, it works!</p>
+<p>I've been experimenting with "sequential" ways of handling this, but couldn't figure something that works good enough and doesn't look ugly (I tried memory watchpoints but they apparently don't work on physical addresses which we use for BAR stuff).</p>
+<h2 id="pciem-uproxy-and-pciem-s-kernel-thread">pciem_uproxy and pciem's kernel thread</h2>
+<p>I would go about and explain how I made a model for communication between the userspace component of pciem and qemu and whatnot but I feel like those parts are actually not-so-interesting; you can freely look at the code for some of the stuff I did to try and avoid race conditions (Not sure I fixed them all but it seems stable from what I can see after leaving DOOM running for a few hours).</p>
+<p>I'd say this is probably (Alongside the polling) the area that should be improved as it'd let me get rid of much of the code I have, but again; we'll see down the road.</p>
+<p>Anyhow, I can get stable output from DOOM and Quake at 640x480@120 (8BPP).</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/pciem/doom.png" alt="doom" />
+<em>DOOM</em></p>
+</div>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/pciem/quake.png" alt="quake" />
+<em>Quake</em></p>
+</div>
+</section>
+
+  <hr />
+
+  <!-- Post Taxonomies -->
+  
+<footer class="mt-12 flex flex-col">
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <div class="mb-2 flex flex-wrap">
+    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/c/"
+      >c</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/linux/"
+      >linux</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/kernel/"
+      >kernel</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/pcie/"
+      >pcie</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/qemu/"
+      >qemu</a
+    >
+    
+  </div>
+  
+</footer>
+
+<!---->
+
+  <!-- Post Nav -->
+  
+<nav class="block-bg mt-12 flex flex-wrap rounded-lg text-lg">
+  
+  <a
+    class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
+    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;"
+    ><span class="mr-1.5">←</span><span>Hardware Fastmem 101</span></a
+  >
+  <!---->
+  
+</nav>
+
+<!---->
+
+  <!-- Comment -->
+  <!---->
+  <!---->
+<!---->
+  
+
+  <!-- Page End inject -->
+  
+</article>
+
+    </main>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2022 - 2025<!---->
+    
+    <a class="link" href="https://cakehonolulu.github.io">
+      cakehonolulu
+    </a>
+     |<!---->
+    <!---->
+    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+      MIT
+    </a>
+    <!---->
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+</footer>
+
+
+    <!-- Body End inject -->
+    
+  </body>
+</html>

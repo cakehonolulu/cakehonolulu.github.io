@@ -1,0 +1,80 @@
+[[project]]
+name = "RustEE"
+desc = "An ongoing Rust port of Neo2, written in Rust. Currently features modular soft-cores for EE and IOP and can be ran either with Interpreter or Cranelift (JIT) backends."
+tags = ["rustee", "ee", "iop", "ps2", "emulator", "rust", "cranelift"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/RustEE" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/RustEE/refs/heads/main/resources/banner.png"
+
+[[project]]
+name = "pciem"
+desc = "A Linux-based PCIe emulation framework to enable in-host driver development in conjunction with QEMU."
+tags = ["linux", "qemu", "driver", "pcie", "pci", "pciem", "synthetic"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/pciem" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/pciem/refs/heads/main/resources/icon.png"
+
+[[project]]
+name = "RT4K-CEC"
+desc = "A custom tailored firmware made for Raspberry Pi Pico's to control RetroTink 4K (CE) devices using HDMI-CEC (And your TVs Controller). Works by intercepting HDMI-CEC signals and sending appropiate responses to the RetroTink's RS232 serial device using an OTG Y splicer and the Pi Pico in USB Host mode (Using CDC spec for serial data)."
+tags = ["retrotink", "retrotink4k", "retrotink-4k", "rt4k", "hdmi", "hdmi-cec", "hdmicec", "cec_enabler", "pico-cec", "freertos"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/RT4K-CEC" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/RT4K-CEC/refs/heads/main/351985391-c37bb127-409a-4ed1-acc1-4e83cf8a6d58.png"
+
+[[project]]
+name = "Neo2"
+desc = "A Sony PlayStation 2 emulator written in C++ trying to be as simple as possible"
+tags = ["neo2", "ee", "iop", "ps2", "emulator"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/Neo2" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/Neo2/refs/heads/main/resources/banner.png"
+
+[[project]]
+name = "SimpleStation"
+desc = "A custom-made, Sony PlayStation 1 Emulator written in C. Featuring a rich OpenGL 3.3+ and Vulkan 1.0+ Hardware Renderer."
+tags = ["simplestation", "psx", "sony", "playstation"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/SimpleStation" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/SimpleStation/refs/heads/main/resources/banner.png"
+
+[[project]]
+name = "Lucid"
+desc = "One of my most beloved projects, a Sega Dreamcast emulator. A big effort, reverse engineering-wise, also coded in C++."
+tags = ["lucid", "loocid", "sh4", "sega", "dreamcast"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/Lucid" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/Lucid/main/resources/lucid_dark_mode_banner.png"
+
+[[project]]
+name = "GameGirl"
+desc = "My first big emulation project, a Nintendo GameBoy Emulator PoC. Made on my first year of university. Runs the entire Bootrom and leverages SDL to blit to the framebuffer."
+tags = ["gamegirl", "nintendo", "dmg-01"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/GameGirl" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/GameGirl/main/resources/banner.png"
+
+[[project]]
+name = "Atom"
+desc = "An custom-written bootloader targetting x86 computers (Legacy, MBR or any CSM-compatible PC). Bootstraps from either EXT2 or FAT16 over to a custom little toy kernel that acts as a second-stage loader."
+tags = ["atom", "x86", "bootloader"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/Atom" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/atom/main/resources/logo_dark.png"
+
+[[project]]
+name = "fGB"
+desc = "A Proof-of-Concept Dynamic Recompiler that targets the GameBoy's 8-bit Z80-compatible Sharp LR35902 CPU. Made after studying Dynamic Recompilers (JITs) for well over a year, contains a Z80-to-x86_64 translation unit, opcode dispatching, stack tracking, block housekeeping and prologue/epilogue emitting for a seamless integration with the major OSs available nowadays."
+tags = ["fgb", "dynarec"]
+links = [
+    { name = "github", url = "https://github.com/cakehonolulu/fGB" },
+]
+image = "https://raw.githubusercontent.com/cakehonolulu/fGB/main/resources/logo.png"

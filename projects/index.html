@@ -1,0 +1,711 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>
+    Projects - cakehonolulu&#x27;s blog
+  </title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  <meta name="description" content="Projects" />
+  <meta name="author" content="cakehonolulu" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Projects" />
+  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:description" content="Projects" />
+  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;projects&#x2F;" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://cakehonolulu.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>
+    renderMathInElement(document.body, {
+      // customised options
+      // • auto-render specific keys, e.g.:
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      // • rendering keys, e.g.:
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Mermaid -->
+  
+  <!---->
+  <script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const initMermaid = (isDark) => {
+    mermaid.initialize({
+      theme: isDark ? "dark" : "default",
+      startOnLoad: false,
+    });
+    mermaid.run();
+  };
+
+  // Add data-mermaid-code attribute on all mermaid block.
+  document.querySelectorAll(".mermaid").forEach((element) => {
+    element.setAttribute("data-mermaid-code", element.innerHTML);
+  });
+
+  // Re-render mermaid when theme changed.
+  document.body.addEventListener("set-theme", (e) => {
+    document.querySelectorAll(".mermaid").forEach((element) => {
+      const mermaidCode = element.getAttribute("data-mermaid-code");
+      if (mermaidCode != null) {
+        element.removeAttribute("data-processed");
+        element.innerHTML = mermaidCode;
+      }
+    });
+    initMermaid(e.detail === "dark");
+  });
+
+  // The es module script will load defer, so the localStorage should already be set by script in header.
+  // If this script is loaded first, the script in header will dispatch an event to re-render mermaid, it's works too.
+  initMermaid(localStorage.getItem("dark") === "true");
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://cakehonolulu.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+  <!---->
+  
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title="Atom"
+    href="https://cakehonolulu.github.io/atom.xml"
+  />
+   
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="https://cakehonolulu.github.io/rss.xml"
+  />
+  
+  <!---->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;projects&#x2F;" />
+
+  <!-- Head inject -->
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+      <div
+        class="btn-menu relative z-50 flex h-8 w-8 shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+        role="button"
+        aria-label="Menu"
+      ></div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
+          htmlClass.add("dark");
+        } else {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
+          htmlClass.remove("dark");
+        }
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/about"
+            >About</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/projects"
+            >Projects</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/blog"
+            >Blog</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/archive"
+            >Archive</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/tags"
+            >Tags</a
+          >
+        </li>
+        
+      </ul>
+      <!-- Header Nav inject -->
+      
+    </nav>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
+    >
+      
+
+
+
+
+
+
+
+<h1 class="mb-16">Projects</h1>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;RustEE&#x2F;refs&#x2F;heads&#x2F;main&#x2F;resources&#x2F;banner.png"
+      alt="RustEE image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">RustEE</h3>
+    <p>An ongoing Rust port of Neo2, written in Rust. Currently features modular soft-cores for EE and IOP and can be ran either with Interpreter or Cranelift (JIT) backends.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#rustee</span>
+        
+        <span>#ee</span>
+        
+        <span>#iop</span>
+        
+        <span>#ps2</span>
+        
+        <span>#emulator</span>
+        
+        <span>#rust</span>
+        
+        <span>#cranelift</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/RustEE"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;pciem&#x2F;refs&#x2F;heads&#x2F;main&#x2F;resources&#x2F;icon.png"
+      alt="pciem image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">pciem</h3>
+    <p>A Linux-based PCIe emulation framework to enable in-host driver development in conjunction with QEMU.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#linux</span>
+        
+        <span>#qemu</span>
+        
+        <span>#driver</span>
+        
+        <span>#pcie</span>
+        
+        <span>#pci</span>
+        
+        <span>#pciem</span>
+        
+        <span>#synthetic</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/pciem"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;RT4K-CEC&#x2F;refs&#x2F;heads&#x2F;main&#x2F;351985391-c37bb127-409a-4ed1-acc1-4e83cf8a6d58.png"
+      alt="RT4K-CEC image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">RT4K-CEC</h3>
+    <p>A custom tailored firmware made for Raspberry Pi Pico&#x27;s to control RetroTink 4K (CE) devices using HDMI-CEC (And your TVs Controller). Works by intercepting HDMI-CEC signals and sending appropiate responses to the RetroTink&#x27;s RS232 serial device using an OTG Y splicer and the Pi Pico in USB Host mode (Using CDC spec for serial data).</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#retrotink</span>
+        
+        <span>#retrotink4k</span>
+        
+        <span>#retrotink-4k</span>
+        
+        <span>#rt4k</span>
+        
+        <span>#hdmi</span>
+        
+        <span>#hdmi-cec</span>
+        
+        <span>#hdmicec</span>
+        
+        <span>#cec_enabler</span>
+        
+        <span>#pico-cec</span>
+        
+        <span>#freertos</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/RT4K-CEC"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;Neo2&#x2F;refs&#x2F;heads&#x2F;main&#x2F;resources&#x2F;banner.png"
+      alt="Neo2 image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">Neo2</h3>
+    <p>A Sony PlayStation 2 emulator written in C++ trying to be as simple as possible</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#neo2</span>
+        
+        <span>#ee</span>
+        
+        <span>#iop</span>
+        
+        <span>#ps2</span>
+        
+        <span>#emulator</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/Neo2"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;SimpleStation&#x2F;refs&#x2F;heads&#x2F;main&#x2F;resources&#x2F;banner.png"
+      alt="SimpleStation image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">SimpleStation</h3>
+    <p>A custom-made, Sony PlayStation 1 Emulator written in C. Featuring a rich OpenGL 3.3+ and Vulkan 1.0+ Hardware Renderer.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#simplestation</span>
+        
+        <span>#psx</span>
+        
+        <span>#sony</span>
+        
+        <span>#playstation</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/SimpleStation"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;Lucid&#x2F;main&#x2F;resources&#x2F;lucid_dark_mode_banner.png"
+      alt="Lucid image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">Lucid</h3>
+    <p>One of my most beloved projects, a Sega Dreamcast emulator. A big effort, reverse engineering-wise, also coded in C++.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#lucid</span>
+        
+        <span>#loocid</span>
+        
+        <span>#sh4</span>
+        
+        <span>#sega</span>
+        
+        <span>#dreamcast</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/Lucid"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;GameGirl&#x2F;main&#x2F;resources&#x2F;banner.png"
+      alt="GameGirl image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">GameGirl</h3>
+    <p>My first big emulation project, a Nintendo GameBoy Emulator PoC. Made on my first year of university. Runs the entire Bootrom and leverages SDL to blit to the framebuffer.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#gamegirl</span>
+        
+        <span>#nintendo</span>
+        
+        <span>#dmg-01</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/GameGirl"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;atom&#x2F;main&#x2F;resources&#x2F;logo_dark.png"
+      alt="Atom image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">Atom</h3>
+    <p>An custom-written bootloader targetting x86 computers (Legacy, MBR or any CSM-compatible PC). Bootstraps from either EXT2 or FAT16 over to a custom little toy kernel that acts as a second-stage loader.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#atom</span>
+        
+        <span>#x86</span>
+        
+        <span>#bootloader</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/Atom"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="not-prose block-bg my-4 flex flex-col md:flex-row rounded-lg px-5 py-1.5">
+  
+  <div class="flex-shrink-0 w-full md:w-1/4">
+    <img
+      class="rounded-lg w-full h-auto object-contain"
+      src="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;cakehonolulu&#x2F;fGB&#x2F;main&#x2F;resources&#x2F;logo.png"
+      alt="fGB image"
+    />
+  </div>
+  
+  <div class="flex flex-col">
+    <h3 class="my-2 text-xl font-bold text-black dark:text-white">fGB</h3>
+    <p>A Proof-of-Concept Dynamic Recompiler that targets the GameBoy&#x27;s 8-bit Z80-compatible Sharp LR35902 CPU. Made after studying Dynamic Recompilers (JITs) for well over a year, contains a Z80-to-x86_64 translation unit, opcode dispatching, stack tracking, block housekeeping and prologue&#x2F;epilogue emitting for a seamless integration with the major OSs available nowadays.</p>
+    <div class="my-2 flex flex-wrap items-center justify-between">
+      <div class="flex flex-wrap gap-x-2 text-sm opacity-60">
+        
+        <span>#fgb</span>
+        
+        <span>#dynarec</span>
+        
+      </div>
+      <div class="flex flex-wrap gap-x-2">
+        
+        <a
+          class="underline"
+          href="https://github.com/cakehonolulu/fGB"
+          rel="noopener"
+          target="_blank"
+          >github</a>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    </main>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2022 - 2025<!---->
+    
+    <a class="link" href="https://cakehonolulu.github.io">
+      cakehonolulu
+    </a>
+     |<!---->
+    <!---->
+    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+      MIT
+    </a>
+    <!---->
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+</footer>
+
+
+    <!-- Body End inject -->
+    
+  </body>
+</html>

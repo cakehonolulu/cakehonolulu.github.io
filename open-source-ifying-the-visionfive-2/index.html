@@ -1,0 +1,937 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>
+    Pushing VisionFive 2 RISC-V board into 2025 - cakehonolulu&#x27;s blog
+  </title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  <meta name="description" content="Because Open Source *always* ends up taking the reins" />
+  <meta name="author" content="cakehonolulu" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Pushing VisionFive 2 RISC-V board into 2025" />
+  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:description" content="Because Open Source *always* ends up taking the reins" />
+  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;open-source-ifying-the-visionfive-2&#x2F;" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://cakehonolulu.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>
+    renderMathInElement(document.body, {
+      // customised options
+      // • auto-render specific keys, e.g.:
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      // • rendering keys, e.g.:
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Mermaid -->
+  
+  <!---->
+  <script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const initMermaid = (isDark) => {
+    mermaid.initialize({
+      theme: isDark ? "dark" : "default",
+      startOnLoad: false,
+    });
+    mermaid.run();
+  };
+
+  // Add data-mermaid-code attribute on all mermaid block.
+  document.querySelectorAll(".mermaid").forEach((element) => {
+    element.setAttribute("data-mermaid-code", element.innerHTML);
+  });
+
+  // Re-render mermaid when theme changed.
+  document.body.addEventListener("set-theme", (e) => {
+    document.querySelectorAll(".mermaid").forEach((element) => {
+      const mermaidCode = element.getAttribute("data-mermaid-code");
+      if (mermaidCode != null) {
+        element.removeAttribute("data-processed");
+        element.innerHTML = mermaidCode;
+      }
+    });
+    initMermaid(e.detail === "dark");
+  });
+
+  // The es module script will load defer, so the localStorage should already be set by script in header.
+  // If this script is loaded first, the script in header will dispatch an event to re-render mermaid, it's works too.
+  initMermaid(localStorage.getItem("dark") === "true");
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://cakehonolulu.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+  <!---->
+  
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title="Atom"
+    href="https://cakehonolulu.github.io/atom.xml"
+  />
+   
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="https://cakehonolulu.github.io/rss.xml"
+  />
+  
+  <!---->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;open-source-ifying-the-visionfive-2&#x2F;" />
+
+  <!-- Head inject -->
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+      <div
+        class="btn-menu relative z-50 flex h-8 w-8 shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+        role="button"
+        aria-label="Menu"
+      ></div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
+          htmlClass.add("dark");
+        } else {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
+          htmlClass.remove("dark");
+        }
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/about"
+            >About</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/projects"
+            >Projects</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/blog"
+            >Blog</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/archive"
+            >Archive</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/tags"
+            >Tags</a
+          >
+        </li>
+        
+      </ul>
+      <!-- Header Nav inject -->
+      
+    </nav>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
+    >
+      
+<article>
+  <!-- Page Start inject -->
+  
+
+  <header class="mb-16">
+    <h1 class="!my-0 pb-2.5">Pushing VisionFive 2 RISC-V board into 2025</h1>
+    <div class="text-sm antialiased opacity-60">
+  
+  <time>2025-05-05</time>
+  <span class="mx-1">&middot;</span>
+  <span>15min</span>
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <span class="mx-1">&middot;</span>
+  <span>cakehonolulu</span>
+  
+  <!-- Page Info inject -->
+  
+</div>
+
+  </header>
+
+  
+
+  <!-- TOC -->
+  <!---->
+<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  <details>
+    <summary class="cursor-pointer py-1 pl-4">
+      <span>Table of Contents</span>
+    </summary>
+    <div class="px-2">
+      <ul>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#trip-down-the-memory-lane"
+            >Trip down the memory lane</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#the-hardware"
+            >The hardware</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#how-much-has-been-already-upstreamed"
+            >How much has been already upstreamed?</a
+          >
+          
+          <ul>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#linux"
+                >Linux!</a
+              >
+            </li>
+            
+          </ul>
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#visionfive-2-boot-process"
+            >VisionFive 2 Boot Process</a
+          >
+          
+          <ul>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-machine-mode-stage"
+                >RISC-V Machine-mode stage</a
+              >
+            </li>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-supervisor-mode-stage"
+                >RISC-V Supervisor-mode stage</a
+              >
+            </li>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-user-mode-stage"
+                >RISC-V User-mode stage</a
+              >
+            </li>
+            
+          </ul>
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#updating-u-boot"
+            >Updating u-boot</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#fixing-u-boot-spl-to-boot-edk2"
+            >Fixing u-boot SPL to boot EDK2</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#crying-over-edk2-and-fixing-it"
+            >Crying over EDK2 and fixing it</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#debian-sid"
+            >Debian sid</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub"
+            >Building a EFI-capable Debian Trixie 13 sid image and adding GRUB</a
+          >
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update"
+            >May 9 2025 2:11AM in the morning EDK2 and u-boot update</a
+          >
+          
+          <ul>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#edk2-wise"
+                >EDK2-wise</a
+              >
+            </li>
+            
+            <li>
+              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#u-boot-wise"
+                >U-boot wise</a
+              >
+            </li>
+            
+          </ul>
+          
+        </li>
+        
+        <li>
+          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#may-10-2025-3-41am-in-the-morning-edk2-update"
+            >May 10 2025 3:41AM in the morning EDK2 update</a
+          >
+          
+        </li>
+        
+      </ul>
+    </div>
+  </details>
+</div>
+
+<!---->
+
+  <!-- Content -->
+  <section><div style="text-align: center;">
+<p><img src="https://cdn.armbian.com/wp-content/uploads/2023/03/vision-five2.png" alt="vf2_board" />
+<em>StarFive's VisionFive 2 RISC-V Board</em></p>
+</div>
+<h2 id="trip-down-the-memory-lane">Trip down the memory lane</h2>
+<p>Bit of a preface:</p>
+<p>I bought this board somewhere in June 2024; I plugged it in to verify it worked and that was pretty much it; I remember
+interfacing it through UART and it came with a super custom Debian-based distro on an SD Card. It also came with a 128GB eMMC
+module (I had never seen removable eMMC module until that point!) which kinda increased the cool factor for me.</p>
+<p>It felt super cool to start seeing "mainstream" adoption of RISC-V, this new and open-source ISA that had started
+powering electronics all around the globe; but how was the software stack?</p>
+<p>It was <em>okay</em>...<em>-ish</em></p>
+<p>Let's start by saying that considering how costly it is to develop the ecosystem, we, the users, can't really expect upstream
+support from day one; heck, sometimes even after years in production, products still are closed source and are pretty much destined
+to die off slowly without the help of the Open Source community!</p>
+<p>So yes, it was okay-ish but it served good; hardware accelerated graphics, external displays, a network stack... It was and <strong>still is</strong>,
+usable, but we can make it even better.</p>
+<h2 id="the-hardware">The hardware</h2>
+<p>The VisionFive 2, is powered by a JH7110 SoC, containing 1.5GHz quad-core 64-bit RISC-V Scalar Processor implementing <strong>RV64IMAFDCSUZicsr_Zifencei_Zba_Zbb</strong> features (It's basically <strong>RV64GC</strong> plus <strong>Zba</strong> and <strong>Zbb</strong>).</p>
+<p>It has a few other goodies, such as an Imagination GPU and so on; but this are irrelevant for us right now.</p>
+<p>It's by no means fast, but it doesn't pretend to be; it's sole prupose was/is being an early-adoption board so that the enthusiasts/companies can run their tests on to gauge how it may look like on actual hardware; so that by itself, is quite the feat already.</p>
+<p>At some point in late '24 the (Supposed) successor to the 7110, the 8100, was mentioned on a Linux Kernel Mailing List; but it hasn't been officially announced/released as of May 2025.</p>
+<p>Now that we understand the basics of our SoC...</p>
+<h2 id="how-much-has-been-already-upstreamed">How much has been already upstreamed?</h2>
+<p>I started looking at probably the easiest place to check for mainline support...</p>
+<h3 id="linux">Linux!</h3>
+<p>Lo-and-behold, there's patches that have already been upstreamed to support the SoC and it's peripherals; as of May 2025 there's still some that haven't
+been merged yet (Most important one, being the HDMI controller logic, DRM... and whatnot) and I personally think they probably won't be merged because
+it's been a bit of a while since last activity on patchwork; but you can easily download the patches in .mbox format if needed and apply them manually into
+your tree.</p>
+<p>I only had to search for a defconfig, <a href="https://github.com/starfive-tech/linux/">thankfully the cool people over at StarFive already have a Linux tree with one</a> (<code>starfive_visionfive2_defconfig</code>), clone the project and target that config; it all compiled fine and booted first try. All the major things I mainly need the board to have working (Ethernet, NVME, SD Slot and eMMC), worked first try.</p>
+<p>It is worth noting I have not personally tried the GPU on it's own (Haven't connected the board to a monitor nor have tested the hardware acceleration, video encoding/decoding...) so if that's a feature you actually need, it's a bit of a mistery for me. I planned on using this as a headless homelab-esque machine to run some stuff on.</p>
+<p>So there we had it, VF2 board running the latest and greatest Linux version! But... I figured I may as well not stop there...</p>
+<h2 id="visionfive-2-boot-process">VisionFive 2 Boot Process</h2>
+<h3 id="risc-v-machine-mode-stage">RISC-V Machine-mode stage</h3>
+<p><em>NOTE: This may have inaccuracies since I don't work for StarFive, it's based on my personal interpretations and findings/reverse engineering regarding the board whilst doing all the work on it.</em></p>
+<p>When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) <del>presumably off of an EEPROM or something similar</del>¹, it's read-only and you can't access it's contents because it's unmapped as soon as the rest of the boot chain starts executing; you could probably try sniffing the contents out of it if provided it's not in the die package of the SoC an is located somewhere in the board; but considering the things it does it's probably best just to ignore it since it's unique task is bootstrapping the processor to the next stage (So most probably, boring assembly to do all of this; nothing interesting).</p>
+<p>¹: <a href="https://www.reddit.com/r/RISCV/s/s5WNFeJe3h">It's an on-chip diode rom mapped at physical address 0x2a000000</a></p>
+<p>Then, it jumps to a cut-down u-boot that gets loaded off of flash storage. It's called <strong>u-boot SPL</strong> (<strong>S</strong>econd <strong>P</strong>rogram <strong>L</strong>oader), it basically exists to provide a bit of a richer environment to run code on; it has a few interesting things bootloader-wise (It can load things off of an SPI NOR/NAND for instance) but not much else; it's task is to bootstrap into OpenSBI to finally enter RISC-V's S (<strong>S</strong>upervisor) mode and act as a handler for a few "supervisor" calls launched from lower privilege levels.</p>
+<pre class="mermaid bg-inherit">
+  graph LR
+    ZSBL[&quot;ZSBL&lt;br&#x2F;&gt;(Zero stage bootloader)&quot;] --&gt; SPL[&quot;u‑boot SPL&lt;br&#x2F;&gt;(Second program loader)&quot;]
+    SPL --&gt; OpenSBI[&quot;OpenSBI&quot;]
+    ZSBL -.-&gt; M[&quot;Machine mode&quot;]
+    SPL -.-&gt; M
+    OpenSBI -.-&gt; S[&quot;Supervisor mode&quot;]
+
+    %% -- node colour classes with contrasting text color
+    classDef m_mode fill:#FF9A00,stroke:#333,stroke-width:1px,color:#000;
+    classDef s_mode fill:#FF0000,stroke:#333,stroke-width:1px,color:#000;
+
+    %% -- assign nodes to classes
+    class M m_mode
+    class S s_mode
+</pre>
+<h3 id="risc-v-supervisor-mode-stage">RISC-V Supervisor-mode stage</h3>
+<p>Now we're on supervisor mode thanks to OpenSBI, what happens now is that it tries loading the actual u-boot (Not the cut-down SPL) from the flash and jumps to it.</p>
+<p>This is where things start getting interesting because it's where the gates really open up to anything; but to keep it simple, we just need to know that u-boot is autoconfigured to load a "DTB" (<strong>D</strong>evice <strong>T</strong>ree <strong>B</strong>inary, think of it of a <strong>much</strong> saner ACPI without the x86 ugliness) that contains the board's required information that Linux needs to parse in order to load itself and init the board's components; then Linux and finally jumping to it, but it can do so <em>officially</em> from 3 different places:</p>
+<ul>
+<li>eMMC storage</li>
+<li>Micro SD Card</li>
+<li>NVME drive</li>
+</ul>
+<p>(The unofficial way would be to store it on the flash the board has, it's 16MiB after all, but that means you'll need to do some memory juggling because the SPL and the rest of u-boot/OpenSBI have predefined memory ranges on the flash and must not overlap for obvious reasons).</p>
+<p>So once the boot media is decided, it does the exciting <code>jmp</code> (Or should I say <code>j</code>...?) to Linux.</p>
+<p>Incidentally, Linux also <em>technically</em> runs in S-mode; so we're missing one last stage; current event horizon is as follows:</p>
+<pre class="mermaid bg-inherit">
+  graph LR
+    UBOOT[&quot;u‑boot&quot;] --&gt; eMMC[&quot;eMMC&quot;]
+    UBOOT --&gt; SDIO[&quot;SDIO&lt;br&#x2F;&gt;(SD Card)&quot;]
+    UBOOT --&gt; NVME[&quot;m.2 NVME&quot;]
+    
+    eMMC --&gt; Linux[&quot;Linux&quot;]
+    SDIO --&gt; Linux
+    NVME --&gt; Linux
+</pre>
+<h3 id="risc-v-user-mode-stage">RISC-V User-mode stage</h3>
+<p>Right after Linux finishes bootstraping all the required things for it, proceeds to setup user-mode registers (CSRs) and delegates the control to the least-privilged mode sometime after loading the required system services. So in a way, Linux <em>kinda</em> lives in 2 separate privilege levels at the same time (Not that different from what you'd see on x86 <em>technically</em>).</p>
+<pre class="mermaid bg-inherit">
+  graph LR
+  %% -- Machine mode group
+  subgraph &quot;Machine mode&quot;
+    direction TB
+    ZSBL[&quot;ZSBL&lt;br&#x2F;&gt;(Zero stage bootloader)&quot;]
+    SPL[&quot;u‑boot SPL&lt;br&#x2F;&gt;(Second program loader)&quot;]
+  end
+
+  %% -- Supervisor mode group
+  subgraph &quot;Supervisor mode&quot;
+    direction TB
+    OpenSBI[&quot;OpenSBI&quot;]
+    UBOOT2[&quot;u‑boot&quot;]
+    eMMC[&quot;eMMC&quot;]
+    SDIO[&quot;SDIO&lt;br&#x2F;&gt;(SD Card)&quot;]
+    NVME[&quot;m.2 NVME&quot;]
+    LinuxSup[&quot;Linux supervisor mode&quot;]
+  end
+
+  %% -- User mode group
+  subgraph &quot;User mode&quot;
+    direction TB
+    LinuxUser[&quot;Linux user mode&quot;]
+  end
+
+  %% -- flow arrows
+  ZSBL    --&gt; SPL
+  SPL     --&gt; OpenSBI
+  OpenSBI --&gt; UBOOT2
+  UBOOT2  --&gt; eMMC
+  UBOOT2  --&gt; SDIO
+  UBOOT2  --&gt; NVME
+  eMMC    --&gt; LinuxSup
+  SDIO    --&gt; LinuxSup
+  NVME    --&gt; LinuxSup
+  LinuxSup--&gt; LinuxUser
+
+  %% -- styling
+  classDef machine    fill:#FF9A00,stroke:#333,stroke-width:1px,color:#000
+  classDef supervisor fill:#FF0000,stroke:#333,stroke-width:1px,color:#fff
+  classDef device     fill:#B3E6B3,stroke:#333,stroke-width:1px,color:#000
+  classDef usermode   fill:#A3CEF1,stroke:#333,stroke-width:1px,color:#000
+
+  %% -- assign nodes to classes
+  class ZSBL machine
+  class SPL machine
+  class OpenSBI device
+  class UBOOT2 device
+  class LinuxSup device
+  class eMMC device
+  class SDIO device
+  class NVME device
+  class LinuxUser usermode
+</pre>
+<p>That's it, that's the full chain.</p>
+<p>There's been some developments lately that I had been following closely; but that'll also come later.</p>
+<h2 id="updating-u-boot">Updating u-boot</h2>
+<p>In a similar fashion as Linux, u-boot also has the VisionFive 2's tidbits upstreamed; so you can pretty much download the source code, compile it and flash it (Both the SPL and u-boot itself) and you'll automatically have a much updated version; no big deal here...</p>
+<p>...except if you want the VisionFive 2 to run UEFI.</p>
+<h2 id="fixing-u-boot-spl-to-boot-edk2">Fixing u-boot SPL to boot EDK2</h2>
+<p>StarFive employees pointed in the forums that a preview of EDK2 could be installed on our boards. It works well, but there's 2 minor catches for me:</p>
+<ul>
+<li>You must run their old u-boot fork with the SPL patches to get it to load EDK2</li>
+<li>You must run their old edk2 fork with VF2 patches</li>
+</ul>
+<p>It's worth noting that even after 3 days of work I haven't had the time to upgrade the EDK2 version, but this'll do for the meantime (I'm actually working on that as of writing this blog, if I succeed I promise a future entry here!).</p>
+<p>So I got my hands to work...</p>
+<p>...though I couldn't progress much; apparently for some reason I've not had the time to investigate further (Other than finding the root issue) but the SPL can't figure out the FDT location inside the SPL binary and crashes on NULL address...</p>
+<p>I made what is <a href="https://github.com/cakehonolulu/u-boot_vf2/commit/7c47c5c85bd0db430deae63eeb56bcd7cdbf0f0e#diff-434931895d55117620bd7f8ab9f55ada1d4510572a9750b6d13e985d93548bfaR778">probably one of my worst hacks ever</a>, I calculate the address in advance and just offset the base address accordingly; this is stupid (It means you have to <code>hexdump</code> the resulting binary searching where the the FDT header is to fix the offset everytime code size changes or different compilers... etc). But hey, it works; once I have the time to investigate this it'll probably end up somewhere in the u-boot code.</p>
+<p>With this, we have StarFive's EDK2 running again, but I wasn't still satisfied; I wanted to be the one provisioning the board with my own binaries (Not that I don't trust StarFive or things you may be thinking, it's just personal preference purely for the funzies).</p>
+<h2 id="crying-over-edk2-and-fixing-it">Crying over EDK2 and fixing it</h2>
+<p>EDK2 sucks. Literally.</p>
+<p>I cannot withstand how it's organized, but even less, how it's compiled.</p>
+<p>It's reminiscent of my old days (2014~, I was barely 13 years old) when I started doing Linux kernel hacking to get a more recent version running on an old phone I had that used a MediaTek SoC.</p>
+<p>They had a custom build system built around the kernel that was outdated by the time I tried to compile it (I even had to download 5~ year old Ubuntu versions at that time, 9.04, to satisfy the scripts...).</p>
+<p><em>(It's great actually, impressive project; but I wanted to vent).</em></p>
+<p>So yeah, expect environment variable <em>shenanigans</em> and lots of trial and error; I've built EDK2 about 100~ times in the weekend I'm writing this entry and yet sometimes I still can't figure out what I'm missing to get it to compile.</p>
+<p>Long story short; to make EDK2 work with my upstreamed u-boot SPL, I've had to update all the device tree information and misc. regarding the board else it wouldn't do anything. You can see the required changes <a href="https://github.com/starfive-tech/edk2-platforms/commit/523d36a471dc7f7238176330e4cd38ebfa1e623a">here</a>.</p>
+<p>At some point EDK2 started booting again so I got all excited...</p>
+<p>...but then it failed again (It always does).</p>
+<p>This remains to be fixed, but since I personally don't use SDIO/eMMC anymore to boot the board (I just use an NVME I had laying around) I just went in and <a href="https://github.com/starfive-tech/edk2-platforms/commit/02294fd40e46378b8050f8a0c19ffafcf7a8d6f5">disabled the MmcDxe from running</a>.</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2.png" alt="edk2" />
+<em>EDK2 running on updated VisionFive 2 board</em></p>
+</div>
+<p>It's worth noting that I had some issues regarding Linux booting, I had to customize the <code>EFI/BOOT/startup.nsh</code> file a good bit to make it log correctly and so on (Also, to no try and find a initrd in memory failing miserably because I don't have one...).</p>
+<h2 id="debian-sid">Debian sid</h2>
+<p>Debian Trixie appears to be supporting the <code>riscv64</code> arch so I figured, why not building an image out of it? <code>debootstrap</code> it was!</p>
+<p>I built an ext4 image that I simply wrote over a partition on the NVME and Linux took care of it by specifying the <code>root=</code> and <code>rootwait</code> cmdline parameters on <code>startup.nsh</code>.</p>
+<p>But the end result was, very, very worth it, here's how to do it:</p>
+<h2 id="building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub">Building a EFI-capable Debian Trixie 13 sid image and adding GRUB</h2>
+<p>We'll start by creating a disk image, making the partitions and formatting them:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> dd if=/dev/zero of=debian-visionfive.img bs=1M count=1500
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> fdisk debian-visionfive.img
+</span><span>
+</span><span style="color:#bf616a;">g</span><span> (For gpt)
+</span><span>
+</span><span style="color:#bf616a;">n,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> +256MB, t, 1 </span><span style="color:#65737e;"># To change type from Linux filesystem to EFI System
+</span><span>
+</span><span style="color:#bf616a;">n,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter) </span><span style="color:#65737e;"># For the ext4 rootfs
+</span><span>
+</span><span style="color:#bf616a;">w </span><span style="color:#65737e;"># To flush the changes
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo losetup</span><span style="color:#bf616a;"> --partscan</span><span> /dev/loopXX debian-visionfive.img
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mkfs.fat /dev/loopXXp1
+</span><span style="color:#bf616a;">mkfs.fat</span><span> 4.2 (2021-01-31)
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mkfs.ext4 /dev/loopXXp2
+</span><span style="color:#bf616a;">mke2fs</span><span> 1.47.2 (1-Jan-2025)
+</span><span style="color:#bf616a;">Discarding</span><span> device blocks: done                            
+</span><span style="color:#bf616a;">Creating</span><span> filesystem with 321024 4k blocks and 80320 inodes
+</span><span style="color:#bf616a;">Filesystem</span><span> UUID: 4146fe1f-6c1d-4668-b6c6-751ff316d35a
+</span><span style="color:#bf616a;">Superblock</span><span> backups stored on blocks: 
+</span><span>	</span><span style="color:#bf616a;">32768,</span><span> 98304, 163840, 229376, 294912
+</span><span>
+</span><span style="color:#bf616a;">Allocating</span><span> group tables: done                            
+</span><span style="color:#bf616a;">Writing</span><span> inode tables: done                            
+</span><span style="color:#bf616a;">Creating</span><span> journal (8192 blocks)</span><span style="color:#96b5b4;">:</span><span> done
+</span><span style="color:#bf616a;">Writing</span><span> superblocks and filesystem accounting information: done
+</span></code></pre>
+<p>Now, with the disk properly formatted and using GPT scheme, we can proceed to install Debian and chroot to it.</p>
+<p>First, we'll mount everything needed:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> mkdir</span><span style="color:#bf616a;"> -p</span><span> debian/boot/efi
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount /dev/loopXXp1 debian/boot/efi/
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount /dev/loopXXp2 debian/
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> --bind</span><span> /dev debian/dev
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> devpts /dev/pts debian/dev/pts
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> proc proc debian/proc
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> sysfs sysfs debian/sys
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> tmpfs tmpfs debian/tmp
+</span></code></pre>
+<p>Now, we'll install Debian on it...</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo debootstrap</span><span style="color:#bf616a;"> --arch</span><span>=riscv64 sid debian/
+</span></code></pre>
+<p>...and we'll <code>chroot</code> into it:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo chroot debian
+</span></code></pre>
+<p>It's worth noting that, we'll have to compile Linux and get debian packages out of it; you can do so with:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- bindeb-pkg KBUILD_IMAGE=&#39;</span><span style="color:#a3be8c;">arch/riscv/boot/Image</span><span>&#39;</span><span style="color:#bf616a;"> -j</span><span>$</span><span style="color:#bf616a;">(nproc)
+</span></code></pre>
+<p>And then just copy the <code>linux-headers*.deb</code> and <code>linux-image*.deb</code> files inside the chroot.</p>
+<hr />
+<p>We'll now install those packages:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> dpkg</span><span style="color:#bf616a;"> -i</span><span> tmp/linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb tmp/linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb 
+</span><span style="color:#bf616a;">Selecting</span><span> previously unselected package linux-headers-6.14.0-dirty.
+</span><span>(</span><span style="color:#bf616a;">Reading</span><span> database ... 8347 files and directories currently installed.)
+</span><span style="color:#bf616a;">Preparing</span><span> to unpack .../linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+</span><span style="color:#bf616a;">Unpacking</span><span> linux-headers-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">Selecting</span><span> previously unselected package linux-image-6.14.0-dirty.
+</span><span style="color:#bf616a;">Preparing</span><span> to unpack .../linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb ...
+</span><span style="color:#bf616a;">Unpacking</span><span> linux-image-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">Setting</span><span> up linux-headers-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">Setting</span><span> up linux-image-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">root@RYZEN5:/# 
+</span></code></pre>
+<p>Now, we'll install some packages that will come in handy:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> apt install initramfs-tools systemd-timesyncd rsync bash-completion u-boot-menu wget binutils sudo network-manager net-tools fastfetch util-linux haveged openssh-server systemd kmod conntrack ebtables ethtool iproute2 iptables mount socat ifupdown iputils-ping pciutils
+</span></code></pre>
+<p>Let's also prepare the network interfaces:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">cat </span><span>&lt;&lt; </span><span style="color:#b48ead;">EOF </span><span>&gt;&gt; /etc/network/interfaces
+</span><span style="color:#a3be8c;">auto lo
+</span><span style="color:#a3be8c;">iface lo inet loopback
+</span><span style="color:#a3be8c;">#setup network for starfive end0
+</span><span style="color:#a3be8c;">allow-hotplug end0
+</span><span style="color:#a3be8c;">#iface end0 inet dhcp
+</span><span style="color:#a3be8c;">#setup network for starfive end1
+</span><span style="color:#a3be8c;">allow-hotplug end1
+</span><span style="color:#a3be8c;">#iface end1 inet dhcp
+</span><span style="color:#b48ead;">EOF
+</span></code></pre>
+<p>We're also going to need to add our hostname info, <code>nano</code> the <code>/etc/hosts</code> and under the <code>127.0.0.1   localhost</code> just add:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>127.0.1.1	visionfive2
+</span></code></pre>
+<p>Or whichever hostname you want, really.</p>
+<p>Also add it to <code>/etc/hostname</code>.</p>
+<hr />
+<p>User management's turn now, set the root password:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> echo &quot;</span><span style="color:#a3be8c;">root:root</span><span>&quot; | </span><span style="color:#bf616a;">chpasswd
+</span></code></pre>
+<p>And create your regular user:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> useradd cakehonolulu</span><span style="color:#bf616a;"> -s</span><span> /bin/bash</span><span style="color:#bf616a;"> -m
+</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> echo &quot;</span><span style="color:#a3be8c;">cakehonolulu:super_secure_password</span><span>&quot; | </span><span style="color:#bf616a;">chpasswd
+</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> usermod</span><span style="color:#bf616a;"> -aG</span><span> sudo cakehonolulu
+</span></code></pre>
+<p>That's it! We're now missing the proper EFI enablement, GRUB will come to the rescue:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> apt install grub-efi
+</span><span>
+</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> grub-install</span><span style="color:#bf616a;"> --target</span><span>=riscv64-efi</span><span style="color:#bf616a;"> --efi-directory</span><span>=/boot/efi</span><span style="color:#bf616a;"> --bootloader-id</span><span>=debian</span><span style="color:#bf616a;"> --recheck --no-nvram --removable
+</span></code></pre>
+<p>As a personal preference, I edit <code>/etc/default/grub</code> and modify <code>GRUB_CMD_LINUX_DEFAULT</code> from <code>"quiet"</code> to <code>""</code> to see the boot log.</p>
+<p>We also need to generate the <code>/boot/grub/grub.cfg</code> file, it's as easy as doing:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> grub-mkconfig</span><span style="color:#bf616a;"> -o</span><span> /boot/grub/grub.cfg
+</span></code></pre>
+<p>Though this is partly incorrect, just open the resulting file and rename all references to the <code>loopXX</code> medium to <code>nvme0n1</code>. Also change the mount mode from <code>ro</code> to <code>rw</code> if you want a R/W root filesystem (You very much need to).</p>
+<p>We're set! Exit the chroot, unmount what we mounted at the start and copy the image over to your NVME drive:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo dd \
+</span><span>          if=debian-visionfive.img \
+</span><span>          of=/dev/your_drive \
+</span><span>          bs=16M status=progress
+</span></code></pre>
+<p>It's now a good time to resize the root partition to accomodate the entire drive:</p>
+<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo parted /dev/your_drive
+</span><span>
+</span><span style="color:#bf616a;">GNU</span><span> Parted 3.6
+</span><span style="color:#bf616a;">Using</span><span> /dev/your_drive
+</span><span style="color:#bf616a;">Welcome</span><span> to GNU Parted! Type &#39;</span><span style="color:#a3be8c;">help</span><span>&#39; to view a list of commands.
+</span><span>(</span><span style="color:#bf616a;">parted</span><span>) print                                                            
+</span><span style="color:#bf616a;">Warning:</span><span> Not all of the space available to /dev/your_drive appears to be used, you can
+</span><span style="color:#bf616a;">fix</span><span> the GPT to use all of the space (an extra 246997680 blocks) </span><span style="color:#bf616a;">or</span><span> continue with
+</span><span style="color:#bf616a;">the</span><span> current setting? 
+</span><span style="color:#bf616a;">Fix/Ignore?</span><span> fix
+</span><span style="color:#bf616a;">Model:</span><span> Realtek RTL9210B-CG (scsi)
+</span><span style="color:#bf616a;">Disk</span><span> /dev/your_drive: 128GB
+</span><span style="color:#bf616a;">Sector</span><span> size (logical/physical)</span><span style="color:#96b5b4;">:</span><span> 512B/16384B
+</span><span style="color:#bf616a;">Partition</span><span> Table: gpt
+</span><span style="color:#bf616a;">Disk</span><span> Flags: 
+</span><span>
+</span><span style="color:#bf616a;">Number</span><span>  Start   End     Size    File system  Name  Flags
+</span><span> </span><span style="color:#bf616a;">1</span><span>      1049kB  257MB   256MB   fat16              boot, esp
+</span><span> </span><span style="color:#bf616a;">2</span><span>      257MB   1572MB  1315MB  ext4
+</span><span>
+</span><span>(</span><span style="color:#bf616a;">parted</span><span>) resizepart 2 100%                                                
+</span><span>(</span><span style="color:#bf616a;">parted</span><span>) quit                                                             
+</span><span style="color:#bf616a;">Information:</span><span> You may need to update /etc/fstab.
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo e2fsck</span><span style="color:#bf616a;"> -f</span><span> /dev/your_drive2
+</span><span style="color:#bf616a;">e2fsck</span><span> 1.47.2 (1-Jan-2025)
+</span><span style="color:#bf616a;">Pass</span><span> 1: Checking inodes, blocks, and sizes
+</span><span style="color:#bf616a;">Pass</span><span> 2: Checking directory structure
+</span><span style="color:#bf616a;">Pass</span><span> 3: Checking directory connectivity
+</span><span style="color:#bf616a;">Pass</span><span> 4: Checking reference counts
+</span><span style="color:#bf616a;">Pass</span><span> 5: Checking group summary information
+</span><span style="color:#bf616a;">/dev/your_drive2:</span><span> 29531/80320 files (0.2% non-contiguous)</span><span style="color:#bf616a;">,</span><span> 209820/321024 blocks
+</span><span>
+</span><span style="color:#bf616a;">$</span><span> sudo resize2fs /dev/your_drive2
+</span><span>
+</span></code></pre>
+<p>With this, you can unplug the drive and re-install it back to the VF2. Assuming that you already installed my u-boot and edk2, it'll launch GRUB automatically.</p>
+<h2 id="may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update">May 9 2025 2:11AM in the morning EDK2 and u-boot update</h2>
+<h3 id="edk2-wise">EDK2-wise</h3>
+<p>I've been able to use more recent EDK2 version (Basically, up-to-date).</p>
+<p><a href="https://github.com/cakehonolulu/edk2_vf2">This</a> is the EDK2 base repository with all the changes from upstream until today May 9 2025, and <a href="https://github.com/cakehonolulu/edk2-platforms_vf2">this other one</a> is the one for the EDK2 Platforms.</p>
+<p>I've made a few changes to the JH7110.dsc target description file to accomodate for new EDK2 changes, but all appears to be working just fine (Like the propietary, outdated fork, from StarFive).</p>
+<p>Here's a new screenshot (It's now being built as <code>RELEASE</code> instead of <code>DEBUG</code>!):</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2_upstream.png" alt="edk2_upstream" />
+<em>Upstream EDK2 running on updated VisionFive 2 board</em></p>
+</div>
+<h3 id="u-boot-wise">U-boot wise</h3>
+<p>So, I've also been battling with the hack I had to resort to to make U-boot launch EDK2 from flash in SPL mode for the VF2, but even though the config file is as <a href="https://docs.u-boot.org/en/latest/develop/devicetree/control.html">recommended by u-boot themselves</a>, which is either <code>CONFIG_OF_EMBED</code> or <code>CONFIG_OF_SEPARATE</code> (StarFive's downstream fork uses the prior) set to <code>y</code> in <code>starfive_visionfive2_defconfig</code> it still refuses to find the FDT on the SPL image in-memory somehow; not too sure if this is a config mishap or maybe some strange u-boot bug...</p>
+<p>For now, my cute little hack will do.</p>
+<h2 id="may-10-2025-3-41am-in-the-morning-edk2-update">May 10 2025 3:41AM in the morning EDK2 update</h2>
+<p>I've finally got EDK2 firmware menu and boot selector to work for the VF2! Woohoo!</p>
+<p>Bonus, we can now have GRUB to the loading for us and Debian is now fully EFI-aware!</p>
+<div style="text-align: center;">
+<script src="https://asciinema.org/a/j9PMSxNgZdbgrpIAGQUCIzO0H.js" id="asciicast-j9PMSxNgZdbgrpIAGQUCIzO0H" async="true"></script>
+<p><em>Showcase of the EDK2 firmware menu, boot selection and GRUB booting Debian SID</em></p>
+</div>
+<p>An EDK2 firmware menu static:</p>
+<p><img src="https://cakehonolulu.github.io/images/visionfive2_upstreaming/menu.png" alt="result" /></p>
+<p>All in all, a frustrating-yet-insanely cool experience.</p>
+</section>
+
+  <hr />
+
+  <!-- Post Taxonomies -->
+  
+<footer class="mt-12 flex flex-col">
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <div class="mb-2 flex flex-wrap">
+    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/visionfive2/"
+      >visionfive2</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/vf/"
+      >vf</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/risc-v/"
+      >risc-v</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/riscv/"
+      >riscv</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/rv/"
+      >rv</a
+    >
+    
+    <a
+      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/sbc/"
+      >sbc</a
+    >
+    
+  </div>
+  
+</footer>
+
+<!---->
+
+  <!-- Post Nav -->
+  
+<nav class="block-bg mt-12 flex flex-wrap rounded-lg text-lg">
+  
+  <a
+    class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
+    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;hugo-to-zola-migration&#x2F;"
+    ><span class="mr-1.5">←</span><span>Migrating my blog from Hugo to Zola</span></a
+  >
+  <!---->
+  
+  <a
+    class="block-hover-mask ml-auto flex min-w-[50%] grow items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline"
+    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;"
+    ><span>Hardware Fastmem 101</span><span class="ml-1.5">→</span></a
+  >
+  
+</nav>
+
+<!---->
+
+  <!-- Comment -->
+  <!---->
+  <!---->
+<!---->
+  
+
+  <!-- Page End inject -->
+  
+</article>
+
+    </main>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2022 - 2025<!---->
+    
+    <a class="link" href="https://cakehonolulu.github.io">
+      cakehonolulu
+    </a>
+     |<!---->
+    <!---->
+    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+      MIT
+    </a>
+    <!---->
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+</footer>
+
+
+    <!-- Body End inject -->
+    
+  </body>
+</html>
