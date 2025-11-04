@@ -161,6 +161,16 @@ Building end-to-end web applications.
 
 ---
 
+## 🦖 OpenSource Contributions
+
+### Coreboot
+
+[commonlib/device_tree: fix 64-bit misaligned member access](https://review.coreboot.org/c/coreboot/+/85800)
+
+[soc/riscv/ucb: Switch to FDT parsing to get memory size](https://review.coreboot.org/c/coreboot/+/86588)
+
+---
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://api.githubtrends.io/user/svg/cakehonolulu/repos?time_range=one_year&loc_metric=changed&theme=dark">
   <source media="(prefers-color-scheme: light)" srcset="https://api.githubtrends.io/user/svg/cakehonolulu/repos?time_range=one_year&loc_metric=changed&theme=classic">
