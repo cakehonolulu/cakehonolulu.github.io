@@ -3,3 +3,7 @@ authors = ["cakehonolulu"]
 language = "en"
 src = "src"
 title = "PCIem"
+
+[output.html]
+no-section-label = true
+additional-js = ["pciem.js"]
