@@ -37,6 +37,19 @@
         return 0;
     }
 
+    function injectVersionIntoHeading() {
+        const docVersion = getDocVersion();
+        if (!docVersion) return;
+
+        const headings = document.querySelectorAll('h1');
+        for (const heading of headings) {
+            if (heading.textContent.trim() === 'API') {
+                heading.textContent = `API (v${docVersion})`;
+                break;
+            }
+        }
+    }
+
     function createVersionBanner(docVersion, tagVersion, tagUrl, status) {
         const banner = document.createElement('div');
         banner.id = 'pciem-version-banner';
@@ -261,10 +274,12 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectStyles();
+            injectVersionIntoHeading();
             checkVersion();
         });
     } else {
         injectStyles();
+        injectVersionIntoHeading();
         checkVersion();
     }
 
