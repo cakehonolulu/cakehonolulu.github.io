@@ -1374,4 +1374,25 @@ $$&lt;&#x2F;p&gt;
 </content>
         
     </entry>
+    <entry xml:lang="en">
+        <title>Documentation</title>
+        <published>2024-01-01T00:00:00+00:00</published>
+        <updated>2024-01-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              cakehonolulu
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cakehonolulu.github.io/docs/"/>
+        <id>https://cakehonolulu.github.io/docs/</id>
+        
+        <content type="html" xml:base="https://cakehonolulu.github.io/docs/">&lt;p&gt;Technical documentation for my projects.&lt;&#x2F;p&gt;
+&lt;h2&gt;&lt;a href=&quot;&#x2F;docs&#x2F;pciem&#x2F;&quot;&gt;PCIem&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+</content>
+        
+    </entry>
 </feed>

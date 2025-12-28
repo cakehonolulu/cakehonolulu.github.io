@@ -1320,5 +1320,15 @@ $$&lt;&#x2F;p&gt;
 &lt;p&gt;You can also join us @ the &lt;a href=&quot;https:&#x2F;&#x2F;discord.gg&#x2F;7nuaqZ2&quot;&gt;EmuDev&lt;&#x2F;a&gt; Discord; there&#x27;s plenty of knowledgeable people that will help you in your journey!&lt;&#x2F;p&gt;
 </description>
       </item>
+      <item>
+          <title>Documentation</title>
+          <pubDate>Mon, 01 Jan 2024 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/docs/</link>
+          <guid>https://cakehonolulu.github.io/docs/</guid>
+          <description xml:base="https://cakehonolulu.github.io/docs/">&lt;p&gt;Technical documentation for my projects.&lt;&#x2F;p&gt;
+&lt;h2&gt;&lt;a href=&quot;&#x2F;docs&#x2F;pciem&#x2F;&quot;&gt;PCIem&lt;&#x2F;a&gt;&lt;&#x2F;h2&gt;
+</description>
+      </item>
     </channel>
 </rss>
