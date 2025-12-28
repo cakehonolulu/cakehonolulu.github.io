@@ -46,6 +46,10 @@ url = "$BASE_URL/archive"
 name = "Tags"
 url = "$BASE_URL/tags"
 
+[[extra.menu]]
+name = "Docs"
+url = "$BASE_URL/docs"
+
 [extra.profile]
 name = "cakehonolulu"
 bio = "A blog containing my personal rants and findings about software"

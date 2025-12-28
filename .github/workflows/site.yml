@@ -1,6 +1,7 @@
 # On every push this script is executed
 on: push
 name: Build and deploy GH Pages
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,3 +16,32 @@ jobs:
           PAGES_BRANCH: gh-pages
           # Provide personal access token
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ONLY: true
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: 'latest'
+
+      - name: Build PCIem docs
+        if: hashFiles('docs/pciem/book.toml') != ''
+        run: cd docs/pciem && mdbook build
+
+      - name: Prepare deployment
+        run: |
+          mkdir -p combined_output
+          cp -r public/* combined_output/
+          for project in pciem; do
+            if [ -d "docs/$project/book" ]; then
+              echo "Copying $project docs"
+              mkdir -p combined_output/docs/$project
+              cp -r docs/$project/book/* combined_output/docs/$project/
+            fi
+          done
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./combined_output
+          cname: cakehonolulu.github.io
