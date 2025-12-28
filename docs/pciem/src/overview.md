@@ -10,3 +10,39 @@ of use-cases.
 
 You can think of the framework as a MITM (Man-in-the-Middle) that sits between the untouched, production drivers (Which are, unaware of PCIem's
 existence) and the Linux kernel.
+
+```bash
+┌──────────────────────────────────────────┐                                   ┌──────────────────────────────────────────────────┐
+│                                          │                                   │                                                  │
+│ ┌─────────►Host Linux Kernel             │                                   │                  Linux Userspace                 │
+│ │                                        │                                   │                                                  │
+│ │                                        │                                   │                                                  │
+│ │    ┌────────────────────────────┐      │                                   │    ┌────────────────────────────────────────┐    │
+│ │    │      PCIem Framework       ◄──────┼────────────►/dev/pciem◄───────────┼────►          Userspace PCI shim            │    │
+│ │    │                            │      │                                   │    │                                        │    │
+│ │    │ - PCI Config Space         │      │                                   │    │ - Emulates PCIe device logic           │    │
+│ │    │                            │      │                                   │    │                                        │    │
+│ │    │ - BAR Mappings             │      │                                   │    └────────────────────────────────────────┘    │
+│ │    │                            │      │                                   │                                                  │
+│ │◄───┤ - INT/MSI/MSI-X Interrupts │      │                                   │                                                  │
+│ │    │                            │      │                                   └──────────────────────────────────────────────────┘
+│ │    │ - DMA (With/without IOMMU) │      │                                                         Userspace                     
+│ │    │                            │      │                                                                                       
+│ │    │ - P2P DMA                  │      │                                                                                       
+│ │    │                            │      │                                                                                       
+│ │    └────────────────────────────┘      │                                                                                       
+│ │                                        │                                                                                       
+│ │                                        │                                                                                       
+│ │    PCIe driver is unaware of PCIem     │                                                                                       
+│ │                                        │                                                                                       
+│ │                                        │                                                                                       
+│ │ ┌──────────────────────────────────┐   │                                                                                       
+│ │ │          Real PCIe Driver        │   │                                                                                       
+│ │ │                                  │   │                                                                                       
+│ └─┤ - Untouched logic from production│   │                                                                                       
+│   │                                  │   │                                                                                       
+│   └──────────────────────────────────┘   │                                                                                       
+│                                          │                                                                                       
+└──────────────────────────────────────────┘                                                                                       
+               Kernel Space                                                                                                        
+```
