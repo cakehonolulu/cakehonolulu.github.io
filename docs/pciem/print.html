@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-940599e2.js";
+            window.path_to_searchindex_js = "searchindex-0dea7164.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-521c78ab.js"></script>
@@ -373,284 +373,12 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <h3 id="add_capability"><a class="header" href="#add_capability"><code>add_capability()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_ADD_CAPABILITY _IOW(PCIEM_IOCTL_MAGIC, 12, struct pciem_cap_config)
 </code></pre>
-<p>Use this <code>ioctl</code> to add PCIe capabilities to your shim device. Pretty much all modern devices need at least one capability to function properly.</p>
-<p>It takes the <a href="#pciem_cap_config">pciem_cap_config</a> <code>struct</code> as param. The main fields you’ll care about are:</p>
-<p><code>cap_type</code>: What type of capability you’re adding (Ex. <code>PCIEM_CAP_MSI</code>, <code>PCIEM_CAP_MSIX</code>, <code>PCIEM_CAP_PCIE</code>…)</p>
-<p><code>cap_size</code>: How many bytes of <code>cap_data</code> you’re providing</p>
-<p><code>cap_data</code>: The actual capability data itself. For MSI/MSI-X, you’d typically fill this with <a href="#pciem_cap_msi_userspace">pciem_cap_msi_userspace</a> or <a href="#pciem_cap_msix_userspace">pciem_cap_msix_userspace</a> structs.</p>
-<h3 id="set_config"><a class="header" href="#set_config"><code>set_config()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_SET_CONFIG _IOW(PCIEM_IOCTL_MAGIC, 13, struct pciem_config_space)
-</code></pre>
-<p>Sets the PCI configuration space for your device. This is where you define how your device identifies itself to the system.</p>
-<p>It takes the <a href="#pciem_config_space">pciem_config_space</a> <code>struct</code> as param. You’ll want to set:</p>
-<p><code>vendor_id</code>: Your vendor ID (or whoever you’re emulating)</p>
-<p><code>device_id</code>: The device ID</p>
-<p><code>class_code</code>: 3-byte PCI class code that tells the system what type of device this is</p>
-<p>Issue this after you’ve added all your BARs and capabilities, but before calling <code>register()</code>.</p>
-<h3 id="register"><a class="header" href="#register"><code>register()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_REGISTER _IO(PCIEM_IOCTL_MAGIC, 14)
-</code></pre>
-<p>This is the final step in setting up your PCIem device. Once you call <code>register()</code>, your device configuration is locked and the device becomes visible to the system.</p>
-<p>Returns an instance file descriptor that you can use to <code>mmap()</code> your BARs into userspace for direct access. Pretty neat.</p>
-<p>After this point, you can start receiving events from the kernel about MMIO operations, config space accesses, etc.</p>
-<h3 id="inject_irq"><a class="header" href="#inject_irq"><code>inject_irq()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_INJECT_IRQ _IOW(PCIEM_IOCTL_MAGIC, 15, struct pciem_irq_inject)
-</code></pre>
-<p>Need to signal the guest/driver? This is how you inject an interrupt.</p>
-<p>It takes the <a href="#pciem_irq_inject">pciem_irq_inject</a> <code>struct</code> as param:</p>
-<p><code>vector</code>: Which MSI/MSI-X vector to fire. If you’ve got MSI configured for 4 vectors, valid values are 0-3.</p>
-<p>Fire this whenever your emulated hardware wants to notify the driver about something (DMA completion, status change, etc.).</p>
-<h3 id="dma"><a class="header" href="#dma"><code>dma()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_DMA _IOWR(PCIEM_IOCTL_MAGIC, 16, struct pciem_dma_op)
-</code></pre>
-<p>Your device needs to access guest memory? That’s what DMA is for. This lets you read from or write to guest physical addresses.</p>
-<p>It takes the <a href="#pciem_dma_op">pciem_dma_op</a> <code>struct</code> as param:</p>
-<p><code>guest_iova</code>: The guest physical address you want to access</p>
-<p><code>user_addr</code>: Your userspace buffer address</p>
-<p><code>length</code>: How many bytes to transfer</p>
-<p><code>flags</code>: Either <code>PCIEM_DMA_FLAG_READ</code> or <code>PCIEM_DMA_FLAG_WRITE</code></p>
-<p>The <code>ioctl</code> will handle all the messy IOMMU translation for you.</p>
-<h3 id="dma_atomic"><a class="header" href="#dma_atomic"><code>dma_atomic()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_DMA_ATOMIC _IOWR(PCIEM_IOCTL_MAGIC, 17, struct pciem_dma_atomic)
-</code></pre>
-<p>Want to do atomic operations on guest memory? This is your friend. Supports fetch-and-add, compare-and-swap, and other atomic ops.</p>
-<p>It takes the <a href="#pciem_dma_atomic">pciem_dma_atomic</a> <code>struct</code> as param:</p>
-<p><code>guest_iova</code>: Target address in guest memory</p>
-<p><code>op_type</code>: What atomic operation (Ex. <code>PCIEM_ATOMIC_CAS</code>, <code>PCIEM_ATOMIC_FETCH_ADD</code>…)</p>
-<p><code>operand</code>: The value to use for the operation</p>
-<p><code>result</code>: Where the previous value gets returned</p>
-<p>Useful if you’re building something that needs lock-free synchronization with the guest.</p>
-<h3 id="p2p"><a class="header" href="#p2p"><code>p2p()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_P2P _IOWR(PCIEM_IOCTL_MAGIC, 18, struct pciem_p2p_op_user)
-</code></pre>
-<p>Peer-to-peer DMA between PCIe devices. Your PCIem device can directly access another physical device’s memory space.</p>
-<p>It takes the <a href="#pciem_p2p_op_user">pciem_p2p_op_user</a> <code>struct</code> as param:</p>
-<p><code>target_phys_addr</code>: Physical address of the target device (usually another device’s BAR)</p>
-<p><code>user_addr</code>: Your buffer in userspace</p>
-<p><code>length</code>: How many bytes to transfer</p>
-<p><code>flags</code>: Similar to regular DMA flags</p>
-<p>This is pretty advanced stuff, but super powerful if you need device-to-device communication.</p>
-<h3 id="get_bar_info"><a class="header" href="#get_bar_info"><code>get_bar_info()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_GET_BAR_INFO _IOWR(PCIEM_IOCTL_MAGIC, 19, struct pciem_bar_info_query)
-</code></pre>
-<p>Need to know where the kernel actually mapped your BAR? This tells you.</p>
-<p>It takes the <a href="#pciem_bar_info_query">pciem_bar_info_query</a> <code>struct</code> as param. Set the <code>bar_index</code> going in, and it’ll fill in:</p>
-<p><code>phys_addr</code>: The physical address where this BAR lives</p>
-<p><code>size</code>: The BAR size</p>
-<p><code>flags</code>: The BAR flags</p>
-<p>Call this after <code>register()</code> if you need to know the actual physical addresses.</p>
-<h3 id="set_watchpoint"><a class="header" href="#set_watchpoint"><code>set_watchpoint()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_SET_WATCHPOINT _IOW(PCIEM_IOCTL_MAGIC, 20, struct pciem_watchpoint_config)
-</code></pre>
-<p>Sets up hardware watchpoints on specific BAR offsets. When the guest writes to these locations, you’ll get notified immediately via the normal event mechanism.</p>
-<p>It takes the <a href="#pciem_watchpoint_config">pciem_watchpoint_config</a> <code>struct</code> as param:</p>
-<p><code>bar_index</code>: Which BAR to watch</p>
-<p><code>offset</code>: Offset within the BAR</p>
-<p><code>width</code>: How many bytes (1, 2, 4, or 8)</p>
-<p><code>flags</code>: Either <code>PCIEM_WP_FLAG_BAR_KPROBES</code> or <code>PCIEM_WP_FLAG_BAR_MANUAL</code> to control how PCIem locates the BAR mapping</p>
-<p>Watchpoints are limited (max 8), so use them for the important registers. Set <code>flags</code> to 0 to disable a previously-set watchpoint.</p>
-<h3 id="set_eventfd"><a class="header" href="#set_eventfd"><code>set_eventfd()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_SET_EVENTFD _IOW(PCIEM_IOCTL_MAGIC, 21, struct pciem_eventfd_config)
-</code></pre>
-<p>Don’t want to poll for events? Set up an <code>eventfd</code> and get notified whenever events arrive.</p>
-<p>It takes the <a href="#pciem_eventfd_config">pciem_eventfd_config</a> <code>struct</code> as param:</p>
-<p><code>eventfd</code>: Your eventfd file descriptor (created via <code>eventfd()</code> syscall)</p>
-<p>Once set up, the kernel will signal your eventfd whenever new events land in the ring buffer. Way more efficient than busy-polling.<meta name="pciem-doc-version" content="0.0.1"></p>
-<h1 id="api-1"><a class="header" href="#api-1">API</a></h1>
-<p>PCIem exposes a userspace-facing API that enables the developer to do PCIe configuration and handling in an easy manner.</p>
-<p>One of the main benefits of doing this entirely in userspace, is that it enables you to do iterations on the shim card virtually for free.</p>
-<p>Detailed below, are the definitions for the <code>ioctl</code> and <code>struct</code> PCIem uses to let you configure your shim.</p>
-<h2 id="structures-1"><a class="header" href="#structures-1">Structures</a></h2>
-<h3 id="pciem_create_device-1"><a class="header" href="#pciem_create_device-1">pciem_create_device</a></h3>
-<pre><code class="language-c">struct pciem_create_device
-{
-    uint32_t flags;
-    uint32_t mode;
-};
-</code></pre>
-<h3 id="pciem_bar_config-1"><a class="header" href="#pciem_bar_config-1">pciem_bar_config</a></h3>
-<pre><code class="language-c">struct pciem_bar_config
-{
-    uint32_t bar_index;
-    uint32_t flags;
-    uint64_t size;
-    uint32_t reserved;
-};
-</code></pre>
-<h3 id="pciem_cap_config-1"><a class="header" href="#pciem_cap_config-1">pciem_cap_config</a></h3>
-<pre><code class="language-c">struct pciem_cap_config
-{
-    uint32_t cap_type;
-    uint32_t cap_size;
-    uint8_t cap_data[256];
-};
-</code></pre>
-<h3 id="pciem_cap_msi_userspace-1"><a class="header" href="#pciem_cap_msi_userspace-1">pciem_cap_msi_userspace</a></h3>
-<pre><code class="language-c">struct pciem_cap_msi_userspace
-{
-    uint8_t num_vectors_log2;
-    uint8_t has_64bit;
-    uint8_t has_masking;
-    uint8_t reserved;
-};
-</code></pre>
-<h3 id="pciem_cap_msix_userspace-1"><a class="header" href="#pciem_cap_msix_userspace-1">pciem_cap_msix_userspace</a></h3>
-<pre><code class="language-c">struct pciem_cap_msix_userspace
-{
-    uint8_t bar_index;
-    uint8_t reserved[3];
-    uint32_t table_offset;
-    uint32_t pba_offset;
-    uint16_t table_size;
-    uint16_t reserved2;
-};
-</code></pre>
-<h3 id="pciem_config_space-1"><a class="header" href="#pciem_config_space-1">pciem_config_space</a></h3>
-<pre><code class="language-c">struct pciem_config_space
-{
-    uint16_t vendor_id;
-    uint16_t device_id;
-    uint16_t subsys_vendor_id;
-    uint16_t subsys_device_id;
-    uint8_t revision;
-    uint8_t class_code[3];
-    uint8_t header_type;
-    uint8_t reserved[7];
-};
-</code></pre>
-<h3 id="pciem_event-1"><a class="header" href="#pciem_event-1">pciem_event</a></h3>
-<pre><code class="language-c">#define PCIEM_EVENT_MMIO_READ 1
-#define PCIEM_EVENT_MMIO_WRITE 2
-#define PCIEM_EVENT_CONFIG_READ 3
-#define PCIEM_EVENT_CONFIG_WRITE 4
-#define PCIEM_EVENT_MSI_ACK 5
-#define PCIEM_EVENT_RESET 6
-
-struct pciem_event
-{
-    uint64_t seq;
-    uint32_t type;
-    uint32_t bar;
-    uint64_t offset;
-    uint32_t size;
-    uint32_t reserved;
-    uint64_t data;
-    uint64_t timestamp;
-};
-</code></pre>
-<h3 id="pciem_response-1"><a class="header" href="#pciem_response-1">pciem_response</a></h3>
-<pre><code class="language-c">struct pciem_response
-{
-    uint64_t seq;
-    uint64_t data;
-    int32_t status;
-    uint32_t reserved;
-};
-</code></pre>
-<h3 id="pciem_irq_inject-1"><a class="header" href="#pciem_irq_inject-1">pciem_irq_inject</a></h3>
-<pre><code class="language-c">struct pciem_irq_inject
-{
-    uint32_t vector;
-    uint32_t reserved;
-};
-</code></pre>
-<h3 id="pciem_dma_op-1"><a class="header" href="#pciem_dma_op-1">pciem_dma_op</a></h3>
-<pre><code class="language-c">#define PCIEM_DMA_FLAG_READ 0x1
-#define PCIEM_DMA_FLAG_WRITE 0x2
-
-struct pciem_dma_op
-{
-    uint64_t guest_iova;
-    uint64_t user_addr;
-    uint32_t length;
-    uint32_t pasid;
-    uint32_t flags;
-    uint32_t reserved;
-};
-</code></pre>
-<h3 id="pciem_dma_atomic-1"><a class="header" href="#pciem_dma_atomic-1">pciem_dma_atomic</a></h3>
-<pre><code class="language-c">#define PCIEM_ATOMIC_FETCH_ADD 1
-#define PCIEM_ATOMIC_FETCH_SUB 2
-#define PCIEM_ATOMIC_SWAP 3
-#define PCIEM_ATOMIC_CAS 4
-#define PCIEM_ATOMIC_FETCH_AND 5
-#define PCIEM_ATOMIC_FETCH_OR 6
-#define PCIEM_ATOMIC_FETCH_XOR 7
-
-struct pciem_dma_atomic
-{
-    uint64_t guest_iova;
-    uint64_t operand;
-    uint64_t compare;
-    uint32_t op_type;
-    uint32_t pasid;
-    uint64_t result;
-};
-</code></pre>
-<h3 id="pciem_p2p_op_user-1"><a class="header" href="#pciem_p2p_op_user-1">pciem_p2p_op_user</a></h3>
-<pre><code class="language-c">struct pciem_p2p_op_user
-{
-    uint64_t target_phys_addr;
-    uint64_t user_addr;
-    uint32_t length;
-    uint32_t flags;
-};
-</code></pre>
-<h3 id="pciem_bar_info_query-1"><a class="header" href="#pciem_bar_info_query-1">pciem_bar_info_query</a></h3>
-<pre><code class="language-c">struct pciem_bar_info_query
-{
-    uint32_t bar_index;
-    uint64_t phys_addr;
-    uint64_t size;
-    uint32_t flags;
-};
-</code></pre>
-<h3 id="pciem_watchpoint_config-1"><a class="header" href="#pciem_watchpoint_config-1">pciem_watchpoint_config</a></h3>
-<pre><code class="language-c">#define PCIEM_WP_FLAG_BAR_KPROBES  (1 &lt;&lt; 0)
-#define PCIEM_WP_FLAG_BAR_MANUAL   (1 &lt;&lt; 1)
-
-struct pciem_watchpoint_config
-{
-    uint32_t bar_index;
-    uint32_t offset;
-    uint32_t width;
-    uint32_t flags;
-};
-</code></pre>
-<h3 id="pciem_eventfd_config-1"><a class="header" href="#pciem_eventfd_config-1">pciem_eventfd_config</a></h3>
-<pre><code class="language-c">struct pciem_eventfd_config
-{
-    int32_t eventfd;
-    uint32_t reserved;
-};
-</code></pre>
-<h2 id="ioctls-1"><a class="header" href="#ioctls-1">IOCTLs</a></h2>
-<pre><code class="language-c">#define PCIEM_IOCTL_MAGIC 0xAF
-</code></pre>
-<h3 id="create_device-1"><a class="header" href="#create_device-1"><code>create_device()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_CREATE_DEVICE _IOWR(PCIEM_IOCTL_MAGIC, 10, struct pciem_create_device)
-</code></pre>
-<p>This is the first <code>ioctl</code> you should issue. Assuming you’ve already done an <code>open()</code> on <code>/dev/pciem</code>, you can issue <code>create_device</code> to
-notify PCIem a new PCIe shim is being crafted from userspace.</p>
-<p>It takes the <a href="#pciem_create_device">pciem_create_device</a> <code>struct</code> as param, but you can basically send a zero-filled one and it’ll work.</p>
-<h3 id="add_bar-1"><a class="header" href="#add_bar-1"><code>add_bar()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_ADD_BAR _IOW(PCIEM_IOCTL_MAGIC, 11, struct pciem_bar_config)
-</code></pre>
-<p>Whenever you want to add <code>BAR</code> definitions, you should issue this <code>ioctl</code>.</p>
-<p>It takes the <a href="#pciem_bar_config">pciem_bar_config</a> <code>struct</code> as param and you can initializate it in a myriad of ways, but the main fields you need to properly fill are:</p>
-<p><code>bar_index</code>: Basically, which is the BAR number it’ll represent within PCIem</p>
-<p><code>size</code>: Which size this BAR will occupy</p>
-<p><code>flags</code>: What PCI flags this BAR will hold (Ex. <code>PCI_BASE_ADDRESS_SPACE_MEMORY</code>, <code>PCI_BASE_ADDRESS_MEM_PREFETCH</code>, <code>PCI_BASE_ADDRESS_MEM_TYPE_64</code>…).</p>
-<p>Issue <code>add_bar</code> when you are ready to push a new BAR to your PCIem shim device <code>fd</code>.</p>
-<h3 id="add_capability-1"><a class="header" href="#add_capability-1"><code>add_capability()</code></a></h3>
-<pre><code class="language-c">#define PCIEM_IOCTL_ADD_CAPABILITY _IOW(PCIEM_IOCTL_MAGIC, 12, struct pciem_cap_config)
-</code></pre>
 <p>Use this <code>ioctl</code> to add PCIe capabilities to your shim device.</p>
 <p>It takes the <a href="#pciem_cap_config">pciem_cap_config</a> <code>struct</code> as param. The main fields you’ll care about are:</p>
 <p><code>cap_type</code>: What type of capability you’re adding (Ex. <code>PCIEM_CAP_MSI</code>, <code>PCIEM_CAP_MSIX</code>, <code>PCIEM_CAP_PCIE</code>…)</p>
 <p><code>cap_size</code>: How many bytes of <code>cap_data</code> you’re providing</p>
 <p><code>cap_data</code>: The actual capability data itself. For MSI/MSI-X, you’d typically fill this with <a href="#pciem_cap_msi_userspace">pciem_cap_msi_userspace</a> or <a href="#pciem_cap_msix_userspace">pciem_cap_msix_userspace</a> structs.</p>
-<h3 id="set_config-1"><a class="header" href="#set_config-1"><code>set_config()</code></a></h3>
+<h3 id="set_config"><a class="header" href="#set_config"><code>set_config()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_CONFIG _IOW(PCIEM_IOCTL_MAGIC, 13, struct pciem_config_space)
 </code></pre>
 <p>Sets the PCI configuration space for your device.</p>
@@ -661,19 +389,19 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>device_id</code>: The device ID</p>
 <p><code>class_code</code>: 3-byte PCI class code that tells the system what type of device this is</p>
 <p>Issue this after you’ve added all your BARs and capabilities, but before calling <code>register()</code>.</p>
-<h3 id="register-1"><a class="header" href="#register-1"><code>register()</code></a></h3>
+<h3 id="register"><a class="header" href="#register"><code>register()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_REGISTER _IO(PCIEM_IOCTL_MAGIC, 14)
 </code></pre>
 <p>This is the final step in setting up your PCIem device.</p>
 <p>Once you call <code>register()</code>, your device configuration is locked and the device becomes visible to the system.</p>
 <p>Returns an instance file descriptor that you can use to <code>mmap()</code> your BARs into userspace for direct access.</p>
-<h3 id="inject_irq-1"><a class="header" href="#inject_irq-1"><code>inject_irq()</code></a></h3>
+<h3 id="inject_irq"><a class="header" href="#inject_irq"><code>inject_irq()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_INJECT_IRQ _IOW(PCIEM_IOCTL_MAGIC, 15, struct pciem_irq_inject)
 </code></pre>
 <p>Issue this to inject an interrupt (After your shim completes some work, for instance).</p>
 <p>It takes the <a href="#pciem_irq_inject">pciem_irq_inject</a> <code>struct</code> as param:</p>
 <p><code>vector</code>: Which MSI/MSI-X vector to fire. If you’ve got MSI configured for 4 vectors, valid values are 0-3.</p>
-<h3 id="dma-1"><a class="header" href="#dma-1"><code>dma()</code></a></h3>
+<h3 id="dma"><a class="header" href="#dma"><code>dma()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_DMA _IOWR(PCIEM_IOCTL_MAGIC, 16, struct pciem_dma_op)
 </code></pre>
 <p>This lets you read from or write to guest physical addresses.</p>
@@ -683,7 +411,7 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>length</code>: How many bytes to transfer</p>
 <p><code>flags</code>: Either <code>PCIEM_DMA_FLAG_READ</code> or <code>PCIEM_DMA_FLAG_WRITE</code></p>
 <p>This is IOMMU-aware so, in case your system has one; the translations get handled by PCIem.</p>
-<h3 id="dma_atomic-1"><a class="header" href="#dma_atomic-1"><code>dma_atomic()</code></a></h3>
+<h3 id="dma_atomic"><a class="header" href="#dma_atomic"><code>dma_atomic()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_DMA_ATOMIC _IOWR(PCIEM_IOCTL_MAGIC, 17, struct pciem_dma_atomic)
 </code></pre>
 <p>It takes the <a href="#pciem_dma_atomic">pciem_dma_atomic</a> <code>struct</code> as param:</p>
@@ -692,7 +420,7 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>operand</code>: The value to use for the operation</p>
 <p><code>result</code>: Where the previous value gets returned</p>
 <p>Useful if you’re building something that needs lock-free synchronization with the guest since it implements what’s needed to do atomic operations on guest memory.</p>
-<h3 id="p2p-1"><a class="header" href="#p2p-1"><code>p2p()</code></a></h3>
+<h3 id="p2p"><a class="header" href="#p2p"><code>p2p()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_P2P _IOWR(PCIEM_IOCTL_MAGIC, 18, struct pciem_p2p_op_user)
 </code></pre>
 <p>Peer-to-peer DMA between PCIe devices. Your PCIem device can directly access another physical device’s memory space.</p>
@@ -701,7 +429,7 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>user_addr</code>: Your buffer in userspace</p>
 <p><code>length</code>: How many bytes to transfer</p>
 <p><code>flags</code>: Similar to regular DMA flags</p>
-<h3 id="get_bar_info-1"><a class="header" href="#get_bar_info-1"><code>get_bar_info()</code></a></h3>
+<h3 id="get_bar_info"><a class="header" href="#get_bar_info"><code>get_bar_info()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_GET_BAR_INFO _IOWR(PCIEM_IOCTL_MAGIC, 19, struct pciem_bar_info_query)
 </code></pre>
 <p>Call this after <code>register()</code> if you need to know the actual physical addresses.</p>
@@ -709,7 +437,7 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>phys_addr</code>: The physical address where this BAR lives</p>
 <p><code>size</code>: The BAR size</p>
 <p><code>flags</code>: The BAR flags</p>
-<h3 id="set_watchpoint-1"><a class="header" href="#set_watchpoint-1"><code>set_watchpoint()</code></a></h3>
+<h3 id="set_watchpoint"><a class="header" href="#set_watchpoint"><code>set_watchpoint()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_WATCHPOINT _IOW(PCIEM_IOCTL_MAGIC, 20, struct pciem_watchpoint_config)
 </code></pre>
 <p>Sets up hardware watchpoints on specific BAR offsets. When the guest writes to these locations, you’ll get notified immediately via the event mechanism (Or your hand-rolled one, if you have done it).</p>
@@ -718,7 +446,7 @@ notify PCIem a new PCIe shim is being crafted from userspace.</p>
 <p><code>offset</code>: Offset within the BAR</p>
 <p><code>width</code>: How many bytes (1, 2, 4, or 8)</p>
 <p><code>flags</code>: Either <code>PCIEM_WP_FLAG_BAR_KPROBES</code> or <code>PCIEM_WP_FLAG_BAR_MANUAL</code> to control how PCIem locates the BAR mapping.</p>
-<h3 id="set_eventfd-1"><a class="header" href="#set_eventfd-1"><code>set_eventfd()</code></a></h3>
+<h3 id="set_eventfd"><a class="header" href="#set_eventfd"><code>set_eventfd()</code></a></h3>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_EVENTFD _IOW(PCIEM_IOCTL_MAGIC, 21, struct pciem_eventfd_config)
 </code></pre>
 <p>This sets up a userspace <code>eventfd</code> which gets notified whenever events arrive from PCIem.</p>
