@@ -188,7 +188,7 @@
       <div class="flex items-center">
         <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -279,14 +279,6 @@
         <li>
           <a
             class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
-            href="https://cakehonolulu.github.io/archive"
-            >Archive</a
-          >
-        </li>
-        
-        <li>
-          <a
-            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
             href="https://cakehonolulu.github.io/tags"
             >Tags</a
           >
@@ -312,21 +304,29 @@
     <!-- Body Start inject -->
     
 
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
-    >
-      
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
 
-      <!-- Profile -->
-      <!---->
-      
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
+
+        <!-- Profile -->
+        <!---->
+        
 <div class="mb-16 flex items-start">
   
   <div
-    class="not-prose mr-5 shrink-0 rounded-full border-[0.5px] border-black/10 bg-white/50 p-3 shadow dark:bg-white/[15%]"
+    class="not-prose mr-5 shrink-0 rounded-full border-[0.5px] border-black/10 bg-white/50 p-3 shadow-sm dark:bg-white/10"
   >
     <img
-      class=" my-0 aspect-square w-16 rounded-full !bg-black/5 hover:animate-spin"
+      class=" my-0 aspect-square w-16 rounded-full bg-black/5! hover:animate-spin"
       src="https://cakehonolulu.github.io/images/profile.jpg"
       alt="cakehonolulu"
     />
@@ -344,7 +344,7 @@
     <nav class="flex justify-start space-x-3 dark:invert">
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cakehonolulu.github.io/icons/github.svg)"
         href="https://github.com/cakehonolulu"
         target="_blank"
@@ -354,7 +354,7 @@
       </a>
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cdn.jsdelivr.net/npm/simple-icons/icons/bluesky.svg)"
         href="https://bsky.app/profile/cakehonolulu.bsky.social"
         target="_blank"
@@ -364,7 +364,7 @@
       </a>
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cdn.jsdelivr.net/npm/simple-icons/icons/mastodon.svg)"
         href="https://mastodon.social/@cakehonolulu"
         target="_blank"
@@ -374,7 +374,7 @@
       </a>
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cdn.jsdelivr.net/npm/simple-icons/icons/linkedin.svg)"
         href="https://www.linkedin.com/in/joel-bueno-calvache/"
         target="_blank"
@@ -384,7 +384,7 @@
       </a>
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cdn.jsdelivr.net/npm/simple-icons/icons/kofi.svg)"
         href="https://ko-fi.com/cakehonolulu"
         target="_blank"
@@ -394,7 +394,7 @@
       </a>
       
       <a
-        class="primary-link h-8 w-8 text-[0] [background:var(--url)_center_center/cover_no-repeat]"
+        class="primary-link h-8 w-8 text-[0px] [background:var(--url)_center_center/cover_no-repeat]"
         style="--url: url(https://cakehonolulu.github.io/icons/rss.svg)"
         href="https://cakehonolulu.github.io/atom.xml"
         target="_blank"
@@ -410,9 +410,9 @@
 </div>
 
 <!---->
-      <!---->
+        <!---->
 
-      <!-- Pages -->
+        <!-- Pages -->
 <!---->
 <!---->
 <!---->
@@ -423,7 +423,7 @@
 >
   <!---->
 
-  <h2 class="!my-0 pb-1 font-bold !leading-none">Introducing PCIem</h2>
+  <h2 class="my-0! pb-1 leading-none! font-bold">Introducing PCIem</h2>
 
   <div class="not-prose my-1 truncate">
     
@@ -449,7 +449,7 @@
 </div>
 
 
-  <a class="absolute inset-0 text-[0]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;">Introducing PCIem</a>
+  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;">Introducing PCIem</a>
 </section>
 
 <section
@@ -457,7 +457,7 @@
 >
   <!---->
 
-  <h2 class="!my-0 pb-1 font-bold !leading-none">Hardware Fastmem 101</h2>
+  <h2 class="my-0! pb-1 leading-none! font-bold">Hardware Fastmem 101</h2>
 
   <div class="not-prose my-1 truncate">
     
@@ -483,7 +483,7 @@
 </div>
 
 
-  <a class="absolute inset-0 text-[0]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;">Hardware Fastmem 101</a>
+  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;">Hardware Fastmem 101</a>
 </section>
 
 <section
@@ -491,7 +491,7 @@
 >
   <!---->
 
-  <h2 class="!my-0 pb-1 font-bold !leading-none">Pushing VisionFive 2 RISC-V board into 2025</h2>
+  <h2 class="my-0! pb-1 leading-none! font-bold">Pushing VisionFive 2 RISC-V board into 2025</h2>
 
   <div class="not-prose my-1 truncate">
     
@@ -517,7 +517,7 @@
 </div>
 
 
-  <a class="absolute inset-0 text-[0]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;open-source-ifying-the-visionfive-2&#x2F;">Pushing VisionFive 2 RISC-V board into 2025</a>
+  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;open-source-ifying-the-visionfive-2&#x2F;">Pushing VisionFive 2 RISC-V board into 2025</a>
 </section>
 
 <section
@@ -525,7 +525,7 @@
 >
   <!---->
 
-  <h2 class="!my-0 pb-1 font-bold !leading-none">Migrating my blog from Hugo to Zola</h2>
+  <h2 class="my-0! pb-1 leading-none! font-bold">Migrating my blog from Hugo to Zola</h2>
 
   <div class="not-prose my-1 truncate">
     
@@ -551,7 +551,7 @@
 </div>
 
 
-  <a class="absolute inset-0 text-[0]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;hugo-to-zola-migration&#x2F;">Migrating my blog from Hugo to Zola</a>
+  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;hugo-to-zola-migration&#x2F;">Migrating my blog from Hugo to Zola</a>
 </section>
 
 <section
@@ -559,7 +559,7 @@
 >
   <!---->
 
-  <h2 class="!my-0 pb-1 font-bold !leading-none">How Emulators Work?</h2>
+  <h2 class="my-0! pb-1 leading-none! font-bold">How Emulators Work?</h2>
 
   <div class="not-prose my-1 truncate">
     
@@ -585,17 +585,17 @@
 </div>
 
 
-  <a class="absolute inset-0 text-[0]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;">How Emulators Work?</a>
+  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;">How Emulators Work?</a>
 </section>
 
 
 <!-- Main Nav -->
 
-<nav class="mt-16 flex">
+<nav class="not-prose mt-16 flex font-bold">
   <!---->
   
   <a
-    class="ml-auto rounded-full bg-black px-4 py-3 text-sm text-white no-underline shadow duration-100 active:scale-95 dark:bg-white/80 dark:text-black"
+    class="ml-auto rounded-full bg-black px-4 py-3 text-sm text-white no-underline duration-100 active:scale-95 dark:bg-white/80 dark:text-black"
     href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;page&#x2F;2&#x2F;"
     >Next Page →</a
   >
@@ -603,14 +603,15 @@
 </nav>
 
 <!---->
-      
-    </main>
+        
+      </main>
+    </div>
 
     <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
   <div class="mr-auto basis-full lg:basis-1/2">
     <!---->
     <!---->
-    &copy; 2022 - 2025<!---->
+    &copy; 2022 - 2026<!---->
     
     <a class="link" href="https://cakehonolulu.github.io">
       cakehonolulu

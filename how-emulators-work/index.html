@@ -174,7 +174,7 @@
       <div class="flex items-center">
         <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -265,14 +265,6 @@
         <li>
           <a
             class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
-            href="https://cakehonolulu.github.io/archive"
-            >Archive</a
-          >
-        </li>
-        
-        <li>
-          <a
-            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
             href="https://cakehonolulu.github.io/tags"
             >Tags</a
           >
@@ -298,16 +290,24 @@
     <!-- Body Start inject -->
     
 
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
-    >
-      
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
 <article>
   <!-- Page Start inject -->
   
 
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">How Emulators Work?</h1>
+    <h1 class="my-0! pb-2.5">How Emulators Work?</h1>
     <div class="text-sm antialiased opacity-60">
   
   <time>2024-01-09</time>
@@ -330,130 +330,98 @@
   
 
   <!-- TOC -->
-  <!---->
-<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
   <details>
     <summary class="cursor-pointer py-1 pl-4">
-      <span>Table of Contents</span>
+      <span class="ml-2">Table of Contents</span>
     </summary>
-    <div class="px-2">
-      <ul>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#what-is-an-emulator">What is an emulator?</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#what-is-an-emulator"
-            >What is an emulator?</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#types-of-emulation">Types of emulation</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#types-of-emulation"
-            >Types of emulation</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#hle-vs-lle">HLE vs LLE</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#hle-vs-lle"
-            >HLE vs LLE</a
-          >
+        <ul>
           
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#lle"
-                >LLE</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#hle"
-                >HLE</a
-              >
-            </li>
-            
-          </ul>
+          <li>
+            <a href="#lle">LLE</a>
+          </li>
           
-        </li>
+          <li>
+            <a href="#hle">HLE</a>
+          </li>
+          
+        </ul>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#defining-the-target"
-            >Defining the target</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#defining-the-target">Defining the target</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#emulation-loop"
-            >Emulation loop</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#emulation-loop">Emulation loop</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#cpu-emulation-techniques"
-            >CPU emulation techniques</a
-          >
-          
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#interpreter"
-                >Interpreter</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#cached-interpreter"
-                >Cached Interpreter</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#dynamic-recompiler"
-                >Dynamic Recompiler</a
-              >
-            </li>
-            
-          </ul>
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#cpu-emulation-techniques">CPU emulation techniques</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#peripherals"
-            >Peripherals</a
-          >
+        <ul>
           
-        </li>
+          <li>
+            <a href="#interpreter">Interpreter</a>
+          </li>
+          
+          <li>
+            <a href="#cached-interpreter">Cached Interpreter</a>
+          </li>
+          
+          <li>
+            <a href="#dynamic-recompiler">Dynamic Recompiler</a>
+          </li>
+          
+        </ul>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#bonus-track"
-            >Bonus Track</a
-          >
-          
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#aot"
-                >AoT</a
-              >
-            </li>
-            
-          </ul>
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#peripherals">Peripherals</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/how-emulators-work/#credits"
-            >Credits</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#bonus-track">Bonus Track</a>
         
-      </ul>
-    </div>
+        <ul>
+          
+          <li>
+            <a href="#aot">AoT</a>
+          </li>
+          
+        </ul>
+        
+      </li>
+      
+      <li>
+        <a href="#credits">Credits</a>
+        
+      </li>
+      
+    </ul>
   </details>
-</div>
+</nav>
 
 <!---->
 
@@ -463,28 +431,27 @@
 <p><img src="https://i.blogs.es/juegos/9648/metal_slug_2/fotos/noticias/metal_slug_2-5218501.jpg" alt="Metal Slug" />
 <em>Metal Slug, an impressive 2D game; developed for SNK's Neo-Geo</em></p>
 </div>
-<p>A few years ago, I started to ask myself how an emulator works; I initially believed it <em>had</em> to be some sort of magic, but at the end of the day, code is just that, <em>code</em> (<em>Technically</em>, you <em>can</em> develop an emulator from an ECE-perspective; look up <a href="https://en.wikipedia.org/wiki/Verilog">Verilog</a> or really, any <a href="https://en.wikipedia.org/wiki/Hardware_description_language">Hardware-Description-Language</a>, but that's beyond the scope for this post).</p>
+<p>A few years ago, I started to ask myself how an emulator works; I initially believed it <em>had</em> to be some sort of magic, but at the end of the day, code is just that, <em>code</em> (<em>Technically</em>, you <em>can</em> develop an emulator from an ECE-perspective; look up <a rel="external" href="https://en.wikipedia.org/wiki/Verilog">Verilog</a> or really, any <a rel="external" href="https://en.wikipedia.org/wiki/Hardware_description_language">Hardware-Description-Language</a>, but that's beyond the scope for this post).</p>
 <h1 id="what-is-an-emulator">What is an emulator?</h1>
 <p>Let's start by defining what an emulator (Not to be confused with simulator) really is.</p>
-<p>According to <a href="https://en.wikipedia.org/wiki/Emulator">Wikipedia</a>:</p>
-<pre data-lang="html" style="background-color:#2b303b;color:#c0c5ce;" class="language-html "><code class="language-html" data-lang="html"><span>In computing, an emulator is hardware or software that
-</span><span>enables one computer  system (called the host) to behave
-</span><span>like another computer system (called the guest).
-</span><span>
-</span><span>An emulator typically enables the host system to run software or 
-</span><span>use peripheral devices designed for the guest system.
-</span><span>Emulation refers to the ability of a computer program in
-</span><span>an electronic device to emulate (or imitate) another program or device. 
-</span></code></pre>
+<p>According to <a rel="external" href="https://en.wikipedia.org/wiki/Emulator">Wikipedia</a>:</p>
+<pre class="giallo z-code"><code data-lang="html"><span class="giallo-l"><span>In computing, an emulator is hardware or software that</span></span>
+<span class="giallo-l"><span>enables one computer  system (called the host) to behave</span></span>
+<span class="giallo-l"><span>like another computer system (called the guest).</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>An emulator typically enables the host system to run software or </span></span>
+<span class="giallo-l"><span>use peripheral devices designed for the guest system.</span></span>
+<span class="giallo-l"><span>Emulation refers to the ability of a computer program in</span></span>
+<span class="giallo-l"><span>an electronic device to emulate (or imitate) another program or device. </span></span></code></pre>
 <p>The key takeaway here, is the <em>ability</em> to run code that is designed for one system on another one.</p>
-<p>Examples of this could be, running aarch64 code on your shiny new Intel/AMD PC (Playing a videogame designed for Android, for example); the technique Apple employs for their newer M-line of processors (Which are 64-bit ARM chips) but they are able to maintain backwards compatibility to a degree with macOS software designed for their older Intel machines (And doing so in a fast and efficient manner, using <a href="https://en.wikipedia.org/wiki/Rosetta_(software)#Rosetta_2">Rosetta 2</a>)...</p>
+<p>Examples of this could be, running aarch64 code on your shiny new Intel/AMD PC (Playing a videogame designed for Android, for example); the technique Apple employs for their newer M-line of processors (Which are 64-bit ARM chips) but they are able to maintain backwards compatibility to a degree with macOS software designed for their older Intel machines (And doing so in a fast and efficient manner, using <a rel="external" href="https://en.wikipedia.org/wiki/Rosetta_(software)#Rosetta_2">Rosetta 2</a>)...</p>
 <p>But how can <em>we</em>, as individuals, tackle this problem?</p>
 <p>Well, there's lots of ways of doing so.</p>
 <h1 id="types-of-emulation">Types of emulation</h1>
 <p>The following paragraph contains information about a type of emulators that have lately emerged; they're more state-of-the-art in comparison with good-old already-existing emulators, it's meant to illustrate, it can be confusing for newbies so you can skip to the <a href="https://cakehonolulu.github.io/how-emulators-work/#hle-vs-lle">HLE vs LLE</a> chapter if you want.</p>
 <hr />
 <p>A brief paragraph: As of recent times, a new way to experience retro systems has appeared, not to confuse you, but I'll give a brief explanation as to what FPGA-based emulation is and not.</p>
-<p><a href="https://en.wikipedia.org/wiki/Field-programmable_gate_array">FPGAs</a> are integrated circuits whose behaviour can be repgrogrammed at the logic level after manufacturing, they can be programmed using HDL's (Hardware description languages) which goes through a series of steps before getting executed by the development board.</p>
+<p><a rel="external" href="https://en.wikipedia.org/wiki/Field-programmable_gate_array">FPGAs</a> are integrated circuits whose behaviour can be repgrogrammed at the logic level after manufacturing, they can be programmed using HDL's (Hardware description languages) which goes through a series of steps before getting executed by the development board.</p>
 <div style="text-align: center;">
 <p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Xerox_ColorQube_8570_-_Main_controller_-_Xilinx_Spartan_XC3S400A-0205.jpg/220px-Xerox_ColorQube_8570_-_Main_controller_-_Xilinx_Spartan_XC3S400A-0205.jpg" alt="Spartan FPGA" /></p>
 <p><em>The Xilinx Spartan FPGA</em></p>
@@ -498,44 +465,41 @@
 <p>There's two ways to understand emulation; and this varies by the level of closeness to the hardware you decide to entangle yourself with.</p>
 <h2 id="lle">LLE</h2>
 <p>LLE stands for Low-level Emulation. What this means is, closely replicating the target hardware at the bare-metal level.</p>
-<p>You must emulate every bit of the system to make it work; that means implementing a CPU core that can execute the foreign instructions; providing an interface for it to send/recieve data to/from peripherals and respecting the timings of all the components to make it as accurate as possible (You can read further on this topic if you look up <a href="https://retrocomputing.stackexchange.com/a/1195">Cycle Accuracy</a>).</p>
+<p>You must emulate every bit of the system to make it work; that means implementing a CPU core that can execute the foreign instructions; providing an interface for it to send/recieve data to/from peripherals and respecting the timings of all the components to make it as accurate as possible (You can read further on this topic if you look up <a rel="external" href="https://retrocomputing.stackexchange.com/a/1195">Cycle Accuracy</a>).</p>
 <h2 id="hle">HLE</h2>
 <p>HLE on the other hand, can be understood as a MITM between the target library calls and mapping them to host-compatible ones; let's say we have <em>System A</em> which, somewhere on it's code, does this:</p>
-<pre data-lang="c" style="background-color:#2b303b;color:#c0c5ce;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#65737e;">// System A function responsible of init-ing the FB
-</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">libGfxInitFramebuffer</span><span>()
-</span><span>{
-</span><span>    </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">libGfxSetupFramebuffer</span><span>())
-</span><span>        </span><span style="color:#b48ead;">goto</span><span> fail;
-</span><span>
-</span><span>    </span><span style="color:#b48ead;">if </span><span>(</span><span style="color:#bf616a;">libGfxClearFramebuffer</span><span>())
-</span><span>        </span><span style="color:#b48ead;">goto</span><span> fail;
-</span><span>
-</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">0</span><span>;
-</span><span>
-</span><span>fail:
-</span><span>    </span><span style="color:#bf616a;">libDebugPrint</span><span>(&quot;</span><span style="color:#a3be8c;">Failed to initialize the framebuffer!</span><span>&quot;);
-</span><span>    </span><span style="color:#b48ead;">return </span><span style="color:#d08770;">1</span><span>;
-</span><span>}
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// System A function responsible of init-ing the FB</span></span>
+<span class="giallo-l"><span class="z-storage z-type">int</span><span class="z-entity z-name z-function"> libGfxInitFramebuffer</span><span class="z-punctuation z-section">()</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
+<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-punctuation z-section"> (</span><span class="z-entity z-name z-function">libGfxSetupFramebuffer</span><span class="z-punctuation z-section">())</span></span>
+<span class="giallo-l"><span class="z-keyword">        goto</span><span> fail</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-punctuation z-section"> (</span><span class="z-entity z-name z-function">libGfxClearFramebuffer</span><span class="z-punctuation z-section">())</span></span>
+<span class="giallo-l"><span class="z-keyword">        goto</span><span> fail</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">    return</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>fail:</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">    libDebugPrint</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Failed to initialize the framebuffer!&quot;</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-keyword">    return</span><span class="z-constant z-numeric"> 1</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span></code></pre>
 <p>If we're trying to HLE System A, we need to figure out a way to first, detect that this function is being called (Normally, there's a piece of code responsible for intercepting, for example, syscalls) and instead of executing the target code, executing a function written for the host architecture that archieves the same but without relying on the target-specific hardware details.</p>
 <p>We could for example, intercept it and call the following code in a PC:</p>
-<pre data-lang="c" style="background-color:#2b303b;color:#c0c5ce;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#65737e;">// Host system function responsible of init-ing the FB
-</span><span style="color:#65737e;">// Assuming we&#39;re using SDL and renderer is a SDL_Renderer
-</span><span style="color:#b48ead;">int </span><span style="color:#8fa1b3;">libGfxInitFramebuffer</span><span>()
-</span><span>{
-</span><span>    </span><span style="color:#bf616a;">SDL_SetRenderDrawColor</span><span>(renderer, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">255</span><span>);
-</span><span>    </span><span style="color:#bf616a;">SDL_RenderClear</span><span>(renderer);
-</span><span>    </span><span style="color:#bf616a;">SDL_RenderPresent</span><span>(renderer);
-</span><span>
-</span><span>    </span><span style="color:#65737e;">// We do not handle error-checking for simplicity&#39;s sake
-</span><span>}
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// Host system function responsible of init-ing the FB</span></span>
+<span class="giallo-l"><span class="z-comment">// Assuming we&#39;re using SDL and renderer is a SDL_Renderer</span></span>
+<span class="giallo-l"><span class="z-storage z-type">int</span><span class="z-entity z-name z-function"> libGfxInitFramebuffer</span><span class="z-punctuation z-section">()</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_SetRenderDrawColor</span><span class="z-punctuation z-section">(renderer</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 255</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_RenderClear</span><span class="z-punctuation z-section">(renderer)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_RenderPresent</span><span class="z-punctuation z-section">(renderer)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-comment">    // We do not handle error-checking for simplicity&#39;s sake</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span></code></pre>
 <p>And that's the basic principle behind HLE. You also need a way to intercept those library calls; for example, let's say we're interpreting target (System A) CPU instructions, and suddenly, we encounter a <code>syscall</code> instruction.</p>
 <p>Let's assume this <code>syscall</code> instruction in System A works by specifying the <code>syscall</code> type on register <code>A</code> and the required arguments on registers <code>B</code> and <code>C</code>.</p>
 <p>Imagine we find this:</p>
-<pre data-lang="asm" style="background-color:#2b303b;color:#c0c5ce;" class="language-asm "><code class="language-asm" data-lang="asm"><span style="color:#8fa1b3;">move </span><span style="color:#d08770;">3</span><span>, </span><span style="color:#96b5b4;">$</span><span style="color:#8fa1b3;">A
-</span><span style="color:#b48ead;">syscall
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="asm"><span class="giallo-l"><span>move </span><span class="z-constant z-numeric">3</span><span>, $A</span></span>
+<span class="giallo-l"><span class="z-keyword z-operator">syscall</span></span></code></pre>
 <p>This basically would call syscall number 3 on the syscall table, which, for example, could be our previously explained <code>libGfxInitFramebuffer()</code>.</p>
 <p>You'd then need to detect this behaviour whilst executing the target code, intercept it and redirect execution and adjust the emulation state accordingly (Maybe adjusting cycle count to account for the original length of the syscall function... etc).</p>
 <p>It's also important to note, that nowadays (Moreso with more recent consoles), there's a trend to mix both LLE and HLE techniques to get thehe benefits of both approaches. There's some components that you can HLE to reduce the processing hurdle of more complex subsystems a machine can have.</p>
@@ -572,59 +536,58 @@
 <h2 id="interpreter">Interpreter</h2>
 <p>We'll start with the more easier type of technique; an Interpreter.</p>
 <p>Let's have some pseudocode explain the rest, we'll do some assumptions that don't map to the real Z80A, to simplify the explanation and the code (We assume opcode size == 1 byte, no addressing modes, no banked register set...):</p>
-<pre data-lang="c" style="background-color:#2b303b;color:#c0c5ce;" class="language-c "><code class="language-c" data-lang="c"><span style="color:#65737e;">// Ignoring the boilerplate code, such as headers, irrelevant functions and such
-</span><span>
-</span><span style="color:#b48ead;">struct </span><span>Bus {
-</span><span>    byte ram[</span><span style="color:#d08770;">64</span><span> KiB];
-</span><span>    ....
-</span><span>}
-</span><span>
-</span><span style="color:#b48ead;">struct </span><span>Cpu {
-</span><span>    byte A, B, C, D, E, H, L; </span><span style="color:#65737e;">// General-Prupose Registers
-</span><span>    byte F; </span><span style="color:#65737e;">// Special Flags Register
-</span><span>    byte IX, IY; </span><span style="color:#65737e;">// Index Registers
-</span><span>    byte SP; </span><span style="color:#65737e;">// Stack Pointer Register
-</span><span>    byte PC; </span><span style="color:#65737e;">// Program Counter Register
-</span><span>    ...
-</span><span>}
-</span><span>
-</span><span style="color:#65737e;">/*
-</span><span style="color:#65737e;">    Bus and Cpu are initialized by main() or another function,
-</span><span style="color:#65737e;">    the ram array has the target binary already loaded at a
-</span><span style="color:#65737e;">    specific offset and the PC (Which effectively acts as a
-</span><span style="color:#65737e;">    pointer to memory) is set to that memory offset.
-</span><span style="color:#65737e;">
-</span><span style="color:#65737e;">    That way once we read from ram we can just do ram[cpu-&gt;PC]
-</span><span style="color:#65737e;">    to get the opcode.
-</span><span style="color:#65737e;">*/
-</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">cpu_fde</span><span>(Bus *</span><span style="color:#bf616a;">bus</span><span>, Cpu *</span><span style="color:#bf616a;">cpu</span><span>)
-</span><span>{
-</span><span>    </span><span style="color:#65737e;">// Get the cpu instruction from memory pointed by the PC register
-</span><span>    byte opcode = bus-&gt;ram[cpu-&gt;PC];
-</span><span>
-</span><span>    </span><span style="color:#b48ead;">switch</span><span>(opcode)
-</span><span>    {
-</span><span>        </span><span style="color:#65737e;">// ADD A, B Instruction
-</span><span>        </span><span style="color:#b48ead;">case </span><span style="color:#d08770;">0x00</span><span>:
-</span><span>            </span><span style="color:#65737e;">// Add B to A
-</span><span>            cpu-&gt;A += cpu-&gt;B;
-</span><span>            </span><span style="color:#65737e;">// Increment PC
-</span><span>            cpu-&gt;PC++;
-</span><span>            </span><span style="color:#b48ead;">break</span><span>;
-</span><span>
-</span><span>        </span><span style="color:#b48ead;">case </span><span>...:
-</span><span>            ...
-</span><span>
-</span><span>        ...
-</span><span>
-</span><span>        </span><span style="color:#b48ead;">default</span><span>:
-</span><span>            </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">Opcode unimplemented! 0x</span><span style="color:#d08770;">%02X</span><span style="color:#96b5b4;">\n</span><span>&quot;, opcode);
-</span><span>            </span><span style="color:#96b5b4;">exit</span><span>(</span><span style="color:#d08770;">1</span><span>);
-</span><span>    }
-</span><span>
-</span><span>}
-</span><span>
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// Ignoring the boilerplate code, such as headers, irrelevant functions and such</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-storage z-type">struct</span><span class="z-punctuation z-section"> Bus {</span></span>
+<span class="giallo-l"><span class="z-variable">    byte ram[</span><span class="z-constant z-numeric">64</span><span> KiB]</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span>    ....</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-storage z-type">struct</span><span class="z-punctuation z-section"> Cpu {</span></span>
+<span class="giallo-l"><span>    byte A</span><span class="z-punctuation z-separator">,</span><span> B</span><span class="z-punctuation z-separator">,</span><span> C</span><span class="z-punctuation z-separator">,</span><span> D</span><span class="z-punctuation z-separator">,</span><span> E</span><span class="z-punctuation z-separator">,</span><span> H</span><span class="z-punctuation z-separator">,</span><span> L</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // General-Prupose Registers</span></span>
+<span class="giallo-l"><span>    byte F</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Special Flags Register</span></span>
+<span class="giallo-l"><span>    byte IX</span><span class="z-punctuation z-separator">,</span><span> IY</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Index Registers</span></span>
+<span class="giallo-l"><span>    byte SP</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Stack Pointer Register</span></span>
+<span class="giallo-l"><span>    byte PC</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Program Counter Register</span></span>
+<span class="giallo-l"><span>    ...</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-comment">/*</span></span>
+<span class="giallo-l"><span class="z-comment">    Bus and Cpu are initialized by main() or another function,</span></span>
+<span class="giallo-l"><span class="z-comment">    the ram array has the target binary already loaded at a</span></span>
+<span class="giallo-l"><span class="z-comment">    specific offset and the PC (Which effectively acts as a</span></span>
+<span class="giallo-l"><span class="z-comment">    pointer to memory) is set to that memory offset.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-comment">    That way once we read from ram we can just do ram[cpu-&gt;PC]</span></span>
+<span class="giallo-l"><span class="z-comment">    to get the opcode.</span></span>
+<span class="giallo-l"><span class="z-comment">*/</span></span>
+<span class="giallo-l"><span class="z-storage z-type">void</span><span class="z-entity z-name z-function"> cpu_fde</span><span class="z-punctuation z-section">(Bus </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">bus</span><span class="z-punctuation z-separator">,</span><span> Cpu </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">cpu</span><span class="z-punctuation z-section">)</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
+<span class="giallo-l"><span class="z-comment">    // Get the cpu instruction from memory pointed by the PC register</span></span>
+<span class="giallo-l"><span>    byte opcode </span><span class="z-keyword z-operator">=</span><span class="z-variable"> bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">ram[cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">PC]</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">    switch</span><span class="z-punctuation z-section">(opcode)</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">    {</span></span>
+<span class="giallo-l"><span class="z-comment">        // ADD A, B Instruction</span></span>
+<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">00</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-comment">            // Add B to A</span></span>
+<span class="giallo-l"><span class="z-variable">            cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">A</span><span class="z-keyword z-operator"> +=</span><span class="z-variable"> cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">B</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-comment">            // Increment PC</span></span>
+<span class="giallo-l"><span class="z-variable">            cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">PC</span><span class="z-keyword z-operator">++</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">        case</span><span> ...</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span>            ...</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>        ...</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">        default</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">            printf</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Opcode unimplemented! 0x</span><span class="z-constant z-other z-constant z-character">%02X\n</span><span class="z-string">&quot;</span><span class="z-punctuation z-separator">,</span><span class="z-punctuation z-section"> opcode)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">            exit</span><span class="z-punctuation z-section">(</span><span class="z-constant z-numeric">1</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"></span></code></pre>
 <p>This is the skeleton for an emulator; think of the PC (Program Counter, sometimes also called IP, Instruction Pointer) register as a pointer to memory from where we'll read instructions from.</p>
 <p>Normally, the PC then will get incremented by 1 at the end of the opcode processing (But some opcodes that handle PC relocation, such as JUMPs or CALLs may add an offset to it or straight up setting it to a determinate value).</p>
 <p>In reality, PC will increment <code>sizeof(opcode)</code>, but there may be some exceptions to that in some architectures; be always mindful when designing the main loop.</p>
@@ -635,7 +598,7 @@
 <p>So far we've covered the basis for an Interpreter; but there's other techniques to gain an advantage, speed-wise.</p>
 <p>For instance, you could cache the instructions you're translating in blocks so that it alleviates the fetch-decode hotspot a bit; as it'd only need to process it once (Ignoring that code can be self-modifying and in that case you'd need to invalidate and recompile the affected block; but that's for another day).</p>
 <h2 id="dynamic-recompiler">Dynamic Recompiler</h2>
-<p>By far, one of the most efficient ways to tackle emulation is by developing a Dynamic Recompiler (Just-in-Time compiler); which interprets the target, arch-uncompatible instructions; and translates them to host instructions. For example, <a href="https://en.wikipedia.org/wiki/Rosetta_(software)#Rosetta_2">Rosetta 2</a> converts x86_64 instructions to aarch64 ones and runs them in a efficient and fast manner.</p>
+<p>By far, one of the most efficient ways to tackle emulation is by developing a Dynamic Recompiler (Just-in-Time compiler); which interprets the target, arch-uncompatible instructions; and translates them to host instructions. For example, <a rel="external" href="https://en.wikipedia.org/wiki/Rosetta_(software)#Rosetta_2">Rosetta 2</a> converts x86_64 instructions to aarch64 ones and runs them in a efficient and fast manner.</p>
 <p>It's one of the most complex ones, but also, one of the most rewarding ones; there's several challenges to tackle when developing a Dynamic Recompiler; such as deciding how to to the actual recompilation:</p>
 <p>Do we want an emitter that directly translates the instructions? Maybe we want instead to use some sort of IL (Intermediate language) so that a compiler backend (Think, LLVM) can introduce code optimizations and do the translation? How do we handle self-modifying code? And what about register spilling (Imagine targetting an arch that has more registers than your host one, you may need to use some stack trickery or another technique to decide the least used registers and swap them into the host ones as needed)?</p>
 <p>As you can see, there are many more challenges when trying to go the Dynamic Recompilation route; but it's a really interesting path to go down.</p>
@@ -647,32 +610,31 @@
 <p>There's also the added challenge of handling peripherals; there's cases where you'll find I/O operations CPU-wise that interact with the peripherals on the system; or some other times, they can be memory-mapped.</p>
 <p>In any case, there's some food for thought involved into deciding the best way to tackle both of the systems.</p>
 <p>A simple, pseudocode example that explains the memory-mapped approach:</p>
-<pre data-lang="c" style="background-color:#2b303b;color:#c0c5ce;" class="language-c "><code class="language-c" data-lang="c"><span>
-</span><span style="color:#65737e;">/*
-</span><span style="color:#65737e;">    This can be called with opcodes like LOAD ($A), $0x20
-</span><span style="color:#65737e;">    (Loads 0x20 to the address pointed by A)
-</span><span style="color:#65737e;">*/
-</span><span style="color:#b48ead;">void </span><span style="color:#8fa1b3;">memory_write_byte</span><span>(Bus *</span><span style="color:#bf616a;">bus</span><span>, Cpu *</span><span style="color:#bf616a;">cpu</span><span>, </span><span style="color:#b48ead;">long </span><span style="color:#bf616a;">address</span><span>, byte </span><span style="color:#bf616a;">value</span><span>)
-</span><span>{
-</span><span>    </span><span style="color:#b48ead;">switch </span><span>(address)
-</span><span>    {
-</span><span>        </span><span style="color:#65737e;">// Main RAM
-</span><span>        </span><span style="color:#b48ead;">case </span><span style="color:#d08770;">0x0 </span><span>... </span><span style="color:#d08770;">0x1000</span><span>:
-</span><span>            bus-&gt;ram[address] = value;
-</span><span>            </span><span style="color:#b48ead;">break</span><span>;
-</span><span>        cd 
-</span><span>        </span><span style="color:#65737e;">// Memory-mapped I/O
-</span><span>        </span><span style="color:#b48ead;">case </span><span style="color:#d08770;">0xFF10</span><span>:
-</span><span>            bus-&gt;</span><span style="color:#bf616a;">set_sprite_a_register</span><span>(value);
-</span><span>            </span><span style="color:#b48ead;">break</span><span>;
-</span><span>
-</span><span>        </span><span style="color:#b48ead;">default</span><span>:
-</span><span>            </span><span style="color:#96b5b4;">printf</span><span>(&quot;</span><span style="color:#a3be8c;">Unhandled address! 0x</span><span style="color:#d08770;">%04X</span><span style="color:#96b5b4;">\n</span><span>&quot;, address);
-</span><span>            </span><span style="color:#96b5b4;">exit</span><span>(</span><span style="color:#d08770;">1</span><span>);
-</span><span>    }
-</span><span>}
-</span><span>
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-comment">/*</span></span>
+<span class="giallo-l"><span class="z-comment">    This can be called with opcodes like LOAD ($A), $0x20</span></span>
+<span class="giallo-l"><span class="z-comment">    (Loads 0x20 to the address pointed by A)</span></span>
+<span class="giallo-l"><span class="z-comment">*/</span></span>
+<span class="giallo-l"><span class="z-storage z-type">void</span><span class="z-entity z-name z-function"> memory_write_byte</span><span class="z-punctuation z-section">(Bus </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">bus</span><span class="z-punctuation z-separator">,</span><span> Cpu </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">cpu</span><span class="z-punctuation z-separator">,</span><span class="z-storage z-type"> long</span><span class="z-variable z-parameter"> address</span><span class="z-punctuation z-separator">,</span><span> byte </span><span class="z-variable z-parameter">value</span><span class="z-punctuation z-section">)</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
+<span class="giallo-l"><span class="z-keyword">    switch</span><span class="z-punctuation z-section"> (address)</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">    {</span></span>
+<span class="giallo-l"><span class="z-comment">        // Main RAM</span></span>
+<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">0</span><span> ... </span><span class="z-keyword">0x</span><span class="z-constant z-numeric">1000</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-variable">            bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">ram[address]</span><span class="z-keyword z-operator"> =</span><span> value</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span>        cd </span></span>
+<span class="giallo-l"><span class="z-comment">        // Memory-mapped I/O</span></span>
+<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">FF10</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-variable">            bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-entity z-name z-function">set_sprite_a_register</span><span class="z-punctuation z-section">(value)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-keyword">        default</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">            printf</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Unhandled address! 0x</span><span class="z-constant z-other z-constant z-character">%04X\n</span><span class="z-string">&quot;</span><span class="z-punctuation z-separator">,</span><span class="z-punctuation z-section"> address)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-entity z-name z-function">            exit</span><span class="z-punctuation z-section">(</span><span class="z-constant z-numeric">1</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">    }</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"></span></code></pre>
 <p>There's also some other considerations to have; think about how you want to plot graphics; or play audio, or read from a filesystem... there's some design choices to be made in order to properly handle the rest of the system aside from the CPU and presenting it to the user (Or letting him interact with the emulated environment!).</p>
 <h1 id="bonus-track">Bonus Track</h1>
 <h2 id="aot">AoT</h2>
@@ -681,7 +643,7 @@
 <h1 id="credits">Credits</h1>
 <p>With all this being said, I hope the reader finds some understanding in what emulation is about!</p>
 <p>Feel free to reach out to me in case you need more resources!</p>
-<p>You can also join us @ the <a href="https://discord.gg/7nuaqZ2">EmuDev</a> Discord; there's plenty of knowledgeable people that will help you in your journey!</p>
+<p>You can also join us @ the <a rel="external" href="https://discord.gg/7nuaqZ2">EmuDev</a> Discord; there's plenty of knowledgeable people that will help you in your journey!</p>
 </section>
 
   <hr />
@@ -695,10 +657,10 @@
   <!---->
   
   <div class="mb-2 flex flex-wrap">
-    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/emulation/"
       >emulation</a
     >
@@ -740,13 +702,14 @@
   
 </article>
 
-    </main>
+      </main>
+    </div>
 
     <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
   <div class="mr-auto basis-full lg:basis-1/2">
     <!---->
     <!---->
-    &copy; 2022 - 2025<!---->
+    &copy; 2022 - 2026<!---->
     
     <a class="link" href="https://cakehonolulu.github.io">
       cakehonolulu

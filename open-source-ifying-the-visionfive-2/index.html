@@ -174,7 +174,7 @@
       <div class="flex items-center">
         <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -265,14 +265,6 @@
         <li>
           <a
             class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
-            href="https://cakehonolulu.github.io/archive"
-            >Archive</a
-          >
-        </li>
-        
-        <li>
-          <a
-            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
             href="https://cakehonolulu.github.io/tags"
             >Tags</a
           >
@@ -298,16 +290,24 @@
     <!-- Body Start inject -->
     
 
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
-    >
-      
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
 <article>
   <!-- Page Start inject -->
   
 
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Pushing VisionFive 2 RISC-V board into 2025</h1>
+    <h1 class="my-0! pb-2.5">Pushing VisionFive 2 RISC-V board into 2025</h1>
     <div class="text-sm antialiased opacity-60">
   
   <time>2025-05-05</time>
@@ -330,144 +330,108 @@
   
 
   <!-- TOC -->
-  <!---->
-<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
   <details>
     <summary class="cursor-pointer py-1 pl-4">
-      <span>Table of Contents</span>
+      <span class="ml-2">Table of Contents</span>
     </summary>
-    <div class="px-2">
-      <ul>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#trip-down-the-memory-lane">Trip down the memory lane</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#trip-down-the-memory-lane"
-            >Trip down the memory lane</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#the-hardware">The hardware</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#the-hardware"
-            >The hardware</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#how-much-has-been-already-upstreamed">How much has been already upstreamed?</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#how-much-has-been-already-upstreamed"
-            >How much has been already upstreamed?</a
-          >
+        <ul>
           
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#linux"
-                >Linux!</a
-              >
-            </li>
-            
-          </ul>
+          <li>
+            <a href="#linux">Linux!</a>
+          </li>
           
-        </li>
+        </ul>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#visionfive-2-boot-process"
-            >VisionFive 2 Boot Process</a
-          >
-          
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-machine-mode-stage"
-                >RISC-V Machine-mode stage</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-supervisor-mode-stage"
-                >RISC-V Supervisor-mode stage</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#risc-v-user-mode-stage"
-                >RISC-V User-mode stage</a
-              >
-            </li>
-            
-          </ul>
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#visionfive-2-boot-process">VisionFive 2 Boot Process</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#updating-u-boot"
-            >Updating u-boot</a
-          >
+        <ul>
           
-        </li>
+          <li>
+            <a href="#risc-v-machine-mode-stage">RISC-V Machine-mode stage</a>
+          </li>
+          
+          <li>
+            <a href="#risc-v-supervisor-mode-stage">RISC-V Supervisor-mode stage</a>
+          </li>
+          
+          <li>
+            <a href="#risc-v-user-mode-stage">RISC-V User-mode stage</a>
+          </li>
+          
+        </ul>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#fixing-u-boot-spl-to-boot-edk2"
-            >Fixing u-boot SPL to boot EDK2</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#updating-u-boot">Updating u-boot</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#crying-over-edk2-and-fixing-it"
-            >Crying over EDK2 and fixing it</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#fixing-u-boot-spl-to-boot-edk2">Fixing u-boot SPL to boot EDK2</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#debian-sid"
-            >Debian sid</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#crying-over-edk2-and-fixing-it">Crying over EDK2 and fixing it</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub"
-            >Building a EFI-capable Debian Trixie 13 sid image and adding GRUB</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#debian-sid">Debian sid</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update"
-            >May 9 2025 2:11AM in the morning EDK2 and u-boot update</a
-          >
-          
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#edk2-wise"
-                >EDK2-wise</a
-              >
-            </li>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#u-boot-wise"
-                >U-boot wise</a
-              >
-            </li>
-            
-          </ul>
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub">Building a EFI-capable Debian Trixie 13 sid image and adding GRUB</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/#may-10-2025-3-41am-in-the-morning-edk2-update"
-            >May 10 2025 3:41AM in the morning EDK2 update</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update">May 9 2025 2:11AM in the morning EDK2 and u-boot update</a>
         
-      </ul>
-    </div>
+        <ul>
+          
+          <li>
+            <a href="#edk2-wise">EDK2-wise</a>
+          </li>
+          
+          <li>
+            <a href="#u-boot-wise">U-boot wise</a>
+          </li>
+          
+        </ul>
+        
+      </li>
+      
+      <li>
+        <a href="#may-10-2025-3-41am-in-the-morning-edk2-update">May 10 2025 3:41AM in the morning EDK2 update</a>
+        
+      </li>
+      
+    </ul>
   </details>
-</div>
+</nav>
 
 <!---->
 
@@ -502,14 +466,14 @@ usable, but we can make it even better.</p>
 been merged yet (Most important one, being the HDMI controller logic, DRM... and whatnot) and I personally think they probably won't be merged because
 it's been a bit of a while since last activity on patchwork; but you can easily download the patches in .mbox format if needed and apply them manually into
 your tree.</p>
-<p>I only had to search for a defconfig, <a href="https://github.com/starfive-tech/linux/">thankfully the cool people over at StarFive already have a Linux tree with one</a> (<code>starfive_visionfive2_defconfig</code>), clone the project and target that config; it all compiled fine and booted first try. All the major things I mainly need the board to have working (Ethernet, NVME, SD Slot and eMMC), worked first try.</p>
+<p>I only had to search for a defconfig, <a rel="external" href="https://github.com/starfive-tech/linux/">thankfully the cool people over at StarFive already have a Linux tree with one</a> (<code>starfive_visionfive2_defconfig</code>), clone the project and target that config; it all compiled fine and booted first try. All the major things I mainly need the board to have working (Ethernet, NVME, SD Slot and eMMC), worked first try.</p>
 <p>It is worth noting I have not personally tried the GPU on it's own (Haven't connected the board to a monitor nor have tested the hardware acceleration, video encoding/decoding...) so if that's a feature you actually need, it's a bit of a mistery for me. I planned on using this as a headless homelab-esque machine to run some stuff on.</p>
 <p>So there we had it, VF2 board running the latest and greatest Linux version! But... I figured I may as well not stop there...</p>
 <h2 id="visionfive-2-boot-process">VisionFive 2 Boot Process</h2>
 <h3 id="risc-v-machine-mode-stage">RISC-V Machine-mode stage</h3>
 <p><em>NOTE: This may have inaccuracies since I don't work for StarFive, it's based on my personal interpretations and findings/reverse engineering regarding the board whilst doing all the work on it.</em></p>
 <p>When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) <del>presumably off of an EEPROM or something similar</del>¹, it's read-only and you can't access it's contents because it's unmapped as soon as the rest of the boot chain starts executing; you could probably try sniffing the contents out of it if provided it's not in the die package of the SoC an is located somewhere in the board; but considering the things it does it's probably best just to ignore it since it's unique task is bootstrapping the processor to the next stage (So most probably, boring assembly to do all of this; nothing interesting).</p>
-<p>¹: <a href="https://www.reddit.com/r/RISCV/s/s5WNFeJe3h">It's an on-chip diode rom mapped at physical address 0x2a000000</a></p>
+<p>¹: <a rel="external" href="https://www.reddit.com/r/RISCV/s/s5WNFeJe3h">It's an on-chip diode rom mapped at physical address 0x2a000000</a></p>
 <p>Then, it jumps to a cut-down u-boot that gets loaded off of flash storage. It's called <strong>u-boot SPL</strong> (<strong>S</strong>econd <strong>P</strong>rogram <strong>L</strong>oader), it basically exists to provide a bit of a richer environment to run code on; it has a few interesting things bootloader-wise (It can load things off of an SPI NOR/NAND for instance) but not much else; it's task is to bootstrap into OpenSBI to finally enter RISC-V's S (<strong>S</strong>upervisor) mode and act as a handler for a few "supervisor" calls launched from lower privilege levels.</p>
 <pre class="mermaid bg-inherit">
   graph LR
@@ -619,7 +583,7 @@ your tree.</p>
 <p>It's worth noting that even after 3 days of work I haven't had the time to upgrade the EDK2 version, but this'll do for the meantime (I'm actually working on that as of writing this blog, if I succeed I promise a future entry here!).</p>
 <p>So I got my hands to work...</p>
 <p>...though I couldn't progress much; apparently for some reason I've not had the time to investigate further (Other than finding the root issue) but the SPL can't figure out the FDT location inside the SPL binary and crashes on NULL address...</p>
-<p>I made what is <a href="https://github.com/cakehonolulu/u-boot_vf2/commit/7c47c5c85bd0db430deae63eeb56bcd7cdbf0f0e#diff-434931895d55117620bd7f8ab9f55ada1d4510572a9750b6d13e985d93548bfaR778">probably one of my worst hacks ever</a>, I calculate the address in advance and just offset the base address accordingly; this is stupid (It means you have to <code>hexdump</code> the resulting binary searching where the the FDT header is to fix the offset everytime code size changes or different compilers... etc). But hey, it works; once I have the time to investigate this it'll probably end up somewhere in the u-boot code.</p>
+<p>I made what is <a rel="external" href="https://github.com/cakehonolulu/u-boot_vf2/commit/7c47c5c85bd0db430deae63eeb56bcd7cdbf0f0e#diff-434931895d55117620bd7f8ab9f55ada1d4510572a9750b6d13e985d93548bfaR778">probably one of my worst hacks ever</a>, I calculate the address in advance and just offset the base address accordingly; this is stupid (It means you have to <code>hexdump</code> the resulting binary searching where the the FDT header is to fix the offset everytime code size changes or different compilers... etc). But hey, it works; once I have the time to investigate this it'll probably end up somewhere in the u-boot code.</p>
 <p>With this, we have StarFive's EDK2 running again, but I wasn't still satisfied; I wanted to be the one provisioning the board with my own binaries (Not that I don't trust StarFive or things you may be thinking, it's just personal preference purely for the funzies).</p>
 <h2 id="crying-over-edk2-and-fixing-it">Crying over EDK2 and fixing it</h2>
 <p>EDK2 sucks. Literally.</p>
@@ -628,10 +592,10 @@ your tree.</p>
 <p>They had a custom build system built around the kernel that was outdated by the time I tried to compile it (I even had to download 5~ year old Ubuntu versions at that time, 9.04, to satisfy the scripts...).</p>
 <p><em>(It's great actually, impressive project; but I wanted to vent).</em></p>
 <p>So yeah, expect environment variable <em>shenanigans</em> and lots of trial and error; I've built EDK2 about 100~ times in the weekend I'm writing this entry and yet sometimes I still can't figure out what I'm missing to get it to compile.</p>
-<p>Long story short; to make EDK2 work with my upstreamed u-boot SPL, I've had to update all the device tree information and misc. regarding the board else it wouldn't do anything. You can see the required changes <a href="https://github.com/starfive-tech/edk2-platforms/commit/523d36a471dc7f7238176330e4cd38ebfa1e623a">here</a>.</p>
+<p>Long story short; to make EDK2 work with my upstreamed u-boot SPL, I've had to update all the device tree information and misc. regarding the board else it wouldn't do anything. You can see the required changes <a rel="external" href="https://github.com/starfive-tech/edk2-platforms/commit/523d36a471dc7f7238176330e4cd38ebfa1e623a">here</a>.</p>
 <p>At some point EDK2 started booting again so I got all excited...</p>
 <p>...but then it failed again (It always does).</p>
-<p>This remains to be fixed, but since I personally don't use SDIO/eMMC anymore to boot the board (I just use an NVME I had laying around) I just went in and <a href="https://github.com/starfive-tech/edk2-platforms/commit/02294fd40e46378b8050f8a0c19ffafcf7a8d6f5">disabled the MmcDxe from running</a>.</p>
+<p>This remains to be fixed, but since I personally don't use SDIO/eMMC anymore to boot the board (I just use an NVME I had laying around) I just went in and <a rel="external" href="https://github.com/starfive-tech/edk2-platforms/commit/02294fd40e46378b8050f8a0c19ffafcf7a8d6f5">disabled the MmcDxe from running</a>.</p>
 <div style="text-align: center;">
 <p><img src="https://cakehonolulu.github.io/images/visionfive2_upstreaming/edk2.png" alt="edk2" />
 <em>EDK2 running on updated VisionFive 2 board</em></p>
@@ -643,165 +607,150 @@ your tree.</p>
 <p>But the end result was, very, very worth it, here's how to do it:</p>
 <h2 id="building-a-efi-capable-debian-trixie-13-sid-image-and-adding-grub">Building a EFI-capable Debian Trixie 13 sid image and adding GRUB</h2>
 <p>We'll start by creating a disk image, making the partitions and formatting them:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> dd if=/dev/zero of=debian-visionfive.img bs=1M count=1500
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> fdisk debian-visionfive.img
-</span><span>
-</span><span style="color:#bf616a;">g</span><span> (For gpt)
-</span><span>
-</span><span style="color:#bf616a;">n,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> +256MB, t, 1 </span><span style="color:#65737e;"># To change type from Linux filesystem to EFI System
-</span><span>
-</span><span style="color:#bf616a;">n,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter)</span><span style="color:#bf616a;">,</span><span> default (enter) </span><span style="color:#65737e;"># For the ext4 rootfs
-</span><span>
-</span><span style="color:#bf616a;">w </span><span style="color:#65737e;"># To flush the changes
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo losetup</span><span style="color:#bf616a;"> --partscan</span><span> /dev/loopXX debian-visionfive.img
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mkfs.fat /dev/loopXXp1
-</span><span style="color:#bf616a;">mkfs.fat</span><span> 4.2 (2021-01-31)
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mkfs.ext4 /dev/loopXXp2
-</span><span style="color:#bf616a;">mke2fs</span><span> 1.47.2 (1-Jan-2025)
-</span><span style="color:#bf616a;">Discarding</span><span> device blocks: done                            
-</span><span style="color:#bf616a;">Creating</span><span> filesystem with 321024 4k blocks and 80320 inodes
-</span><span style="color:#bf616a;">Filesystem</span><span> UUID: 4146fe1f-6c1d-4668-b6c6-751ff316d35a
-</span><span style="color:#bf616a;">Superblock</span><span> backups stored on blocks: 
-</span><span>	</span><span style="color:#bf616a;">32768,</span><span> 98304, 163840, 229376, 294912
-</span><span>
-</span><span style="color:#bf616a;">Allocating</span><span> group tables: done                            
-</span><span style="color:#bf616a;">Writing</span><span> inode tables: done                            
-</span><span style="color:#bf616a;">Creating</span><span> journal (8192 blocks)</span><span style="color:#96b5b4;">:</span><span> done
-</span><span style="color:#bf616a;">Writing</span><span> superblocks and filesystem accounting information: done
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> dd if=/dev/zero of=debian-visionfive.img bs=1M count=</span><span class="z-constant z-numeric">1500</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> fdisk debian-visionfive.img</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">g</span><span> (For</span><span class="z-string"> gpt</span><span>)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">n,</span><span class="z-string"> default</span><span> (enter), default (</span><span class="z-entity z-name">enter</span><span>), +256MB, t, 1</span><span class="z-comment"> # To change type from Linux filesystem to EFI System</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">n,</span><span class="z-string"> default</span><span> (enter), default (</span><span class="z-entity z-name">enter</span><span>), default (</span><span class="z-entity z-name">enter</span><span>)</span><span class="z-comment"> # For the ext4 rootfs</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">w</span><span class="z-comment"> # To flush the changes</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo losetup</span><span class="z-constant z-other"> --partscan</span><span class="z-string"> /dev/loopXX debian-visionfive.img</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mkfs.fat /dev/loopXXp1</span></span>
+<span class="giallo-l"><span class="z-entity z-name">mkfs.fat</span><span class="z-constant z-numeric"> 4.2</span><span> (2021-01-31)</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mkfs.ext4 /dev/loopXXp2</span></span>
+<span class="giallo-l"><span class="z-entity z-name">mke2fs</span><span class="z-constant z-numeric"> 1.47.2</span><span> (1-Jan-2025)</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Discarding</span><span class="z-string"> device blocks: done</span><span>                            </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Creating</span><span class="z-string"> filesystem with</span><span class="z-constant z-numeric"> 321024</span><span class="z-string"> 4k blocks and</span><span class="z-constant z-numeric"> 80320</span><span class="z-string"> inodes</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Filesystem</span><span class="z-string"> UUID: 4146fe1f-6c1d-4668-b6c6-751ff316d35a</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Superblock</span><span class="z-string"> backups stored on blocks:</span><span> </span></span>
+<span class="giallo-l"><span class="z-entity z-name">	32768,</span><span class="z-string"> 98304, 163840, 229376,</span><span class="z-constant z-numeric"> 294912</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">Allocating</span><span class="z-string"> group tables: done</span><span>                            </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Writing</span><span class="z-string"> inode tables: done</span><span>                            </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Creating</span><span class="z-string"> journal</span><span> (8192</span><span class="z-string"> blocks</span><span>): </span><span class="z-keyword">done</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Writing</span><span class="z-string"> superblocks and filesystem accounting information: done</span></span></code></pre>
 <p>Now, with the disk properly formatted and using GPT scheme, we can proceed to install Debian and chroot to it.</p>
 <p>First, we'll mount everything needed:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> mkdir</span><span style="color:#bf616a;"> -p</span><span> debian/boot/efi
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount /dev/loopXXp1 debian/boot/efi/
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount /dev/loopXXp2 debian/
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> --bind</span><span> /dev debian/dev
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> devpts /dev/pts debian/dev/pts
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> proc proc debian/proc
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> sysfs sysfs debian/sys
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo mount</span><span style="color:#bf616a;"> -t</span><span> tmpfs tmpfs debian/tmp
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> mkdir</span><span class="z-constant z-other"> -p</span><span class="z-string"> debian/boot/efi</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount /dev/loopXXp1 debian/boot/efi/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount /dev/loopXXp2 debian/</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount</span><span class="z-constant z-other"> --bind</span><span class="z-string"> /dev debian/dev</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount</span><span class="z-constant z-other"> -t</span><span class="z-string"> devpts /dev/pts debian/dev/pts</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount</span><span class="z-constant z-other"> -t</span><span class="z-string"> proc proc debian/proc</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount</span><span class="z-constant z-other"> -t</span><span class="z-string"> sysfs sysfs debian/sys</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo mount</span><span class="z-constant z-other"> -t</span><span class="z-string"> tmpfs tmpfs debian/tmp</span></span></code></pre>
 <p>Now, we'll install Debian on it...</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo debootstrap</span><span style="color:#bf616a;"> --arch</span><span>=riscv64 sid debian/
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo debootstrap</span><span class="z-constant z-other"> --arch=riscv64</span><span class="z-string"> sid debian/</span></span></code></pre>
 <p>...and we'll <code>chroot</code> into it:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo chroot debian
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo chroot debian</span></span></code></pre>
 <p>It's worth noting that, we'll have to compile Linux and get debian packages out of it; you can do so with:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- bindeb-pkg KBUILD_IMAGE=&#39;</span><span style="color:#a3be8c;">arch/riscv/boot/Image</span><span>&#39;</span><span style="color:#bf616a;"> -j</span><span>$</span><span style="color:#bf616a;">(nproc)
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> make ARCH=riscv CROSS_COMPILE=riscv64-linux-gnu- bindeb-pkg KBUILD_IMAGE=&#39;arch/riscv/boot/Image&#39;</span><span class="z-constant z-other"> -j$(</span><span class="z-entity z-name">nproc</span><span class="z-constant z-other">)</span></span></code></pre>
 <p>And then just copy the <code>linux-headers*.deb</code> and <code>linux-image*.deb</code> files inside the chroot.</p>
 <hr />
 <p>We'll now install those packages:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> dpkg</span><span style="color:#bf616a;"> -i</span><span> tmp/linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb tmp/linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb 
-</span><span style="color:#bf616a;">Selecting</span><span> previously unselected package linux-headers-6.14.0-dirty.
-</span><span>(</span><span style="color:#bf616a;">Reading</span><span> database ... 8347 files and directories currently installed.)
-</span><span style="color:#bf616a;">Preparing</span><span> to unpack .../linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb ...
-</span><span style="color:#bf616a;">Unpacking</span><span> linux-headers-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
-</span><span style="color:#bf616a;">Selecting</span><span> previously unselected package linux-image-6.14.0-dirty.
-</span><span style="color:#bf616a;">Preparing</span><span> to unpack .../linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb ...
-</span><span style="color:#bf616a;">Unpacking</span><span> linux-image-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
-</span><span style="color:#bf616a;">Setting</span><span> up linux-headers-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
-</span><span style="color:#bf616a;">Setting</span><span> up linux-image-6.14.0-dirty (6.14.0-10) </span><span style="color:#bf616a;">...
-</span><span style="color:#bf616a;">root@RYZEN5:/# 
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> dpkg</span><span class="z-constant z-other"> -i</span><span class="z-string"> tmp/linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb tmp/linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb</span><span> </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Selecting</span><span class="z-string"> previously unselected package linux-headers-6.14.0-dirty.</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">(</span><span class="z-entity z-name">Reading</span><span class="z-string"> database ...</span><span class="z-constant z-numeric"> 8347</span><span class="z-string"> files and directories currently installed.</span><span class="z-punctuation z-section">)</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Preparing</span><span class="z-string"> to unpack .../linux-headers-6.14.0-dirty_6.14.0-10_riscv64.deb ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Unpacking</span><span class="z-string"> linux-headers-6.14.0-dirty</span><span> (6.14.0-10) ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Selecting</span><span class="z-string"> previously unselected package linux-image-6.14.0-dirty.</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Preparing</span><span class="z-string"> to unpack .../linux-image-6.14.0-dirty_6.14.0-10_riscv64.deb ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Unpacking</span><span class="z-string"> linux-image-6.14.0-dirty</span><span> (6.14.0-10) ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Setting</span><span class="z-string"> up linux-headers-6.14.0-dirty</span><span> (6.14.0-10) ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Setting</span><span class="z-string"> up linux-image-6.14.0-dirty</span><span> (6.14.0-10) ...</span></span>
+<span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span> </span></span></code></pre>
 <p>Now, we'll install some packages that will come in handy:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> apt install initramfs-tools systemd-timesyncd rsync bash-completion u-boot-menu wget binutils sudo network-manager net-tools fastfetch util-linux haveged openssh-server systemd kmod conntrack ebtables ethtool iproute2 iptables mount socat ifupdown iputils-ping pciutils
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> apt install initramfs-tools systemd-timesyncd rsync bash-completion u-boot-menu wget binutils sudo network-manager net-tools fastfetch util-linux haveged openssh-server systemd kmod conntrack ebtables ethtool iproute2 iptables mount socat ifupdown iputils-ping pciutils</span></span></code></pre>
 <p>Let's also prepare the network interfaces:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">cat </span><span>&lt;&lt; </span><span style="color:#b48ead;">EOF </span><span>&gt;&gt; /etc/network/interfaces
-</span><span style="color:#a3be8c;">auto lo
-</span><span style="color:#a3be8c;">iface lo inet loopback
-</span><span style="color:#a3be8c;">#setup network for starfive end0
-</span><span style="color:#a3be8c;">allow-hotplug end0
-</span><span style="color:#a3be8c;">#iface end0 inet dhcp
-</span><span style="color:#a3be8c;">#setup network for starfive end1
-</span><span style="color:#a3be8c;">allow-hotplug end1
-</span><span style="color:#a3be8c;">#iface end1 inet dhcp
-</span><span style="color:#b48ead;">EOF
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">cat</span><span class="z-keyword z-operator"> &lt;&lt;</span><span> EOF</span><span class="z-keyword z-operator"> &gt;&gt;</span><span class="z-string"> /etc/network/interfaces</span></span>
+<span class="giallo-l"><span class="z-string">auto lo</span></span>
+<span class="giallo-l"><span class="z-string">iface lo inet loopback</span></span>
+<span class="giallo-l"><span class="z-string">#setup network for starfive end0</span></span>
+<span class="giallo-l"><span class="z-string">allow-hotplug end0</span></span>
+<span class="giallo-l"><span class="z-string">#iface end0 inet dhcp</span></span>
+<span class="giallo-l"><span class="z-string">#setup network for starfive end1</span></span>
+<span class="giallo-l"><span class="z-string">allow-hotplug end1</span></span>
+<span class="giallo-l"><span class="z-string">#iface end1 inet dhcp</span></span>
+<span class="giallo-l"><span>EOF</span></span></code></pre>
 <p>We're also going to need to add our hostname info, <code>nano</code> the <code>/etc/hosts</code> and under the <code>127.0.0.1   localhost</code> just add:</p>
-<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>127.0.1.1	visionfive2
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>127.0.1.1	visionfive2</span></span></code></pre>
 <p>Or whichever hostname you want, really.</p>
 <p>Also add it to <code>/etc/hostname</code>.</p>
 <hr />
 <p>User management's turn now, set the root password:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> echo &quot;</span><span style="color:#a3be8c;">root:root</span><span>&quot; | </span><span style="color:#bf616a;">chpasswd
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> echo &quot;root:root&quot;</span><span class="z-keyword z-operator"> |</span><span class="z-entity z-name"> chpasswd</span></span></code></pre>
 <p>And create your regular user:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> useradd cakehonolulu</span><span style="color:#bf616a;"> -s</span><span> /bin/bash</span><span style="color:#bf616a;"> -m
-</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> echo &quot;</span><span style="color:#a3be8c;">cakehonolulu:super_secure_password</span><span>&quot; | </span><span style="color:#bf616a;">chpasswd
-</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> usermod</span><span style="color:#bf616a;"> -aG</span><span> sudo cakehonolulu
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> useradd cakehonolulu</span><span class="z-constant z-other"> -s</span><span class="z-string"> /bin/bash</span><span class="z-constant z-other"> -m</span></span>
+<span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> echo &quot;cakehonolulu:super_secure_password&quot;</span><span class="z-keyword z-operator"> |</span><span class="z-entity z-name"> chpasswd</span></span>
+<span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> usermod</span><span class="z-constant z-other"> -aG</span><span class="z-string"> sudo cakehonolulu</span></span></code></pre>
 <p>That's it! We're now missing the proper EFI enablement, GRUB will come to the rescue:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> apt install grub-efi
-</span><span>
-</span><span style="color:#bf616a;">root@RYZEN5:/#</span><span> grub-install</span><span style="color:#bf616a;"> --target</span><span>=riscv64-efi</span><span style="color:#bf616a;"> --efi-directory</span><span>=/boot/efi</span><span style="color:#bf616a;"> --bootloader-id</span><span>=debian</span><span style="color:#bf616a;"> --recheck --no-nvram --removable
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> apt install grub-efi</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> grub-install</span><span class="z-constant z-other"> --target=riscv64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-nvram --removable</span></span></code></pre>
 <p>As a personal preference, I edit <code>/etc/default/grub</code> and modify <code>GRUB_CMD_LINUX_DEFAULT</code> from <code>"quiet"</code> to <code>""</code> to see the boot log.</p>
 <p>We also need to generate the <code>/boot/grub/grub.cfg</code> file, it's as easy as doing:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">root@RYZEN5:/#</span><span> grub-mkconfig</span><span style="color:#bf616a;"> -o</span><span> /boot/grub/grub.cfg
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">root@RYZEN5:/#</span><span class="z-string"> grub-mkconfig</span><span class="z-constant z-other"> -o</span><span class="z-string"> /boot/grub/grub.cfg</span></span></code></pre>
 <p>Though this is partly incorrect, just open the resulting file and rename all references to the <code>loopXX</code> medium to <code>nvme0n1</code>. Also change the mount mode from <code>ro</code> to <code>rw</code> if you want a R/W root filesystem (You very much need to).</p>
 <p>We're set! Exit the chroot, unmount what we mounted at the start and copy the image over to your NVME drive:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo dd \
-</span><span>          if=debian-visionfive.img \
-</span><span>          of=/dev/your_drive \
-</span><span>          bs=16M status=progress
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo dd</span><span class="z-constant z-character"> \</span></span>
+<span class="giallo-l"><span class="z-string">          if=debian-visionfive.img</span><span class="z-constant z-character"> \</span></span>
+<span class="giallo-l"><span class="z-string">          of=/dev/your_drive</span><span class="z-constant z-character"> \</span></span>
+<span class="giallo-l"><span class="z-string">          bs=16M status=progress</span></span></code></pre>
 <p>It's now a good time to resize the root partition to accomodate the entire drive:</p>
-<pre data-lang="bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#bf616a;">$</span><span> sudo parted /dev/your_drive
-</span><span>
-</span><span style="color:#bf616a;">GNU</span><span> Parted 3.6
-</span><span style="color:#bf616a;">Using</span><span> /dev/your_drive
-</span><span style="color:#bf616a;">Welcome</span><span> to GNU Parted! Type &#39;</span><span style="color:#a3be8c;">help</span><span>&#39; to view a list of commands.
-</span><span>(</span><span style="color:#bf616a;">parted</span><span>) print                                                            
-</span><span style="color:#bf616a;">Warning:</span><span> Not all of the space available to /dev/your_drive appears to be used, you can
-</span><span style="color:#bf616a;">fix</span><span> the GPT to use all of the space (an extra 246997680 blocks) </span><span style="color:#bf616a;">or</span><span> continue with
-</span><span style="color:#bf616a;">the</span><span> current setting? 
-</span><span style="color:#bf616a;">Fix/Ignore?</span><span> fix
-</span><span style="color:#bf616a;">Model:</span><span> Realtek RTL9210B-CG (scsi)
-</span><span style="color:#bf616a;">Disk</span><span> /dev/your_drive: 128GB
-</span><span style="color:#bf616a;">Sector</span><span> size (logical/physical)</span><span style="color:#96b5b4;">:</span><span> 512B/16384B
-</span><span style="color:#bf616a;">Partition</span><span> Table: gpt
-</span><span style="color:#bf616a;">Disk</span><span> Flags: 
-</span><span>
-</span><span style="color:#bf616a;">Number</span><span>  Start   End     Size    File system  Name  Flags
-</span><span> </span><span style="color:#bf616a;">1</span><span>      1049kB  257MB   256MB   fat16              boot, esp
-</span><span> </span><span style="color:#bf616a;">2</span><span>      257MB   1572MB  1315MB  ext4
-</span><span>
-</span><span>(</span><span style="color:#bf616a;">parted</span><span>) resizepart 2 100%                                                
-</span><span>(</span><span style="color:#bf616a;">parted</span><span>) quit                                                             
-</span><span style="color:#bf616a;">Information:</span><span> You may need to update /etc/fstab.
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo e2fsck</span><span style="color:#bf616a;"> -f</span><span> /dev/your_drive2
-</span><span style="color:#bf616a;">e2fsck</span><span> 1.47.2 (1-Jan-2025)
-</span><span style="color:#bf616a;">Pass</span><span> 1: Checking inodes, blocks, and sizes
-</span><span style="color:#bf616a;">Pass</span><span> 2: Checking directory structure
-</span><span style="color:#bf616a;">Pass</span><span> 3: Checking directory connectivity
-</span><span style="color:#bf616a;">Pass</span><span> 4: Checking reference counts
-</span><span style="color:#bf616a;">Pass</span><span> 5: Checking group summary information
-</span><span style="color:#bf616a;">/dev/your_drive2:</span><span> 29531/80320 files (0.2% non-contiguous)</span><span style="color:#bf616a;">,</span><span> 209820/321024 blocks
-</span><span>
-</span><span style="color:#bf616a;">$</span><span> sudo resize2fs /dev/your_drive2
-</span><span>
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="shellscript"><span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo parted /dev/your_drive</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">GNU</span><span class="z-string"> Parted</span><span class="z-constant z-numeric"> 3.6</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Using</span><span class="z-string"> /dev/your_drive</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Welcome</span><span class="z-string"> to GNU Parted! Type &#39;help&#39; to view a list of commands.</span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">(</span><span class="z-entity z-name">parted</span><span class="z-punctuation z-section">)</span><span class="z-support z-function"> print</span><span>                                                            </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Warning:</span><span class="z-string"> Not all of the space available to /dev/your_drive appears to be used, you can</span></span>
+<span class="giallo-l"><span class="z-entity z-name">fix</span><span class="z-string"> the GPT to use all of the space</span><span> (an</span><span class="z-string"> extra</span><span class="z-constant z-numeric"> 246997680</span><span class="z-string"> blocks</span><span>) or continue with</span></span>
+<span class="giallo-l"><span class="z-entity z-name">the</span><span class="z-string"> current setting?</span><span> </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Fix/Ignore?</span><span class="z-string"> fix</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Model:</span><span class="z-string"> Realtek RTL9210B-CG</span><span> (scsi)</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Disk</span><span class="z-string"> /dev/your_drive: 128GB</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Sector</span><span class="z-string"> size</span><span> (logical/physical): 512B/16384B</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Partition</span><span class="z-string"> Table: gpt</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Disk</span><span class="z-string"> Flags:</span><span> </span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">Number</span><span class="z-string">  Start   End     Size    File system  Name  Flags</span></span>
+<span class="giallo-l"><span class="z-entity z-name"> 1</span><span class="z-string">      1049kB  257MB   256MB   fat16              boot, esp</span></span>
+<span class="giallo-l"><span class="z-entity z-name"> 2</span><span class="z-string">      257MB   1572MB  1315MB  ext4</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-punctuation z-section">(</span><span class="z-entity z-name">parted</span><span class="z-punctuation z-section">)</span><span class="z-entity z-name"> resizepart</span><span class="z-constant z-numeric"> 2</span><span class="z-string"> 100%</span><span>                                                </span></span>
+<span class="giallo-l"><span class="z-punctuation z-section">(</span><span class="z-entity z-name">parted</span><span class="z-punctuation z-section">)</span><span class="z-entity z-name"> quit</span><span>                                                             </span></span>
+<span class="giallo-l"><span class="z-entity z-name">Information:</span><span class="z-string"> You may need to update /etc/fstab.</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo e2fsck</span><span class="z-constant z-other"> -f</span><span class="z-string"> /dev/your_drive2</span></span>
+<span class="giallo-l"><span class="z-entity z-name">e2fsck</span><span class="z-constant z-numeric"> 1.47.2</span><span> (1-Jan-2025)</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Pass</span><span class="z-string"> 1: Checking inodes, blocks, and sizes</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Pass</span><span class="z-string"> 2: Checking directory structure</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Pass</span><span class="z-string"> 3: Checking directory connectivity</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Pass</span><span class="z-string"> 4: Checking reference counts</span></span>
+<span class="giallo-l"><span class="z-entity z-name">Pass</span><span class="z-string"> 5: Checking group summary information</span></span>
+<span class="giallo-l"><span class="z-entity z-name">/dev/your_drive2:</span><span class="z-string"> 29531/80320 files</span><span> (0.2%</span><span class="z-string"> non-contiguous</span><span>), 209820/321024 blocks</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-entity z-name">$</span><span class="z-string"> sudo resize2fs /dev/your_drive2</span></span>
+<span class="giallo-l"></span></code></pre>
 <p>With this, you can unplug the drive and re-install it back to the VF2. Assuming that you already installed my u-boot and edk2, it'll launch GRUB automatically.</p>
 <h2 id="may-9-2025-2-11am-in-the-morning-edk2-and-u-boot-update">May 9 2025 2:11AM in the morning EDK2 and u-boot update</h2>
 <h3 id="edk2-wise">EDK2-wise</h3>
 <p>I've been able to use more recent EDK2 version (Basically, up-to-date).</p>
-<p><a href="https://github.com/cakehonolulu/edk2_vf2">This</a> is the EDK2 base repository with all the changes from upstream until today May 9 2025, and <a href="https://github.com/cakehonolulu/edk2-platforms_vf2">this other one</a> is the one for the EDK2 Platforms.</p>
+<p><a rel="external" href="https://github.com/cakehonolulu/edk2_vf2">This</a> is the EDK2 base repository with all the changes from upstream until today May 9 2025, and <a rel="external" href="https://github.com/cakehonolulu/edk2-platforms_vf2">this other one</a> is the one for the EDK2 Platforms.</p>
 <p>I've made a few changes to the JH7110.dsc target description file to accomodate for new EDK2 changes, but all appears to be working just fine (Like the propietary, outdated fork, from StarFive).</p>
 <p>Here's a new screenshot (It's now being built as <code>RELEASE</code> instead of <code>DEBUG</code>!):</p>
 <div style="text-align: center;">
@@ -809,7 +758,7 @@ your tree.</p>
 <em>Upstream EDK2 running on updated VisionFive 2 board</em></p>
 </div>
 <h3 id="u-boot-wise">U-boot wise</h3>
-<p>So, I've also been battling with the hack I had to resort to to make U-boot launch EDK2 from flash in SPL mode for the VF2, but even though the config file is as <a href="https://docs.u-boot.org/en/latest/develop/devicetree/control.html">recommended by u-boot themselves</a>, which is either <code>CONFIG_OF_EMBED</code> or <code>CONFIG_OF_SEPARATE</code> (StarFive's downstream fork uses the prior) set to <code>y</code> in <code>starfive_visionfive2_defconfig</code> it still refuses to find the FDT on the SPL image in-memory somehow; not too sure if this is a config mishap or maybe some strange u-boot bug...</p>
+<p>So, I've also been battling with the hack I had to resort to to make U-boot launch EDK2 from flash in SPL mode for the VF2, but even though the config file is as <a rel="external" href="https://docs.u-boot.org/en/latest/develop/devicetree/control.html">recommended by u-boot themselves</a>, which is either <code>CONFIG_OF_EMBED</code> or <code>CONFIG_OF_SEPARATE</code> (StarFive's downstream fork uses the prior) set to <code>y</code> in <code>starfive_visionfive2_defconfig</code> it still refuses to find the FDT on the SPL image in-memory somehow; not too sure if this is a config mishap or maybe some strange u-boot bug...</p>
 <p>For now, my cute little hack will do.</p>
 <h2 id="may-10-2025-3-41am-in-the-morning-edk2-update">May 10 2025 3:41AM in the morning EDK2 update</h2>
 <p>I've finally got EDK2 firmware menu and boot selector to work for the VF2! Woohoo!</p>
@@ -834,40 +783,40 @@ your tree.</p>
   <!---->
   
   <div class="mb-2 flex flex-wrap">
-    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/visionfive2/"
       >visionfive2</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/vf/"
       >vf</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/risc-v/"
       >risc-v</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/riscv/"
       >riscv</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/rv/"
       >rv</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/sbc/"
       >sbc</a
     >
@@ -909,13 +858,14 @@ your tree.</p>
   
 </article>
 
-    </main>
+      </main>
+    </div>
 
     <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
   <div class="mr-auto basis-full lg:basis-1/2">
     <!---->
     <!---->
-    &copy; 2022 - 2025<!---->
+    &copy; 2022 - 2026<!---->
     
     <a class="link" href="https://cakehonolulu.github.io">
       cakehonolulu

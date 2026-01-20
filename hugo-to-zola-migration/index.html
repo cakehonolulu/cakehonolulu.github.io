@@ -174,7 +174,7 @@
       <div class="flex items-center">
         <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -265,14 +265,6 @@
         <li>
           <a
             class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
-            href="https://cakehonolulu.github.io/archive"
-            >Archive</a
-          >
-        </li>
-        
-        <li>
-          <a
-            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
             href="https://cakehonolulu.github.io/tags"
             >Tags</a
           >
@@ -298,16 +290,24 @@
     <!-- Body Start inject -->
     
 
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
-    >
-      
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
 <article>
   <!-- Page Start inject -->
   
 
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Migrating my blog from Hugo to Zola</h1>
+    <h1 class="my-0! pb-2.5">Migrating my blog from Hugo to Zola</h1>
     <div class="text-sm antialiased opacity-60">
   
   <time>2025-04-20</time>
@@ -330,57 +330,45 @@
   
 
   <!-- TOC -->
-  <!---->
-<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
   <details>
     <summary class="cursor-pointer py-1 pl-4">
-      <span>Table of Contents</span>
+      <span class="ml-2">Table of Contents</span>
     </summary>
-    <div class="px-2">
-      <ul>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#to-blog-or-to-not-blog">To blog or to not blog...</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/hugo-to-zola-migration/#to-blog-or-to-not-blog"
-            >To blog or to not blog...</a
-          >
+        <ul>
           
-          <ul>
-            
-            <li>
-              <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/hugo-to-zola-migration/#communication-excerpt"
-                >Communication excerpt</a
-              >
-            </li>
-            
-          </ul>
+          <li>
+            <a href="#communication-excerpt">Communication excerpt</a>
+          </li>
           
-        </li>
+        </ul>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/hugo-to-zola-migration/#available-technologies"
-            >Available technologies</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#available-technologies">Available technologies</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/hugo-to-zola-migration/#with-great-power-comes-great-responsibility"
-            >With great power comes great responsibility</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#with-great-power-comes-great-responsibility">With great power comes great responsibility</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/hugo-to-zola-migration/#oxidizing-backend"
-            >Oxidizing backend</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#oxidizing-backend">Oxidizing backend</a>
         
-      </ul>
-    </div>
+      </li>
+      
+    </ul>
   </details>
-</div>
+</nav>
 
 <!---->
 
@@ -400,19 +388,18 @@ ahold of this piece!)</em></p>
 <hr />
 <h2 id="available-technologies">Available technologies</h2>
 <p>You know, in a sea of technologies it's sometimes hard to try and choose... you could always...</p>
-<p>You could always go ahead and make a frontend engine based on <a href="https://lhartikk.github.io/ArnoldC/">ArnoldC</a> --</p>
+<p>You could always go ahead and make a frontend engine based on <a rel="external" href="https://lhartikk.github.io/ArnoldC/">ArnoldC</a> --</p>
 <p><strong>my_coolblog.arnoldc:</strong></p>
-<pre data-lang="nix" style="background-color:#2b303b;color:#c0c5ce;" class="language-nix "><code class="language-nix" data-lang="nix"><span style="color:#bf616a;">IT&#39;S SHOWTIME
-</span><span style="color:#bf616a;">TALK TO THE HAND </span><span>&quot;</span><span style="color:#a3be8c;">hello blog</span><span>&quot;
-</span><span style="color:#bf616a;">TALK TO THE HAND </span><span>&quot;</span><span style="color:#a3be8c;">hasta la vista baby</span><span>&quot;
-</span><span style="color:#bf616a;">YOU HAVE BEEN TERMINATED
-</span></code></pre>
+<pre class="giallo z-code"><code data-lang="nix"><span class="giallo-l"><span class="z-variable z-parameter">IT&#39;S SHOWTIME</span></span>
+<span class="giallo-l"><span class="z-variable z-parameter">TALK TO THE HAND</span><span class="z-string"> &quot;hello blog&quot;</span></span>
+<span class="giallo-l"><span class="z-variable z-parameter">TALK TO THE HAND</span><span class="z-string"> &quot;hasta la vista baby&quot;</span></span>
+<span class="giallo-l"><span class="z-variable z-parameter">YOU HAVE BEEN TERMINATED</span></span></code></pre>
 <p>Kidding.... (<em>or not?</em>)</p>
 <p>But yes, choosing what and how you want it to be tends to be increasingly difficult because for certain things you may want some features only available
 in certain engines and some others not available... not to get started on where to host it.</p>
 <p>Fortunately for me, I learned years ago about GitHub offering *.github.io subdomains "linked" to your username (There's probably a vastly more technical way of explaining
 how this actually works in GitHub but this'll do for now) so I went down that route (Could be cool to have shadow copies on other code sharing services, or straight up
-ditching this platform as a whole <a href="https://sfconservancy.org/blog/2022/jun/30/give-up-github-launch/">due to an already long list of enshittification practises</a>) (You know
+ditching this platform as a whole <a rel="external" href="https://sfconservancy.org/blog/2022/jun/30/give-up-github-launch/">due to an already long list of enshittification practises</a>) (You know
 this may actually be the time to actually learn in a practical way about networking and whatnot by building a local homelab instead of those pesky long hours staring at
 Wireshark dumps at university and self-host while I'm at it).</p>
 <h2 id="with-great-power-comes-great-responsibility">With great power comes great responsibility</h2>
@@ -422,14 +409,14 @@ we'll have to settle for something more practical.</p>
 <p>While there are a few candidates, Github's default one tends to be Jekyll if my memory serves me right; but it's not uncommon for users to ditch it altogether (You know, I kinda feel bad for the poor fellow that wanted to be the coolest one at Github by doing a static-site-generator using Ruby...) for another alternative.</p>
 <p>That's what I personally did, and went with Hugo, which is written in Go and it's more tolerable for me.</p>
 <h2 id="oxidizing-backend">Oxidizing backend</h2>
-<p>It's not that I've never ever dealt with Rust, but the times I tried in the past (Pre-2025) have been fun but not heart-touching enough for me to justify switching my religious beliefs from C (More precisely, <a href="https://holyc-lang.com/">HolyC</a>) (Before someone in the audience (<em>hello???</em>) asks, <strong>yes</strong> I was kidding) to it's <em>crusted</em> counterpart.</p>
+<p>It's not that I've never ever dealt with Rust, but the times I tried in the past (Pre-2025) have been fun but not heart-touching enough for me to justify switching my religious beliefs from C (More precisely, <a rel="external" href="https://holyc-lang.com/">HolyC</a>) (Before someone in the audience (<em>hello???</em>) asks, <strong>yes</strong> I was kidding) to it's <em>crusted</em> counterpart.</p>
 <p>That is, until some rainy day around January 2025 (Wasn't rainy but else it wouldn't have had the dramatic impact this has had, right? right...? oh no, I'm talking by myself again; sorry I must've forgotten my <em>Celexa</em>'s).</p>
 <p>So I just kinda got this (un)necessary urge to Rust-ify myself. It's as closest to a spiritual awakening I'll probably ever get probably.</p>
 <p>So there I went, looking for Rust alternatives for my programs (Shoutout to fish-shell for converting it's core engine to Rust!); and of course, converting some of mine to it.</p>
-<p>I kinda started with the usuals, the projects you usually love more (<a href="https://github.com/cakehonolulu/Neo2">Neo2</a> I love you but understand that <a href="https://github.com/cakehonolulu/RustEE">RustEE</a> is the <em>cooler Daniel</em> right now).</p>
+<p>I kinda started with the usuals, the projects you usually love more (<a rel="external" href="https://github.com/cakehonolulu/Neo2">Neo2</a> I love you but understand that <a rel="external" href="https://github.com/cakehonolulu/RustEE">RustEE</a> is the <em>cooler Daniel</em> right now).</p>
 <p>And then, I got a bit of an enlightment; what if there's a SSG made with Rust already?</p>
 <p>It so does happen that there is, was going to ask for a slow drum roll but I kinda forgot I was alone here writing with a coffee and I'm not a percussionist so you'll have to imagine:</p>
-<p><strong><a href="https://www.getzola.org/">Zola</a></strong></p>
+<p><strong><a rel="external" href="https://www.getzola.org/">Zola</a></strong></p>
 <p>So yeah, there it is. Considering you could also write the pages using Markdown (Well, actually a custom Markdown derivative that's also compatible with Markdown) I chose the first theme I could see and just used it, then it's been a matter of porting the general structure of the blog in Hugo here and ta-da!</p>
 <p>Now we have a Rust-powered SSG for my blog.</p>
 <p>I can also do cool math finally:</p>
@@ -461,28 +448,28 @@ $$</p>
   <!---->
   
   <div class="mb-2 flex flex-wrap">
-    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/hugo/"
       >hugo</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/golang/"
       >golang</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/zola/"
       >zola</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/rust/"
       >rust</a
     >
@@ -524,13 +511,14 @@ $$</p>
   
 </article>
 
-    </main>
+      </main>
+    </div>
 
     <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
   <div class="mr-auto basis-full lg:basis-1/2">
     <!---->
     <!---->
-    &copy; 2022 - 2025<!---->
+    &copy; 2022 - 2026<!---->
     
     <a class="link" href="https://cakehonolulu.github.io">
       cakehonolulu

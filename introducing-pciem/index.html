@@ -174,7 +174,7 @@
       <div class="flex items-center">
         <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:invert dark:[background-position:right]"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -265,14 +265,6 @@
         <li>
           <a
             class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
-            href="https://cakehonolulu.github.io/archive"
-            >Archive</a
-          >
-        </li>
-        
-        <li>
-          <a
-            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
             href="https://cakehonolulu.github.io/tags"
             >Tags</a
           >
@@ -298,16 +290,24 @@
     <!-- Body Start inject -->
     
 
-    <main
-      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-3xl break-words px-4 pb-16 pt-32 dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg"
-    >
-      
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
 <article>
   <!-- Page Start inject -->
   
 
   <header class="mb-16">
-    <h1 class="!my-0 pb-2.5">Introducing PCIem</h1>
+    <h1 class="my-0! pb-2.5">Introducing PCIem</h1>
     <div class="text-sm antialiased opacity-60">
   
   <time>2025-11-02</time>
@@ -330,96 +330,72 @@
   
 
   <!-- TOC -->
-  <!---->
-<div class="block-bg mb-12 flex rounded-lg p-2 text-lg">
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
   <details>
     <summary class="cursor-pointer py-1 pl-4">
-      <span>Table of Contents</span>
+      <span class="ml-2">Table of Contents</span>
     </summary>
-    <div class="px-2">
-      <ul>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#preface">Preface</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#preface"
-            >Preface</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#first-of-all-why">First of all, why?</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#first-of-all-why"
-            >First of all, why?</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#protopciem-card">ProtoPCIem card</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#protopciem-card"
-            >ProtoPCIem card</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#pciem-or-a-speedrun-on-getting-linus-mad">PCIem (or a speedrun on getting Linus mad)</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#pciem-or-a-speedrun-on-getting-linus-mad"
-            >PCIem (or a speedrun on getting Linus mad)</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#memmap-cmdline-argument">memmap cmdline argument</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#memmap-cmdline-argument"
-            >memmap cmdline argument</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#adding-a-synthetic-pcie-device">Adding a Synthetic PCIe device</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#adding-a-synthetic-pcie-device"
-            >Adding a Synthetic PCIe device</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#bar-remapping">BAR remapping</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#bar-remapping"
-            >BAR remapping</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#msis">MSIs</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#msis"
-            >MSIs</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#dma">DMA</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#dma"
-            >DMA</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#handling-pci-commands">Handling PCI commands</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#handling-pci-commands"
-            >Handling PCI commands</a
-          >
-          
-        </li>
+      </li>
+      
+      <li>
+        <a href="#pciem-uproxy-and-pciem-s-kernel-thread">pciem_uproxy and pciem&#x27;s kernel thread</a>
         
-        <li>
-          <a class="no-underline hover:underline" href="https://cakehonolulu.github.io/introducing-pciem/#pciem-uproxy-and-pciem-s-kernel-thread"
-            >pciem_uproxy and pciem&#x27;s kernel thread</a
-          >
-          
-        </li>
-        
-      </ul>
-    </div>
+      </li>
+      
+    </ul>
   </details>
-</div>
+</nav>
 
 <!---->
 
@@ -481,7 +457,7 @@
 <p>Using <code>pci_scan_root_bus()</code> and having a specially-prepared <code>struct pci_ops</code> with the <code>read</code> and <code>write</code> handlers containing some cool code makes it so that Linux props up a new PCI device on the bus as if it physically existed there.</p>
 <p>I also use <code>pci_bus_add_devices()</code> and the <code>pci_bus_assign_resources()</code> to populate the card.</p>
 <p>When the kernel probes the new device, it ends up calling those functions on the struct; by carefully setting the parameters, we can specify the PCI device properties. From <code>VENDOR_ID</code> to <code>DEVICE_ID</code>, to extended capabilities, to <code>MSI</code> configuration, <code>DMA</code>... and whatnot.</p>
-<p>You can take a closer look on the source code of <a href="https://github.com/cakehonolulu/pciem/blob/main/pciem.c">pciem.c</a> (<code>vph_read_config()</code>, <code>vph_write_config()</code>, <code>vph_fill_config()</code>).</p>
+<p>You can take a closer look on the source code of <a rel="external" href="https://github.com/cakehonolulu/pciem/blob/main/pciem.c">pciem.c</a> (<code>vph_read_config()</code>, <code>vph_write_config()</code>, <code>vph_fill_config()</code>).</p>
 <h2 id="bar-remapping">BAR remapping</h2>
 <p>When we have to back the BAR0 memory we can use the carved region from <code>memmap</code> because when it tries to take ownership of it the PCI subsystem won't complain as it won't see it belonging to <code>"System RAM"</code> and thus won't return <code>"-EBUSY"</code>, as we mentioned before.</p>
 <p>This enables your usual PCIe driver to do <code>"pci_iomap()"</code> as if nothing.</p>
@@ -527,34 +503,34 @@
   <!---->
   
   <div class="mb-2 flex flex-wrap">
-    <span class="block-bg mb-1.5 mr-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/c/"
       >c</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/linux/"
       >linux</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/kernel/"
       >kernel</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/pcie/"
       >pcie</a
     >
     
     <a
-      class="block-bg block-hover mb-1.5 mr-1.5 rounded-lg px-5 py-1.5 no-underline"
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
       href="https://cakehonolulu.github.io/tags/qemu/"
       >qemu</a
     >
@@ -590,13 +566,14 @@
   
 </article>
 
-    </main>
+      </main>
+    </div>
 
     <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
   <div class="mr-auto basis-full lg:basis-1/2">
     <!---->
     <!---->
-    &copy; 2022 - 2025<!---->
+    &copy; 2022 - 2026<!---->
     
     <a class="link" href="https://cakehonolulu.github.io">
       cakehonolulu
