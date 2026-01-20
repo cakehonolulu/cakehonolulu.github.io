@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-f68f9938.js";
+            window.path_to_searchindex_js = "searchindex-e3c54499.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -199,7 +199,7 @@
 </ol>
 <h2 id="the-code"><a class="header" href="#the-code">The Code</a></h2>
 <h3 id="userspace-device-emulator"><a class="header" href="#userspace-device-emulator">Userspace Device Emulator</a></h3>
-<p>The userspace program creates the PCIe device and handles MMIO operations:</p>
+<p>The userspace program creates the PCIe device, establishes the event channel, and handles MMIO operations.</p>
 <pre><code class="language-c">/*
  * DummyClockPCIe userspace shim
  */
@@ -212,7 +212,10 @@
 #include &lt;string.h&gt;
 #include &lt;sys/ioctl.h&gt;
 #include &lt;sys/mman.h&gt;
+#include &lt;sys/eventfd.h&gt;
 #include &lt;unistd.h&gt;
+#include &lt;stdatomic.h&gt;
+#include &lt;poll.h&gt;
 
 #include "pciem_userspace.h"
 
@@ -226,8 +229,10 @@
 /* DummyClockPCIe state */
 struct counter_device {
     int fd;
+    int instance_fd;
     uint32_t counter;
     uint32_t status;
+    struct pciem_shared_ring *ring;
 };
 </code></pre>
 <h4 id="1-opening-the-pciem-device"><a class="header" href="#1-opening-the-pciem-device">1. Opening the PCIem Device</a></h4>
@@ -237,10 +242,14 @@ if (fd &lt; 0) {
     return 1;
 }
 </code></pre>
-<p>This opens the PCIem control device. All subsequent operations use this file descriptor.</p>
+<p>This opens the PCIem control device. All configuration happens on this file descriptor.</p>
 <h4 id="2-creating-the-device"><a class="header" href="#2-creating-the-device">2. Creating the Device</a></h4>
 <pre><code class="language-c">struct pciem_create_device create = {0};
 ret = ioctl(fd, PCIEM_IOCTL_CREATE_DEVICE, &amp;create);
+if (ret &lt; 0) {
+    perror("Failed to create device");
+    return 1;
+}
 </code></pre>
 <p>This tells PCIem we’re starting to configure a new virtual PCIe device.</p>
 <h4 id="3-adding-bar0"><a class="header" href="#3-adding-bar0">3. Adding BAR0</a></h4>
@@ -252,11 +261,7 @@ ret = ioctl(fd, PCIEM_IOCTL_CREATE_DEVICE, &amp;create);
 };
 ret = ioctl(fd, PCIEM_IOCTL_ADD_BAR, &amp;bar);
 </code></pre>
-<p>This creates a 4KB memory BAR at index 0. The flags specify:</p>
-<ul>
-<li><code>PCI_BASE_ADDRESS_SPACE_MEMORY</code>: This is a memory BAR (not I/O)</li>
-<li><code>PCI_BASE_ADDRESS_MEM_TYPE_32</code>: 32-bit addressable</li>
-</ul>
+<p>This creates a 4KB memory BAR at index 0.</p>
 <h4 id="4-adding-msi-capability"><a class="header" href="#4-adding-msi-capability">4. Adding MSI Capability</a></h4>
 <pre><code class="language-c">struct pciem_cap_msi_userspace msi = {
     .num_vectors_log2 = 0,  /* 2^0 = 1 vector */
@@ -296,100 +301,115 @@ ret = ioctl(fd, PCIEM_IOCTL_SET_CONFIG, &amp;cfg);
     .flags = PCIEM_WP_FLAG_BAR_KPROBES,
 };
 
-int ret = ioctl(dev.fd, PCIEM_IOCTL_SET_WATCHPOINT, &amp;wp);
+ret = ioctl(fd, PCIEM_IOCTL_SET_WATCHPOINT, &amp;wp);
 if (ret &lt; 0) {
     perror("Failed to set watchpoint");
 }
+
 </code></pre>
 <p><strong>Watchpoint flags:</strong></p>
-<ul>
-<li><code>PCIEM_WP_FLAG_BAR_KPROBES</code>: PCIem automatically locates the BAR mapping (recommended)</li>
-<li><code>PCIEM_WP_FLAG_BAR_MANUAL</code>: You develop your own heuristic (Or if the driver stores the BAR address somewhere on it’s internal private driver data structure, you can query it in a hacky way using some offset magic)</li>
-</ul>
+<p>– <code>PCIEM_WP_FLAG_BAR_KPROBES</code>: PCIem automatically locates the BAR mapping (recommended).
+– <code>PCIEM_WP_FLAG_BAR_MANUAL</code>: You provide the virtual address manually (advanced usage).</p>
 <p><strong>Note:</strong> Watchpoints use hardware debug registers, so you can only have a limited number active (Don’t assume there’s loads…).</p>
 <h4 id="7-registering-the-device"><a class="header" href="#7-registering-the-device">7. Registering the Device</a></h4>
 <pre><code class="language-c">ret = ioctl(fd, PCIEM_IOCTL_REGISTER, 0);
+if (ret &lt; 0) {
+    perror("Failed to register device");
+    return 1;
+}
+printf("Device registered! Instance FD: %d\n", ret);
 </code></pre>
-<p>This is the moment your device shim becomes visible to the kernel and the local PCIe bus.</p>
-<p>It’s worth mentioning that every PCI shim has it’s own private <code>fd</code> you can interact with (To map BARs the shim can alter and whatnot, think fault-injection and similar).</p>
-<h4 id="8-handling-events"><a class="header" href="#8-handling-events">8. Handling Events</a></h4>
-<p>Once registered, the kernel will send events when a driver accesses your card:</p>
-<pre><code class="language-c">static void handle_mmio_read(struct counter_device *dev, struct pciem_event *evt)
-{
-    struct pciem_response resp = {
-        .seq = evt-&gt;seq,
-        .status = 0,
-    };
+<p>This makes the device visible to the kernel. It returns a new <code>instance_fd</code> which represents the synthetic device on the bus.</p>
+<h4 id="8-setting-up-the-event-ring"><a class="header" href="#8-setting-up-the-event-ring">8. Setting up the Event Ring</a></h4>
+<p>To receive events efficiently, we map a shared atomic ring buffer and set up an <code>eventfd</code> for notifications. This avoids busy polling.</p>
+<pre><code class="language-c">int efd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+struct pciem_eventfd_config efd_cfg = { .eventfd = efd };
 
-    switch (evt-&gt;offset) {
-    case REG_COUNTER:
-        resp.data = dev-&gt;counter;
-        break;
-    default:
-        printf("Unimplemented read offset!: %d\n", evt-&gt;offset);
-        /* You would gracefully exit here by calling the dtors and whatnot, but for brevity */
-        exit(1);
+if (ioctl(fd, PCIEM_IOCTL_SET_EVENTFD, &amp;efd_cfg) &lt; 0) {
+    perror("Failed to set eventfd");
+    return 1;
+}
+
+struct pciem_shared_ring *ring = mmap(NULL, sizeof(struct pciem_shared_ring),
+                                      PROT_READ | PROT_WRITE, MAP_SHARED,
+                                      fd, 0);
+uint32_t head = atomic_load(&amp;ring-&gt;head);
+
+struct pciem_bar_info_query bar0_info = { .bar_index = 0 };
+ioctl(fd, PCIEM_IOCTL_GET_BAR_INFO, &amp;bar0_info);
+
+volatile uint32_t *bar0 = mmap(NULL, bar0_info.size,
+                               PROT_READ | PROT_WRITE,
+                               MAP_SHARED, instance_fd, 0);
+</code></pre>
+<h4 id="9-the-event-loop"><a class="header" href="#9-the-event-loop">9. The Event Loop</a></h4>
+<p>Now we enter the main loop. If the ring is empty, we <code>poll()</code> on the <code>eventfd</code> to sleep until the kernel wakes us up.</p>
+<pre><code class="language-c">struct pollfd pfd = {
+    .fd = efd,
+    .events = POLLIN
+};
+
+struct counter_device dev = { .fd = fd, .counter = 0 };
+
+while (1) {
+    uint32_t tail = atomic_load(&amp;ring-&gt;tail);
+
+    if (head == tail) {
+        if (poll(&amp;pfd, 1, -1) &gt; 0) {
+            uint64_t count;
+            read(efd, &amp;count, sizeof(count));
+        }
+        continue;
     }
 
-    write(dev-&gt;fd, &amp;resp, sizeof(resp));
+    while (head != tail) {
+        atomic_thread_fence(memory_order_acquire);
+
+        struct pciem_event *evt = &amp;ring-&gt;events[head];
+
+        switch (evt-&gt;type) {
+            case PCIEM_EVENT_MMIO_WRITE:
+                handle_mmio_write(fd, evt, &amp;dev, bar0);
+                break;
+
+            case PCIEM_EVENT_MMIO_READ:
+                printf("Driver read offset 0x%lx\n", evt-&gt;offset);
+                break;
+        }
+
+        head = (head + 1) % PCIEM_RING_SIZE;
+        atomic_store(&amp;ring-&gt;head, head);
+    }
 }
 </code></pre>
-<h4 id="9-injecting-interrupts"><a class="header" href="#9-injecting-interrupts">9. Injecting Interrupts</a></h4>
-<p>When you want to signal the driver:</p>
+<h4 id="10-processing-events"><a class="header" href="#10-processing-events">10. Processing Events</a></h4>
+<p>Since PCIem uses a shared memory model, you <strong>do not</strong> send a response to the kernel for events.</p>
+<ul>
+<li><strong>For Reads:</strong> The driver reads directly from the BAR memory you mapped.</li>
+<li><strong>For Writes:</strong> The driver writes to memory and posts a notification event. You update your internal state and the BAR memory immediately.</li>
+</ul>
+<pre><code class="language-c">static void handle_mmio_write(int fd, struct pciem_event *evt,
+                              struct counter_device *dev,
+                              volatile uint32_t *bar0)
+{
+    if (evt-&gt;bar == 0 &amp;&amp; evt-&gt;offset == REG_CONTROL) {
+        if (evt-&gt;data &amp; 1) {
+            dev-&gt;counter++;
+
+            bar0[REG_COUNTER / 4] = dev-&gt;counter;
+
+            if (dev-&gt;counter % 10 == 0) {
+                struct pciem_irq_inject irq = { .vector = 0 };
+                ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
+            }
+        }
+    }
+}
+</code></pre>
+<h4 id="11-injecting-interrupts"><a class="header" href="#11-injecting-interrupts">11. Injecting Interrupts</a></h4>
+<p>As shown in the handler above, when you want to signal the driver asynchronously (like when the counter reaches a threshold), you use the IRQ injection IOCTL:</p>
 <pre><code class="language-c">struct pciem_irq_inject irq = { .vector = 0 };
 ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
-</code></pre>
-<p>This triggers an MSI interrupt. In our DummyClockPCIe example, we fire one every 10 counter increments.</p>
-<h3 id="kernel-driver"><a class="header" href="#kernel-driver">Kernel Driver</a></h3>
-<p>The driver is a standard PCIe driver, it’s basically unaware that PCIem exists at all.</p>
-<pre><code class="language-c">static int dummyclockpcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-{
-    ...
-
-    ret = pci_enable_device(pdev);
-    
-    /* We map BAR0 */
-    bar0 = pci_iomap(pdev, 0, 0);
-    
-    /* We enable MSIs */
-    ret = pci_enable_msi(pdev);
-}
-</code></pre>
-<p>Then, this, would for instance, generate events:</p>
-<pre><code class="language-c">    iowrite32(1, bar0 + REG_CONTROL);
-    val = ioread32(bar0 + REG_COUNTER);
-</code></pre>
-<p>Anything that accesses the watchpoint will trigger events that your shim will be able to consume and respond accordingly.</p>
-<p>When the driver does <code>iowrite32()</code> or <code>ioread32()</code>, PCIem intercepts it and adds the event to it’s per-device ring-buffer that you can manually poll or use the <code>eventfd</code> API enabled to not busywait.</p>
-<h3 id="eventfd"><a class="header" href="#eventfd">Eventfd</a></h3>
-<p>Instead of busy-polling the device for events, you can use Linux’s <code>eventfd</code> mechanism for efficient notification, support is baked in on the <code>pciem_userspace</code> module of the framework:</p>
-<pre><code class="language-c">setup_eventfd(struct counter_device *dev)
-{
-    struct pciem_eventfd_config efd_cfg;
-    
-    ...
-    
-    event_fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-
-    if (dev-&gt;event_fd &lt; 0)
-    {
-        perror("Failed to create eventfd");
-        ...
-    }
-
-    efd_cfg.eventfd = dev-&gt;event_fd;
-    efd_cfg.reserved = 0;
-    
-    if (ioctl(dev-&gt;fd, PCIEM_IOCTL_SET_EVENTFD, &amp;efd_cfg) &lt; 0)
-    {
-        perror("Failed to set eventfd");
-        close(dev-&gt;event_fd);
-        dev-&gt;event_fd = -1;
-        ...
-    }
-
-    ...
-}
 </code></pre>
 
                     </main>
