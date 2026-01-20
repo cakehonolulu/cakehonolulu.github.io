@@ -169,6 +169,10 @@ Building end-to-end web applications.
 
 [soc/riscv/ucb: Switch to FDT parsing to get memory size](https://review.coreboot.org/c/coreboot/+/86588)
 
+### QEMU
+
+[hw/block/m25p80: Fix Winbond Fast Read dummy cycles](https://lore.kernel.org/qemu-devel/20251221105340.2699327-1-buenocalvachejoel@gmail.com/)
+
 ---
 
 <picture>
