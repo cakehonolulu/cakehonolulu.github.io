@@ -549,7 +549,7 @@ Whilst there's a few ways of doing so, I chose to have a different set of functi
 
 The main reason as to why I use functions instead of inlining the pointer dereference is mainly because, while you could probably have a trampoline within JIT bounds and take it from there; it felt easier for me, conceptually-speaking; to patch `call` opcodes instead - so, if the actual pointer dereference fails, we'll be on a "function boundary", that is, it'll have it's own stack frame and such and it'll be easier to identify using less-obscure code; at least, personally speaking.
 
-```ascii
+```
                                                        ┌───────────────────────────────────────────┐
                                                        │                  fn hw_write32            │
                                                        │                                           │
@@ -575,7 +575,7 @@ The main reason as to why I use functions instead of inlining the pointer derefe
 
 --------------
 
-```ascii
+```
 ┌───────────────────────┐             ┌────────────────────────────────────────────────────────┐
 │      JIT Context      │             │               Signal Handler Context                   │
 ├───────────────────────┤             ├────────────────────────────────────────────────────────┤
@@ -648,7 +648,7 @@ After we have the registers that hold the values that called the function that f
 
 A simple, visual example:
 
-```ascii
+```
      JIT Block Prior Patch
 ┌──────────────────────────────┐
 │ mov rax, 1                   │
@@ -663,7 +663,7 @@ A simple, visual example:
 
 After patch:
 
-```ascii
+```
      JIT Block After Patch
 ┌──────────────────────────────┐
 │ mov rax, 1                   │

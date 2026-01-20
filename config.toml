@@ -18,8 +18,11 @@ generate_feeds = true
 
 feed_filenames = ["atom.xml", "rss.xml"]
 
-[markdown]
-highlight_code = true
+[markdown.highlighting]
+theme  = "ayu-dark"
+error_on_missing_language = true
+style = "class"
+extra_grammars = []
 
 [extra]
 math = true
@@ -37,10 +40,6 @@ url = "$BASE_URL/projects"
 [[extra.menu]]
 name = "Blog"
 url = "$BASE_URL/blog"
-
-[[extra.menu]]
-name = "Archive"
-url = "$BASE_URL/archive"
 
 [[extra.menu]]
 name = "Tags"
