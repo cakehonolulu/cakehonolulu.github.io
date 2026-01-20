@@ -25,7 +25,7 @@ Before starting, make sure you have:
 
 ### Userspace Device Emulator
 
-The userspace program creates the PCIe device and handles MMIO operations:
+The userspace program creates the PCIe device, establishes the event channel, and handles MMIO operations.
 
 ```c
 /*
@@ -40,7 +40,10 @@ The userspace program creates the PCIe device and handles MMIO operations:
 #include <string.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <sys/eventfd.h>
 #include <unistd.h>
+#include <stdatomic.h>
+#include <poll.h>
 
 #include "pciem_userspace.h"
 
@@ -54,8 +57,10 @@ The userspace program creates the PCIe device and handles MMIO operations:
 /* DummyClockPCIe state */
 struct counter_device {
     int fd;
+    int instance_fd;
     uint32_t counter;
     uint32_t status;
+    struct pciem_shared_ring *ring;
 };
 ```
 
@@ -69,13 +74,17 @@ if (fd < 0) {
 }
 ```
 
-This opens the PCIem control device. All subsequent operations use this file descriptor.
+This opens the PCIem control device. All configuration happens on this file descriptor.
 
 #### 2. Creating the Device
 
 ```c
 struct pciem_create_device create = {0};
 ret = ioctl(fd, PCIEM_IOCTL_CREATE_DEVICE, &create);
+if (ret < 0) {
+    perror("Failed to create device");
+    return 1;
+}
 ```
 
 This tells PCIem we're starting to configure a new virtual PCIe device.
@@ -92,9 +101,7 @@ struct pciem_bar_config bar = {
 ret = ioctl(fd, PCIEM_IOCTL_ADD_BAR, &bar);
 ```
 
-This creates a 4KB memory BAR at index 0. The flags specify:
-- `PCI_BASE_ADDRESS_SPACE_MEMORY`: This is a memory BAR (not I/O)
-- `PCI_BASE_ADDRESS_MEM_TYPE_32`: 32-bit addressable
+This creates a 4KB memory BAR at index 0.
 
 #### 4. Adding MSI Capability
 
@@ -144,15 +151,17 @@ struct pciem_watchpoint_config wp = {
     .flags = PCIEM_WP_FLAG_BAR_KPROBES,
 };
 
-int ret = ioctl(dev.fd, PCIEM_IOCTL_SET_WATCHPOINT, &wp);
+ret = ioctl(fd, PCIEM_IOCTL_SET_WATCHPOINT, &wp);
 if (ret < 0) {
     perror("Failed to set watchpoint");
 }
+
 ```
 
 **Watchpoint flags:**
-- `PCIEM_WP_FLAG_BAR_KPROBES`: PCIem automatically locates the BAR mapping (recommended)
-- `PCIEM_WP_FLAG_BAR_MANUAL`: You develop your own heuristic (Or if the driver stores the BAR address somewhere on it's internal private driver data structure, you can query it in a hacky way using some offset magic)
+
+-- `PCIEM_WP_FLAG_BAR_KPROBES`: PCIem automatically locates the BAR mapping (recommended).
+-- `PCIEM_WP_FLAG_BAR_MANUAL`: You provide the virtual address manually (advanced usage).
 
 **Note:** Watchpoints use hardware debug registers, so you can only have a limited number active (Don't assume there's loads...).
 
@@ -160,109 +169,117 @@ if (ret < 0) {
 
 ```c
 ret = ioctl(fd, PCIEM_IOCTL_REGISTER, 0);
+if (ret < 0) {
+    perror("Failed to register device");
+    return 1;
+}
+printf("Device registered! Instance FD: %d\n", ret);
 ```
 
-This is the moment your device shim becomes visible to the kernel and the local PCIe bus.
+This makes the device visible to the kernel. It returns a new `instance_fd` which represents the synthetic device on the bus.
 
-It's worth mentioning that every PCI shim has it's own private `fd` you can interact with (To map BARs the shim can alter and whatnot, think fault-injection and similar).
+#### 8. Setting up the Event Ring
 
-#### 8. Handling Events
-
-Once registered, the kernel will send events when a driver accesses your card:
+To receive events efficiently, we map a shared atomic ring buffer and set up an `eventfd` for notifications. This avoids busy polling.
 
 ```c
-static void handle_mmio_read(struct counter_device *dev, struct pciem_event *evt)
-{
-    struct pciem_response resp = {
-        .seq = evt->seq,
-        .status = 0,
-    };
+int efd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
+struct pciem_eventfd_config efd_cfg = { .eventfd = efd };
 
-    switch (evt->offset) {
-    case REG_COUNTER:
-        resp.data = dev->counter;
-        break;
-    default:
-        printf("Unimplemented read offset!: %d\n", evt->offset);
-        /* You would gracefully exit here by calling the dtors and whatnot, but for brevity */
-        exit(1);
+if (ioctl(fd, PCIEM_IOCTL_SET_EVENTFD, &efd_cfg) < 0) {
+    perror("Failed to set eventfd");
+    return 1;
+}
+
+struct pciem_shared_ring *ring = mmap(NULL, sizeof(struct pciem_shared_ring),
+                                      PROT_READ | PROT_WRITE, MAP_SHARED,
+                                      fd, 0);
+uint32_t head = atomic_load(&ring->head);
+
+struct pciem_bar_info_query bar0_info = { .bar_index = 0 };
+ioctl(fd, PCIEM_IOCTL_GET_BAR_INFO, &bar0_info);
+
+volatile uint32_t *bar0 = mmap(NULL, bar0_info.size,
+                               PROT_READ | PROT_WRITE,
+                               MAP_SHARED, instance_fd, 0);
+```
+
+#### 9. The Event Loop
+
+Now we enter the main loop. If the ring is empty, we `poll()` on the `eventfd` to sleep until the kernel wakes us up.
+
+```c
+struct pollfd pfd = {
+    .fd = efd,
+    .events = POLLIN
+};
+
+struct counter_device dev = { .fd = fd, .counter = 0 };
+
+while (1) {
+    uint32_t tail = atomic_load(&ring->tail);
+
+    if (head == tail) {
+        if (poll(&pfd, 1, -1) > 0) {
+            uint64_t count;
+            read(efd, &count, sizeof(count));
+        }
+        continue;
     }
 
-    write(dev->fd, &resp, sizeof(resp));
+    while (head != tail) {
+        atomic_thread_fence(memory_order_acquire);
+
+        struct pciem_event *evt = &ring->events[head];
+
+        switch (evt->type) {
+            case PCIEM_EVENT_MMIO_WRITE:
+                handle_mmio_write(fd, evt, &dev, bar0);
+                break;
+
+            case PCIEM_EVENT_MMIO_READ:
+                printf("Driver read offset 0x%lx\n", evt->offset);
+                break;
+        }
+
+        head = (head + 1) % PCIEM_RING_SIZE;
+        atomic_store(&ring->head, head);
+    }
 }
 ```
 
-#### 9. Injecting Interrupts
+#### 10. Processing Events
 
-When you want to signal the driver:
+Since PCIem uses a shared memory model, you **do not** send a response to the kernel for events.
+
+* **For Reads:** The driver reads directly from the BAR memory you mapped.
+* **For Writes:** The driver writes to memory and posts a notification event. You update your internal state and the BAR memory immediately.
+
+```c
+static void handle_mmio_write(int fd, struct pciem_event *evt,
+                              struct counter_device *dev,
+                              volatile uint32_t *bar0)
+{
+    if (evt->bar == 0 && evt->offset == REG_CONTROL) {
+        if (evt->data & 1) {
+            dev->counter++;
+
+            bar0[REG_COUNTER / 4] = dev->counter;
+
+            if (dev->counter % 10 == 0) {
+                struct pciem_irq_inject irq = { .vector = 0 };
+                ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &irq);
+            }
+        }
+    }
+}
+```
+
+#### 11. Injecting Interrupts
+
+As shown in the handler above, when you want to signal the driver asynchronously (like when the counter reaches a threshold), you use the IRQ injection IOCTL:
 
 ```c
 struct pciem_irq_inject irq = { .vector = 0 };
 ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &irq);
-```
-
-This triggers an MSI interrupt. In our DummyClockPCIe example, we fire one every 10 counter increments.
-
-### Kernel Driver
-
-The driver is a standard PCIe driver, it's basically unaware that PCIem exists at all.
-
-```c
-static int dummyclockpcie_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-{
-    ...
-
-    ret = pci_enable_device(pdev);
-    
-    /* We map BAR0 */
-    bar0 = pci_iomap(pdev, 0, 0);
-    
-    /* We enable MSIs */
-    ret = pci_enable_msi(pdev);
-}
-```
-
-Then, this, would for instance, generate events:
-
-```c
-    iowrite32(1, bar0 + REG_CONTROL);
-    val = ioread32(bar0 + REG_COUNTER);
-```
-
-Anything that accesses the watchpoint will trigger events that your shim will be able to consume and respond accordingly.
-
-When the driver does `iowrite32()` or `ioread32()`, PCIem intercepts it and adds the event to it's per-device ring-buffer that you can manually poll or use the `eventfd` API enabled to not busywait.
-
-### Eventfd
-
-Instead of busy-polling the device for events, you can use Linux's `eventfd` mechanism for efficient notification, support is baked in on the `pciem_userspace` module of the framework:
-
-```c
-setup_eventfd(struct counter_device *dev)
-{
-    struct pciem_eventfd_config efd_cfg;
-    
-    ...
-    
-    event_fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
-
-    if (dev->event_fd < 0)
-    {
-        perror("Failed to create eventfd");
-        ...
-    }
-
-    efd_cfg.eventfd = dev->event_fd;
-    efd_cfg.reserved = 0;
-    
-    if (ioctl(dev->fd, PCIEM_IOCTL_SET_EVENTFD, &efd_cfg) < 0)
-    {
-        perror("Failed to set eventfd");
-        close(dev->event_fd);
-        dev->event_fd = -1;
-        ...
-    }
-
-    ...
-}
 ```
