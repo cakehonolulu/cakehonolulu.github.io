@@ -1,0 +1,126 @@
+name: Docs
+
+on:
+  pull_request:
+    paths:
+      - "include/**/*.h"
+      - "docs/pciem/tools/gen_api_docs.py"
+      - "docs/pciem/tools/api_descriptions.toml"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  generator-tests:
+    name: Generator self-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install tomli
+      - name: Run self-tests
+        run: python3 docs/pciem/tools/gen_api_docs.py --self-test
+
+  stale-check:
+    name: Check api.md is not stale
+    runs-on: ubuntu-latest
+    needs: generator-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install tomli
+
+      - name: Run stale check
+        id: check
+        run: |
+          set +e
+          python3 docs/pciem/tools/gen_api_docs.py \
+            --title "API Reference" \
+            --version "pr-${{ github.event.pull_request.number }}" \
+            --toc \
+            --check \
+            -o docs/pciem/src/user/api.md \
+            include/pciem_api.h
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Post or update PR comment on stale docs
+        if: steps.check.outputs.exit_code != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              "docs/pciem/src/user/api.md` is out of date",
+              "",
+              "This PR modifies kernel headers or the doc generator but hasn't",
+              "regenerated the API reference page to match.",
+              "",
+              "**Fix it locally:**",
+              "```bash",
+              "python3 docs/pciem/tools/gen_api_docs.py \\",
+              "  --title 'API Reference' --toc \\",
+              "  -o docs/pciem/src/user/api.md \\",
+              "  kernel/pciem_api.h",
+              "",
+              "git add docs/pciem/src/user/api.md",
+              "git commit -m 'docs: regenerate api.md'",
+              "```",
+              "",
+              "Or just run `make docs` if you have it wired up.",
+            ].join("\n");
+
+            const marker = "docs/pciem/src/user/api.md` is out of date";
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.login === "github-actions[bot]" && c.body.includes(marker)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Resolve comment if docs are now in sync
+        if: steps.check.outputs.exit_code == '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = "docs/pciem/src/user/api.md` is out of date";
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.login === "github-actions[bot]" && c.body.includes(marker)
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body: "`docs/pciem/src/user/api.md` is now in sync.",
+              });
+            }
+
+      - name: Fail if stale
+        if: steps.check.outputs.exit_code != '0'
+        run: exit 1

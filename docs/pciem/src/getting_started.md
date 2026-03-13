@@ -41,13 +41,13 @@ In short, the way this framework works is by loading the `pciem.ko` kernel drive
 
 ### PCIem parameters
 
-#### pciem_phys_regions
+#### pciem_phys_region
 
 Let's start with the preface that, we're obviously going to use `insmod` to load `pciem.ko`, but the way we do it changes the behaviour of the framework.
 
 Starting from PCIem 0.1, one can specify kernel module arguments to alter/instruct certain logic on the code.
 
-`pciem_phys_regions`: This basically specifies what physically-contiguous memory regions are reserved and free to use by PCIem. This is attained by passing the `memmap=` argument to Linux's `cmdline`.
+`pciem_phys_region`: This basically specifies what physically-contiguous memory region is reserved and free to use by PCIem. This is attained by passing the `memmap=` argument to Linux's `cmdline`.
 
 As per kernel.org's [`memmap`](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html):
 
@@ -73,33 +73,10 @@ Linux is going to carve 128M starting from physical address `0x1bf000000` out of
 With that exact setup, we'd then load PCIem as follows:
 
 ```bash
-sudo insmod kernel/pciem.ko pciem_phys_regions="bar0:0x1bf000000:0x10000,bar2:0x1bf100000:0x100000"
+sudo insmod kernel/pciem.ko pciem_phys_region="0x1bf000000:0x8000000"
 ```
 
-What this does is, tell PCIem that, out of the reserved memory region, we'll do (In terms of BAR assignation):
-
-
-```bash
-                   memmap=128M$0x1bf000000      
-┌────────────┬─────────────────────────────────┐ Start of reserved
-│0x1bf000000 │              BAR0               │
-│0x1bf010000 │                                 │
-└────────────┼─────────────────────────────────┤
-      .      │              Free               │
-┌────────────┼─────────────────────────────────┤
-│0x1bf100000 │                                 │
-│            │              BAR2               │
-│0x1bf200000 │                                 │
-└────────────┼─────────────────────────────────┤
-      .      │                                 │
-             │                                 │
-      .      │                                 │
-             │              Free               │
-      .      │                                 │
-             │                                 │
- 0x1c7000000 │                                 │
-             └─────────────────────────────────┘ End of reserved
-```
+What this does is, tell PCIem that it basically has 128MBs to play starting from physical ```0x1bf000000```:
 
 #### p2p_regions
 

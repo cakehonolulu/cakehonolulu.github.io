@@ -20,7 +20,13 @@
         return null;
     }
 
+    function isSemver(v) {
+        return /^\d+(\.\d+)*$/.test(v);
+    }
+
     function compareVersions(v1, v2) {
+        if (!isSemver(v1) || !isSemver(v2)) return 0;
+
         const parts1 = v1.split('.').map(Number);
         const parts2 = v2.split('.').map(Number);
         

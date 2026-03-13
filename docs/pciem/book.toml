@@ -4,6 +4,10 @@ language = "en"
 src = "src"
 title = "PCIem"
 
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
 [output.html]
 no-section-label = true
-additional-js = ["pciem.js"]
+additional-js = ["mermaid.min.js", "pciem.js", "mermaid-init.js"]
+additional-css = ["src/custom.css"]

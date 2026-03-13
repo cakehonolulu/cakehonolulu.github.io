@@ -1,11 +1,14 @@
 # On every push this script is executed
-on: push
-name: Build and deploy GH Pages
+on:
+  push:
+  repository_dispatch:
+    types: [pciem-updated]
 
+name: Build and deploy GH Pages
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.event_name == 'repository_dispatch'
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -18,10 +21,50 @@ jobs:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BUILD_ONLY: true
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install doc generator dependencies
+        run: pip install tomli
+
+      - name: Get PCIem main commit SHA
+        id: pciem_version
+        run: |
+          SHA=$(curl -f \
+            -H "Authorization: Bearer ${{ secrets.SITE_DISPATCH_TOKEN }}" \
+            "https://api.github.com/repos/cakehonolulu/pciem/commits/main" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['sha'][:7])")
+          echo "version=${SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch PCIem kernel header
+        run: |
+          mkdir -p kernel
+          curl -f \
+            -H "Authorization: Bearer ${{ secrets.SITE_DISPATCH_TOKEN }}" \
+            "https://raw.githubusercontent.com/cakehonolulu/pciem/main/include/pciem_api.h" \
+            -o kernel/pciem_api.h
+
+      - name: Generate PCIem API docs
+        if: hashFiles('docs/pciem/book.toml') != ''
+        run: |
+          python3 docs/pciem/tools/gen_api_docs.py \
+            --title "API Reference" \
+            --version "${{ steps.pciem_version.outputs.version }}" \
+            --toc \
+            -o docs/pciem/src/user/api.md \
+            kernel/pciem_api.h
+
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
         with:
           mdbook-version: 'latest'
+
+      - name: Install mdbook-mermaid
+        run: |
+          cargo install mdbook-mermaid
+          cd docs/pciem && mdbook-mermaid install
 
       - name: Build PCIem docs
         if: hashFiles('docs/pciem/book.toml') != ''
@@ -40,7 +83,7 @@ jobs:
           done
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./combined_output
