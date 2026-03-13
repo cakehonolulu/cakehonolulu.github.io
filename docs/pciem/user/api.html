@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e6ecbc85.js";
+            window.path_to_searchindex_js = "../searchindex-293725ad.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-942b1139.js"></script>
@@ -182,29 +182,6 @@
 <h2 id="contents"><a class="header" href="#contents">Contents</a></h2>
 <ul>
 <li><a href="#constants">Constants</a></li>
-<li><a href="#structures">Structures</a>
-<ul>
-<li><a href="#struct-pciem-create-device"><code>pciem_create_device</code></a></li>
-<li><a href="#struct-pciem-bar-config"><code>pciem_bar_config</code></a></li>
-<li><a href="#struct-pciem-cap-msi-userspace"><code>pciem_cap_msi_userspace</code></a></li>
-<li><a href="#struct-pciem-cap-msix-userspace"><code>pciem_cap_msix_userspace</code></a></li>
-<li><a href="#struct-pciem-cap-pasid-userspace"><code>pciem_cap_pasid_userspace</code></a></li>
-<li><a href="#struct-pciem-cap-config"><code>pciem_cap_config</code></a></li>
-<li><a href="#struct-pciem-config-space"><code>pciem_config_space</code></a></li>
-<li><a href="#struct-pciem-event"><code>pciem_event</code></a></li>
-<li><a href="#struct-pciem-response"><code>pciem_response</code></a></li>
-<li><a href="#struct-pciem-irq-inject"><code>pciem_irq_inject</code></a></li>
-<li><a href="#struct-pciem-dma-op"><code>pciem_dma_op</code></a></li>
-<li><a href="#struct-pciem-dma-atomic"><code>pciem_dma_atomic</code></a></li>
-<li><a href="#struct-pciem-p2p-op-user"><code>pciem_p2p_op_user</code></a></li>
-<li><a href="#struct-pciem-bar-info-query"><code>pciem_bar_info_query</code></a></li>
-<li><a href="#struct-pciem-eventfd-config"><code>pciem_eventfd_config</code></a></li>
-<li><a href="#struct-pciem-irqfd-config"><code>pciem_irqfd_config</code></a></li>
-<li><a href="#struct-pciem-dma-indirect"><code>pciem_dma_indirect</code></a></li>
-<li><a href="#struct-pciem-trace-bar"><code>pciem_trace_bar</code></a></li>
-<li><a href="#struct-pciem-shared-ring"><code>pciem_shared_ring</code></a></li>
-</ul>
-</li>
 <li><a href="#ioctls">IOCTLs</a>
 <ul>
 <li><a href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></li>
@@ -349,643 +326,126 @@
 </tbody>
 </table>
 </div>
-<h2 id="structures"><a class="header" href="#structures">Structures</a></h2>
-<h3 id="struct-pciem-create-device"><a class="header" href="#struct-pciem-create-device"><code>pciem_create_device</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_create_device
-{
-    uint32_t flags;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></p>
-<h3 id="struct-pciem-bar-config"><a class="header" href="#struct-pciem-bar-config"><code>pciem_bar_config</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_bar_config
-{
-    uint32_t bar_index;
-    uint32_t flags;
-    uint64_t size;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>bar_index</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>size</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-add-bar"><code>PCIEM_IOCTL_ADD_BAR</code></a></p>
-<h3 id="struct-pciem-cap-msi-userspace"><a class="header" href="#struct-pciem-cap-msi-userspace"><code>pciem_cap_msi_userspace</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_cap_msi_userspace
-{
-    uint8_t num_vectors_log2;
-    uint8_t has_64bit;
-    uint8_t has_masking;
-    uint8_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>num_vectors_log2</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>has_64bit</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>has_masking</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint8_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="struct-pciem-cap-msix-userspace"><a class="header" href="#struct-pciem-cap-msix-userspace"><code>pciem_cap_msix_userspace</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_cap_msix_userspace
-{
-    uint8_t bar_index;
-    uint8_t reserved[3];
-    uint32_t table_offset;
-    uint32_t pba_offset;
-    uint16_t table_size;
-    uint16_t reserved2;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>bar_index</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
-<tr><td><code>table_offset</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>pba_offset</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>table_size</code></td><td><code>uint16_t</code></td><td></td></tr>
-<tr><td><code>reserved2</code></td><td><code>uint16_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="struct-pciem-cap-pasid-userspace"><a class="header" href="#struct-pciem-cap-pasid-userspace"><code>pciem_cap_pasid_userspace</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_cap_pasid_userspace
-{
-    uint8_t max_pasid_width;
-    uint8_t execute_permission;
-    uint8_t privileged_mode;
-    uint8_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>max_pasid_width</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>execute_permission</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>privileged_mode</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint8_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="struct-pciem-cap-config"><a class="header" href="#struct-pciem-cap-config"><code>pciem_cap_config</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_cap_config
-{
-    uint32_t cap_type;
-    struct pciem_cap_msi_userspace msi;
-    struct pciem_cap_msix_userspace msix;
-    struct pciem_cap_pasid_userspace pasid;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>cap_type</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>msi</code></td><td><a href="#struct-pciem-cap-msi-userspace"><code>struct pciem_cap_msi_userspace</code></a></td><td></td></tr>
-<tr><td><code>msix</code></td><td><a href="#struct-pciem-cap-msix-userspace"><code>struct pciem_cap_msix_userspace</code></a></td><td></td></tr>
-<tr><td><code>pasid</code></td><td><a href="#struct-pciem-cap-pasid-userspace"><code>struct pciem_cap_pasid_userspace</code></a></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-add-capability"><code>PCIEM_IOCTL_ADD_CAPABILITY</code></a></p>
-<h3 id="struct-pciem-config-space"><a class="header" href="#struct-pciem-config-space"><code>pciem_config_space</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_config_space
-{
-    uint16_t vendor_id;
-    uint16_t device_id;
-    uint16_t subsys_vendor_id;
-    uint16_t subsys_device_id;
-    uint8_t revision;
-    uint8_t class_code[3];
-    uint8_t header_type;
-    uint8_t reserved[7];
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>vendor_id</code></td><td><code>uint16_t</code></td><td></td></tr>
-<tr><td><code>device_id</code></td><td><code>uint16_t</code></td><td></td></tr>
-<tr><td><code>subsys_vendor_id</code></td><td><code>uint16_t</code></td><td></td></tr>
-<tr><td><code>subsys_device_id</code></td><td><code>uint16_t</code></td><td></td></tr>
-<tr><td><code>revision</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>class_code</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
-<tr><td><code>header_type</code></td><td><code>uint8_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint8_t[7]</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-set-config"><code>PCIEM_IOCTL_SET_CONFIG</code></a></p>
-<h3 id="struct-pciem-event"><a class="header" href="#struct-pciem-event"><code>pciem_event</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_event
-{
-    uint64_t seq;
-    uint32_t type;
-    uint32_t bar;
-    uint64_t offset;
-    uint32_t size;
-    uint32_t reserved;
-    uint64_t data;
-    uint64_t timestamp;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>seq</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>type</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>bar</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>offset</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>size</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>data</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>timestamp</code></td><td><code>uint64_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="struct-pciem-response"><a class="header" href="#struct-pciem-response"><code>pciem_response</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_response
-{
-    uint64_t seq;
-    uint64_t data;
-    int32_t status;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>seq</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>data</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>status</code></td><td><code>int32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="struct-pciem-irq-inject"><a class="header" href="#struct-pciem-irq-inject"><code>pciem_irq_inject</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<p>Parameters for PCIEM_IOCTL_INJECT_IRQ.</p>
-<pre><code class="language-c">struct pciem_irq_inject
-{
-    uint32_t vector;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>vector</code></td><td><code>uint32_t</code></td><td>MSI/MSI-X vector number to inject into the guest.</td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td>Must be zero.</td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-inject-irq"><code>PCIEM_IOCTL_INJECT_IRQ</code></a></p>
-<h3 id="struct-pciem-dma-op"><a class="header" href="#struct-pciem-dma-op"><code>pciem_dma_op</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_dma_op
-{
-    uint64_t guest_iova;
-    uint64_t user_addr;
-    uint32_t length;
-    uint32_t pasid;
-    uint32_t flags;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>guest_iova</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>user_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>length</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-dma"><code>PCIEM_IOCTL_DMA</code></a></p>
-<h3 id="struct-pciem-dma-atomic"><a class="header" href="#struct-pciem-dma-atomic"><code>pciem_dma_atomic</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_dma_atomic
-{
-    uint64_t guest_iova;
-    uint64_t operand;
-    uint64_t compare;
-    uint32_t op_type;
-    uint32_t pasid;
-    uint64_t result;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>guest_iova</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>operand</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>compare</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>op_type</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>result</code></td><td><code>uint64_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-dma-atomic"><code>PCIEM_IOCTL_DMA_ATOMIC</code></a></p>
-<h3 id="struct-pciem-p2p-op-user"><a class="header" href="#struct-pciem-p2p-op-user"><code>pciem_p2p_op_user</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_p2p_op_user
-{
-    uint64_t target_phys_addr;
-    uint64_t user_addr;
-    uint32_t length;
-    uint32_t flags;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>target_phys_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>user_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>length</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-p2p"><code>PCIEM_IOCTL_P2P</code></a></p>
-<h3 id="struct-pciem-bar-info-query"><a class="header" href="#struct-pciem-bar-info-query"><code>pciem_bar_info_query</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_bar_info_query
-{
-    uint32_t bar_index;
-    uint64_t phys_addr;
-    uint64_t size;
-    uint32_t flags;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>bar_index</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>phys_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>size</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-get-bar-info"><code>PCIEM_IOCTL_GET_BAR_INFO</code></a></p>
-<h3 id="struct-pciem-eventfd-config"><a class="header" href="#struct-pciem-eventfd-config"><code>pciem_eventfd_config</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_eventfd_config
-{
-    int32_t eventfd;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>eventfd</code></td><td><code>int32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-set-eventfd"><code>PCIEM_IOCTL_SET_EVENTFD</code></a></p>
-<h3 id="struct-pciem-irqfd-config"><a class="header" href="#struct-pciem-irqfd-config"><code>pciem_irqfd_config</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_irqfd_config
-{
-    int32_t eventfd;
-    uint32_t vector;
-    uint32_t flags;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>eventfd</code></td><td><code>int32_t</code></td><td></td></tr>
-<tr><td><code>vector</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-set-irqfd"><code>PCIEM_IOCTL_SET_IRQFD</code></a></p>
-<h3 id="struct-pciem-dma-indirect"><a class="header" href="#struct-pciem-dma-indirect"><code>pciem_dma_indirect</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_dma_indirect
-{
-    uint64_t prp1;
-    uint64_t prp2;
-    uint64_t user_addr;
-    uint32_t length;
-    uint32_t page_size;
-    uint32_t pasid;
-    uint32_t flags;
-    uint32_t reserved;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>prp1</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>prp2</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>user_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>length</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>page_size</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-dma-indirect"><code>PCIEM_IOCTL_DMA_INDIRECT</code></a></p>
-<h3 id="struct-pciem-trace-bar"><a class="header" href="#struct-pciem-trace-bar"><code>pciem_trace_bar</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<pre><code class="language-c">struct pciem_trace_bar
-{
-    uint32_t bar_index;
-    uint32_t flags;
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>bar_index</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-</tbody>
-</table>
-</div>
-<p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-trace-bar"><code>PCIEM_IOCTL_TRACE_BAR</code></a></p>
-<h3 id="struct-pciem-shared-ring"><a class="header" href="#struct-pciem-shared-ring"><code>pciem_shared_ring</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
-<p>Lock-free single-producer/single-consumer event ring shared between the
-kernel and userspace.</p>
-<p>The kernel writes events by advancing @head; userspace consumes them by
-advancing @tail. Each counter is cache-line padded.
-The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
-<pre><code class="language-c">struct pciem_shared_ring
-{
-    atomic_t head;
-    char _pad1[60];
-    atomic_t tail;
-    char _pad2[60];
-    struct pciem_event events[PCIEM_RING_SIZE];
-};
-</code></pre>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Field</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>head</code></td><td><code>atomic_t</code></td><td>Write index, owned by the kernel. Incremented atomically after each event is committed.</td></tr>
-<tr><td><code>_pad1</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate @head from @tail.</td></tr>
-<tr><td><code>tail</code></td><td><code>atomic_t</code></td><td>Read index, owned by userspace. Incremented after each event is consumed.</td></tr>
-<tr><td><code>_pad2</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate @tail from the event array.</td></tr>
-<tr><td><code>events</code></td><td><a href="#struct-pciem-event"><code>struct pciem_event</code></a><code>[PCIEM_RING_SIZE]</code></td><td>Circular buffer of PCIEM_RING_SIZE events.</td></tr>
-</tbody>
-</table>
-</div>
 <h2 id="ioctls"><a class="header" href="#ioctls">IOCTLs</a></h2>
 <blockquote>
 <p>All ioctls are issued on the <code>/dev/pciem</code> file descriptor unless noted otherwise.</p>
 </blockquote>
 <h3 id="ioctl-pciem-ioctl-create-device"><a class="header" href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_CREATE_DEVICE _IOWR(PCIEM_IOCTL_MAGIC, 10, struct pciem_create_device)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-create-device"><code>pciem_create_device</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_create_device</code></p>
+<pre><code class="language-c">struct pciem_create_device arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_CREATE_DEVICE, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-add-bar"><a class="header" href="#ioctl-pciem-ioctl-add-bar"><code>PCIEM_IOCTL_ADD_BAR</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_ADD_BAR _IOW(PCIEM_IOCTL_MAGIC, 11, struct pciem_bar_config)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-bar-config"><code>pciem_bar_config</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_bar_config</code></p>
+<pre><code class="language-c">struct pciem_bar_config arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_ADD_BAR, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-add-capability"><a class="header" href="#ioctl-pciem-ioctl-add-capability"><code>PCIEM_IOCTL_ADD_CAPABILITY</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_ADD_CAPABILITY _IOW(PCIEM_IOCTL_MAGIC, 12, struct pciem_cap_config)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-cap-config"><code>pciem_cap_config</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_cap_config</code></p>
+<pre><code class="language-c">struct pciem_cap_config arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_ADD_CAPABILITY, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-set-config"><a class="header" href="#ioctl-pciem-ioctl-set-config"><code>PCIEM_IOCTL_SET_CONFIG</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_CONFIG _IOW(PCIEM_IOCTL_MAGIC, 13, struct pciem_config_space)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-config-space"><code>pciem_config_space</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_config_space</code></p>
+<pre><code class="language-c">struct pciem_config_space arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_SET_CONFIG, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-register"><a class="header" href="#ioctl-pciem-ioctl-register"><code>PCIEM_IOCTL_REGISTER</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_REGISTER _IO(PCIEM_IOCTL_MAGIC, 14)
 </code></pre>
 <p><strong>Direction:</strong> none (no data transfer)</p>
+<pre><code class="language-c">int ret = ioctl(fd, PCIEM_IOCTL_REGISTER);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-inject-irq"><a class="header" href="#ioctl-pciem-ioctl-inject-irq"><code>PCIEM_IOCTL_INJECT_IRQ</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_INJECT_IRQ _IOW(PCIEM_IOCTL_MAGIC, 15, struct pciem_irq_inject)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-irq-inject"><code>pciem_irq_inject</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_irq_inject</code></p>
+<pre><code class="language-c">struct pciem_irq_inject arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-dma"><a class="header" href="#ioctl-pciem-ioctl-dma"><code>PCIEM_IOCTL_DMA</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_DMA _IOWR(PCIEM_IOCTL_MAGIC, 16, struct pciem_dma_op)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-dma-op"><code>pciem_dma_op</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_op</code></p>
+<pre><code class="language-c">struct pciem_dma_op arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_DMA, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-dma-atomic"><a class="header" href="#ioctl-pciem-ioctl-dma-atomic"><code>PCIEM_IOCTL_DMA_ATOMIC</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_DMA_ATOMIC _IOWR(PCIEM_IOCTL_MAGIC, 17, struct pciem_dma_atomic)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-dma-atomic"><code>pciem_dma_atomic</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_atomic</code></p>
+<pre><code class="language-c">struct pciem_dma_atomic arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_DMA_ATOMIC, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-p2p"><a class="header" href="#ioctl-pciem-ioctl-p2p"><code>PCIEM_IOCTL_P2P</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_P2P _IOWR(PCIEM_IOCTL_MAGIC, 18, struct pciem_p2p_op_user)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-p2p-op-user"><code>pciem_p2p_op_user</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_p2p_op_user</code></p>
+<pre><code class="language-c">struct pciem_p2p_op_user arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_P2P, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-get-bar-info"><a class="header" href="#ioctl-pciem-ioctl-get-bar-info"><code>PCIEM_IOCTL_GET_BAR_INFO</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_GET_BAR_INFO _IOWR(PCIEM_IOCTL_MAGIC, 19, struct pciem_bar_info_query)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-bar-info-query"><code>pciem_bar_info_query</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_bar_info_query</code></p>
+<pre><code class="language-c">struct pciem_bar_info_query arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_GET_BAR_INFO, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-set-eventfd"><a class="header" href="#ioctl-pciem-ioctl-set-eventfd"><code>PCIEM_IOCTL_SET_EVENTFD</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_EVENTFD _IOW(PCIEM_IOCTL_MAGIC, 21, struct pciem_eventfd_config)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-eventfd-config"><code>pciem_eventfd_config</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_eventfd_config</code></p>
+<pre><code class="language-c">struct pciem_eventfd_config arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_SET_EVENTFD, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-set-irqfd"><a class="header" href="#ioctl-pciem-ioctl-set-irqfd"><code>PCIEM_IOCTL_SET_IRQFD</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_SET_IRQFD _IOW(PCIEM_IOCTL_MAGIC, 22, struct pciem_irqfd_config)
 </code></pre>
 <p><strong>Direction:</strong> write (userspace → kernel)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-irqfd-config"><code>pciem_irqfd_config</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_irqfd_config</code></p>
+<pre><code class="language-c">struct pciem_irqfd_config arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_SET_IRQFD, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-dma-indirect"><a class="header" href="#ioctl-pciem-ioctl-dma-indirect"><code>PCIEM_IOCTL_DMA_INDIRECT</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_DMA_INDIRECT _IOWR(PCIEM_IOCTL_MAGIC, 24, struct pciem_dma_indirect)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-dma-indirect"><code>pciem_dma_indirect</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_indirect</code></p>
+<pre><code class="language-c">struct pciem_dma_indirect arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_DMA_INDIRECT, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-trace-bar"><a class="header" href="#ioctl-pciem-ioctl-trace-bar"><code>PCIEM_IOCTL_TRACE_BAR</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_TRACE_BAR _IOWR(PCIEM_IOCTL_MAGIC, 25, struct pciem_trace_bar)
 </code></pre>
 <p><strong>Direction:</strong> read/write (both directions)</p>
-<p><strong>Parameter struct:</strong> <a href="#struct-pciem-trace-bar"><code>pciem_trace_bar</code></a></p>
+<p><strong>Parameter struct:</strong> <code>pciem_trace_bar</code></p>
+<pre><code class="language-c">struct pciem_trace_bar arg = { /* ... */ };
+int ret = ioctl(fd, PCIEM_IOCTL_TRACE_BAR, &amp;arg);
+</code></pre>
 <h3 id="ioctl-pciem-ioctl-start"><a class="header" href="#ioctl-pciem-ioctl-start"><code>PCIEM_IOCTL_START</code></a></h3>
-<blockquote>
-<p><em>Defined in <code>pciem_api.h</code></em></p>
-</blockquote>
 <pre><code class="language-c">#define PCIEM_IOCTL_START _IO(PCIEM_IOCTL_MAGIC, 26)
 </code></pre>
 <p><strong>Direction:</strong> none (no data transfer)</p>
+<pre><code class="language-c">int ret = ioctl(fd, PCIEM_IOCTL_START);
+</code></pre>
 
                     </main>
 
@@ -1032,7 +492,9 @@ The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
         <script src="../book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../mermaid-eefea253.min.js"></script>
         <script src="../pciem-afd5dc05.js"></script>
+        <script src="../mermaid-init-ccf746f1.js"></script>
 
 
 

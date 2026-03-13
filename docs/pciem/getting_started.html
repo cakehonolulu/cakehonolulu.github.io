@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-e6ecbc85.js";
+            window.path_to_searchindex_js = "searchindex-293725ad.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -198,10 +198,10 @@
                                └────────────┘
 </code></pre>
 <h3 id="pciem-parameters"><a class="header" href="#pciem-parameters">PCIem parameters</a></h3>
-<h4 id="pciem_phys_regions"><a class="header" href="#pciem_phys_regions">pciem_phys_regions</a></h4>
+<h4 id="pciem_phys_region"><a class="header" href="#pciem_phys_region">pciem_phys_region</a></h4>
 <p>Let’s start with the preface that, we’re obviously going to use <code>insmod</code> to load <code>pciem.ko</code>, but the way we do it changes the behaviour of the framework.</p>
 <p>Starting from PCIem 0.1, one can specify kernel module arguments to alter/instruct certain logic on the code.</p>
-<p><code>pciem_phys_regions</code>: This basically specifies what physically-contiguous memory regions are reserved and free to use by PCIem. This is attained by passing the <code>memmap=</code> argument to Linux’s <code>cmdline</code>.</p>
+<p><code>pciem_phys_region</code>: This basically specifies what physically-contiguous memory region is reserved and free to use by PCIem. This is attained by passing the <code>memmap=</code> argument to Linux’s <code>cmdline</code>.</p>
 <p>As per kernel.org’s <a href="https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html"><code>memmap</code></a>:</p>
 <pre><code>memmap=nn[KMG]$ss[KMG]
                         [KNL,ACPI,EARLY] Mark specific memory as reserved.
@@ -218,29 +218,9 @@
 <p><code>memmap=128M$0x1bf000000</code></p>
 <p>Linux is going to carve 128M starting from physical address <code>0x1bf000000</code> out of the <code>System RAM</code> and mark it as <code>Reserved</code> so PCIem can use it.</p>
 <p>With that exact setup, we’d then load PCIem as follows:</p>
-<pre><code class="language-bash">sudo insmod kernel/pciem.ko pciem_phys_regions="bar0:0x1bf000000:0x10000,bar2:0x1bf100000:0x100000"
+<pre><code class="language-bash">sudo insmod kernel/pciem.ko pciem_phys_region="0x1bf000000:0x8000000"
 </code></pre>
-<p>What this does is, tell PCIem that, out of the reserved memory region, we’ll do (In terms of BAR assignation):</p>
-<pre><code class="language-bash">                   memmap=128M$0x1bf000000      
-┌────────────┬─────────────────────────────────┐ Start of reserved
-│0x1bf000000 │              BAR0               │
-│0x1bf010000 │                                 │
-└────────────┼─────────────────────────────────┤
-      .      │              Free               │
-┌────────────┼─────────────────────────────────┤
-│0x1bf100000 │                                 │
-│            │              BAR2               │
-│0x1bf200000 │                                 │
-└────────────┼─────────────────────────────────┤
-      .      │                                 │
-             │                                 │
-      .      │                                 │
-             │              Free               │
-      .      │                                 │
-             │                                 │
- 0x1c7000000 │                                 │
-             └─────────────────────────────────┘ End of reserved
-</code></pre>
+<p>What this does is, tell PCIem that it basically has 128MBs to play starting from physical <code>0x1bf000000</code>:</p>
 <h4 id="p2p_regions"><a class="header" href="#p2p_regions">p2p_regions</a></h4>
 <p>The <code>p2p_regions</code> argument is a bit more complex; think of it as a whitelist for DMA accesses within PCIem.</p>
 <p>The framework supports Peer-to-Peer DMA, but in order to add a little bit of security; one has to manually whitelist the target BAR region of the device we want to P2P from/to.</p>
@@ -319,7 +299,9 @@ f147:00:00.0 System peripheral: Red Hat, Inc. Virtio 1.0 file system (rev 01)
         <script src="book-a0b12cfe.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="mermaid-eefea253.min.js"></script>
         <script src="pciem-afd5dc05.js"></script>
+        <script src="mermaid-init-ccf746f1.js"></script>
 
 
 
