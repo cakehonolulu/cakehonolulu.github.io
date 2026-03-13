@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0433faa9.js";
+            window.path_to_searchindex_js = "searchindex-7283757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -549,7 +549,7 @@ while (1) {
 <pre><code class="language-c">struct pciem_irq_inject irq = { .vector = 0 };
 ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="430ef42">
+<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="63ecd75">
 <h1 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h1>
 <p>This page is <strong>auto-generated</strong> from the PCIem kernel headers. Do not edit it by hand — run <code>make docs</code> to regenerate.</p>
 <p>PCIem exposes a userspace-facing API through <code>/dev/pciem</code> that lets developers configure and emulate PCIe devices entirely from userspace.</p>
@@ -682,9 +682,9 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><th>Name</th><th>Value</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_ATTACH</code></td><td><code>0x00000001</code></td><td></td></tr>
-<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_MASK</code></td><td><code>0x00000003</code></td><td></td></tr>
-<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_VIRTUAL</code></td><td><code>0x00000000</code></td><td></td></tr>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_ATTACH</code></td><td><code>0x00000001</code></td><td>Attach to an existing physical PCIe bus.</td></tr>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_MASK</code></td><td><code>0x00000003</code></td><td>Mask to extract the bus mode bits from the flags field.</td></tr>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_VIRTUAL</code></td><td><code>0x00000000</code></td><td>Create a virtual PCIe bus owned entirely by PCIem.</td></tr>
 </tbody>
 </table>
 </div>
