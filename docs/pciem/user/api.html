@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ca744b3e.js";
+            window.path_to_searchindex_js = "../searchindex-e6ecbc85.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-942b1139.js"></script>
@@ -841,8 +841,6 @@ kernel and userspace.</p>
 <p>The kernel writes events by advancing @head; userspace consumes them by
 advancing @tail. Each counter is cache-line padded.
 The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
-<p>@head from @tail.</p>
-<p>@tail from the event array.</p>
 <pre><code class="language-c">struct pciem_shared_ring
 {
     atomic_t head;
@@ -859,9 +857,9 @@ The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
 </thead>
 <tbody>
 <tr><td><code>head</code></td><td><code>atomic_t</code></td><td>Write index, owned by the kernel. Incremented atomically after each event is committed.</td></tr>
-<tr><td><code>_pad1</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate</td></tr>
+<tr><td><code>_pad1</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate @head from @tail.</td></tr>
 <tr><td><code>tail</code></td><td><code>atomic_t</code></td><td>Read index, owned by userspace. Incremented after each event is consumed.</td></tr>
-<tr><td><code>_pad2</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate</td></tr>
+<tr><td><code>_pad2</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate @tail from the event array.</td></tr>
 <tr><td><code>events</code></td><td><a href="#struct-pciem-event"><code>struct pciem_event</code></a><code>[PCIEM_RING_SIZE]</code></td><td>Circular buffer of PCIEM_RING_SIZE events.</td></tr>
 </tbody>
 </table>
