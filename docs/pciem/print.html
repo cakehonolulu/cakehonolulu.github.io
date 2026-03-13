@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-febdc98b.js";
+            window.path_to_searchindex_js = "searchindex-0433faa9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -549,11 +549,279 @@ while (1) {
 <pre><code class="language-c">struct pciem_irq_inject irq = { .vector = 0 };
 ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="0.2">
+<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="11b17a7">
 <h1 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h1>
 <p>This page is <strong>auto-generated</strong> from the PCIem kernel headers. Do not edit it by hand — run <code>make docs</code> to regenerate.</p>
 <p>PCIem exposes a userspace-facing API through <code>/dev/pciem</code> that lets developers configure and emulate PCIe devices entirely from userspace.</p>
 <h2 id="contents"><a class="header" href="#contents">Contents</a></h2>
+<ul>
+<li><a href="#constants">Constants</a></li>
+<li><a href="#ioctls">IOCTLs</a>
+<ul>
+<li><a href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-add-bar"><code>PCIEM_IOCTL_ADD_BAR</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-add-capability"><code>PCIEM_IOCTL_ADD_CAPABILITY</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-set-config"><code>PCIEM_IOCTL_SET_CONFIG</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-register"><code>PCIEM_IOCTL_REGISTER</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-inject-irq"><code>PCIEM_IOCTL_INJECT_IRQ</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-dma"><code>PCIEM_IOCTL_DMA</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-dma-atomic"><code>PCIEM_IOCTL_DMA_ATOMIC</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-p2p"><code>PCIEM_IOCTL_P2P</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-get-bar-info"><code>PCIEM_IOCTL_GET_BAR_INFO</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-set-eventfd"><code>PCIEM_IOCTL_SET_EVENTFD</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-set-irqfd"><code>PCIEM_IOCTL_SET_IRQFD</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-dma-indirect"><code>PCIEM_IOCTL_DMA_INDIRECT</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-trace-bar"><code>PCIEM_IOCTL_TRACE_BAR</code></a></li>
+<li><a href="#ioctl-pciem-ioctl-start"><code>PCIEM_IOCTL_START</code></a></li>
+</ul>
+</li>
+</ul>
+<h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<h3 id="pciem_cap_"><a class="header" href="#pciem_cap_"><code>PCIEM_CAP_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_CAP_MSI</code></td><td><code>0</code></td><td></td></tr>
+<tr><td><code>PCIEM_CAP_MSIX</code></td><td><code>1</code></td><td></td></tr>
+<tr><td><code>PCIEM_CAP_PASID</code></td><td><code>5</code></td><td></td></tr>
+<tr><td><code>PCIEM_CAP_PCIE</code></td><td><code>3</code></td><td></td></tr>
+<tr><td><code>PCIEM_CAP_PM</code></td><td><code>2</code></td><td></td></tr>
+<tr><td><code>PCIEM_CAP_VSEC</code></td><td><code>4</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_event_"><a class="header" href="#pciem_event_"><code>PCIEM_EVENT_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_EVENT_CONFIG_READ</code></td><td><code>3</code></td><td></td></tr>
+<tr><td><code>PCIEM_EVENT_CONFIG_WRITE</code></td><td><code>4</code></td><td></td></tr>
+<tr><td><code>PCIEM_EVENT_MMIO_READ</code></td><td><code>1</code></td><td></td></tr>
+<tr><td><code>PCIEM_EVENT_MMIO_WRITE</code></td><td><code>2</code></td><td></td></tr>
+<tr><td><code>PCIEM_EVENT_MSI_ACK</code></td><td><code>5</code></td><td></td></tr>
+<tr><td><code>PCIEM_EVENT_RESET</code></td><td><code>6</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_trace_"><a class="header" href="#pciem_trace_"><code>PCIEM_TRACE_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_TRACE_READS</code></td><td><code>(1 &lt;&lt; 0)</code></td><td></td></tr>
+<tr><td><code>PCIEM_TRACE_STOP_WRITES</code></td><td><code>(1 &lt;&lt; 2)</code></td><td></td></tr>
+<tr><td><code>PCIEM_TRACE_WRITES</code></td><td><code>(1 &lt;&lt; 1)</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_atomic_"><a class="header" href="#pciem_atomic_"><code>PCIEM_ATOMIC_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_ATOMIC_CAS</code></td><td><code>4</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_FETCH_ADD</code></td><td><code>1</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_FETCH_AND</code></td><td><code>5</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_FETCH_OR</code></td><td><code>6</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_FETCH_SUB</code></td><td><code>2</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_FETCH_XOR</code></td><td><code>7</code></td><td></td></tr>
+<tr><td><code>PCIEM_ATOMIC_SWAP</code></td><td><code>3</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_dma_flag_"><a class="header" href="#pciem_dma_flag_"><code>PCIEM_DMA_FLAG_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_DMA_FLAG_READ</code></td><td><code>0x1</code></td><td></td></tr>
+<tr><td><code>PCIEM_DMA_FLAG_WRITE</code></td><td><code>0x2</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_irqfd_flag_"><a class="header" href="#pciem_irqfd_flag_"><code>PCIEM_IRQFD_FLAG_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_IRQFD_FLAG_DEASSERT</code></td><td><code>(1 &lt;&lt; 1)</code></td><td></td></tr>
+<tr><td><code>PCIEM_IRQFD_FLAG_LEVEL</code></td><td><code>(1 &lt;&lt; 0)</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_wp_flag_bar_"><a class="header" href="#pciem_wp_flag_bar_"><code>PCIEM_WP_FLAG_BAR_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_WP_FLAG_BAR_KPROBES</code></td><td><code>(1 &lt;&lt; 0)</code></td><td></td></tr>
+<tr><td><code>PCIEM_WP_FLAG_BAR_MANUAL</code></td><td><code>(1 &lt;&lt; 1)</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="pciem_create_flag_bus_mode_"><a class="header" href="#pciem_create_flag_bus_mode_"><code>PCIEM_CREATE_FLAG_BUS_MODE_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_ATTACH</code></td><td><code>0x00000001</code></td><td></td></tr>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_MASK</code></td><td><code>0x00000003</code></td><td></td></tr>
+<tr><td><code>PCIEM_CREATE_FLAG_BUS_MODE_VIRTUAL</code></td><td><code>0x00000000</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="miscellaneous"><a class="header" href="#miscellaneous">Miscellaneous</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_MAX_IRQFDS</code></td><td><code>32</code></td><td></td></tr>
+<tr><td><code>PCIEM_RING_SIZE</code></td><td><code>256</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="ioctls"><a class="header" href="#ioctls">IOCTLs</a></h2>
+<blockquote>
+<p>All ioctls are issued on the <code>/dev/pciem</code> file descriptor unless noted otherwise.</p>
+</blockquote>
+<h3 id="ioctl-pciem-ioctl-create-device"><a class="header" href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_CREATE_DEVICE _IOWR(PCIEM_IOCTL_MAGIC, 10, struct pciem_create_device)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_create_device</code></p>
+<h3 id="ioctl-pciem-ioctl-add-bar"><a class="header" href="#ioctl-pciem-ioctl-add-bar"><code>PCIEM_IOCTL_ADD_BAR</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_ADD_BAR _IOW(PCIEM_IOCTL_MAGIC, 11, struct pciem_bar_config)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_bar_config</code></p>
+<h3 id="ioctl-pciem-ioctl-add-capability"><a class="header" href="#ioctl-pciem-ioctl-add-capability"><code>PCIEM_IOCTL_ADD_CAPABILITY</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_ADD_CAPABILITY _IOW(PCIEM_IOCTL_MAGIC, 12, struct pciem_cap_config)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_cap_config</code></p>
+<h3 id="ioctl-pciem-ioctl-set-config"><a class="header" href="#ioctl-pciem-ioctl-set-config"><code>PCIEM_IOCTL_SET_CONFIG</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_SET_CONFIG _IOW(PCIEM_IOCTL_MAGIC, 13, struct pciem_config_space)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_config_space</code></p>
+<h3 id="ioctl-pciem-ioctl-register"><a class="header" href="#ioctl-pciem-ioctl-register"><code>PCIEM_IOCTL_REGISTER</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_REGISTER _IO(PCIEM_IOCTL_MAGIC, 14)
+</code></pre>
+<p><strong>Direction:</strong> none (no data transfer)</p>
+<h3 id="ioctl-pciem-ioctl-inject-irq"><a class="header" href="#ioctl-pciem-ioctl-inject-irq"><code>PCIEM_IOCTL_INJECT_IRQ</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_INJECT_IRQ _IOW(PCIEM_IOCTL_MAGIC, 15, struct pciem_irq_inject)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_irq_inject</code></p>
+<h3 id="ioctl-pciem-ioctl-dma"><a class="header" href="#ioctl-pciem-ioctl-dma"><code>PCIEM_IOCTL_DMA</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_DMA _IOWR(PCIEM_IOCTL_MAGIC, 16, struct pciem_dma_op)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_op</code></p>
+<h3 id="ioctl-pciem-ioctl-dma-atomic"><a class="header" href="#ioctl-pciem-ioctl-dma-atomic"><code>PCIEM_IOCTL_DMA_ATOMIC</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_DMA_ATOMIC _IOWR(PCIEM_IOCTL_MAGIC, 17, struct pciem_dma_atomic)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_atomic</code></p>
+<h3 id="ioctl-pciem-ioctl-p2p"><a class="header" href="#ioctl-pciem-ioctl-p2p"><code>PCIEM_IOCTL_P2P</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_P2P _IOWR(PCIEM_IOCTL_MAGIC, 18, struct pciem_p2p_op_user)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_p2p_op_user</code></p>
+<h3 id="ioctl-pciem-ioctl-get-bar-info"><a class="header" href="#ioctl-pciem-ioctl-get-bar-info"><code>PCIEM_IOCTL_GET_BAR_INFO</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_GET_BAR_INFO _IOWR(PCIEM_IOCTL_MAGIC, 19, struct pciem_bar_info_query)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_bar_info_query</code></p>
+<h3 id="ioctl-pciem-ioctl-set-eventfd"><a class="header" href="#ioctl-pciem-ioctl-set-eventfd"><code>PCIEM_IOCTL_SET_EVENTFD</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_SET_EVENTFD _IOW(PCIEM_IOCTL_MAGIC, 21, struct pciem_eventfd_config)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_eventfd_config</code></p>
+<h3 id="ioctl-pciem-ioctl-set-irqfd"><a class="header" href="#ioctl-pciem-ioctl-set-irqfd"><code>PCIEM_IOCTL_SET_IRQFD</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_SET_IRQFD _IOW(PCIEM_IOCTL_MAGIC, 22, struct pciem_irqfd_config)
+</code></pre>
+<p><strong>Direction:</strong> write (userspace → kernel)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_irqfd_config</code></p>
+<h3 id="ioctl-pciem-ioctl-dma-indirect"><a class="header" href="#ioctl-pciem-ioctl-dma-indirect"><code>PCIEM_IOCTL_DMA_INDIRECT</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_DMA_INDIRECT _IOWR(PCIEM_IOCTL_MAGIC, 24, struct pciem_dma_indirect)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_dma_indirect</code></p>
+<h3 id="ioctl-pciem-ioctl-trace-bar"><a class="header" href="#ioctl-pciem-ioctl-trace-bar"><code>PCIEM_IOCTL_TRACE_BAR</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_TRACE_BAR _IOWR(PCIEM_IOCTL_MAGIC, 25, struct pciem_trace_bar)
+</code></pre>
+<p><strong>Direction:</strong> read/write (both directions)</p>
+<p><strong>Parameter struct:</strong> <code>pciem_trace_bar</code></p>
+<h3 id="ioctl-pciem-ioctl-start"><a class="header" href="#ioctl-pciem-ioctl-start"><code>PCIEM_IOCTL_START</code></a></h3>
+<blockquote>
+<p><em>Defined in <code>pciem_api.h</code></em></p>
+</blockquote>
+<pre><code class="language-c">#define PCIEM_IOCTL_START _IO(PCIEM_IOCTL_MAGIC, 26)
+</code></pre>
+<p><strong>Direction:</strong> none (no data transfer)</p>
 
                     </main>
 
