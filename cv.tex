@@ -1,0 +1,217 @@
+%-------------------------
+% Resume in Latex
+% Author : Sourabh Bajaj
+% License : MIT
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.375in}
+\addtolength{\evensidemargin}{-0.375in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item\small{
+    \textbf{#1}{: #2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-4pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  CV STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING-----------------
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\href{https://www.linkedin.com/in/joel-bueno-calvache/}{\Large Joel Bueno Calvache}} & Email : \href{mailto:buenocalvachejoel@gmail.com}{buenocalvachejoel@gmail.com}\\
+  \href{https://www.linkedin.com/in/joel-bueno-calvache/}{{https://www.linkedin.com/in/joel-bueno-calvache/}} & Mobile : Ask \\
+\end{tabular*}
+
+%--------PROGRAMMING SKILLS------------
+\section{Skills and interests}
+ \resumeSubHeadingListStart
+    \item{
+     \textbf{Experienced with low-level systems software (BootROM, Firmware \& Kernel)}
+    }
+    \item{
+     \textbf{3+ years expertise with C, Python, shell scripting, assembly (x86, RISC-V, ARM, MIPS, SuperH) \& 1+ year of Rust expertise}
+    }
+    \item{
+     \textbf{Extensive experience in open-source development}
+    }
+    \item{
+     \textbf{Deep expertise in hardware/software emulation}
+    }
+ \resumeSubHeadingListEnd
+
+
+%-------------------------------------------
+
+
+
+%-----------EXPERIENCE-----------------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {OPENCHIP \& SOFTWARE TECHNOLOGIES SL}{Barcelona, Spain}
+      {Junior Firmware, Operating Systems \& Security Engineer}{Dec 2024 - Present}
+      \resumeItemListStart
+        \resumeItem{Promotion}
+              {Joined as Junior (Dec 2024), promoted to Associate (Jun 2025), and promoted to Engineer (Dec 2025).}
+        \resumeItem{Control management core firmware, kernel \& userspace}
+              {Helped design \& implement the management core's RISC-V firmware, from the Zstage, to Coreboot \& OpenSBI; enabling Linux plus userspace to work on it seamlessy.}
+        \resumeItem{Application core firmware \& kernel}
+              {Worked on laying down \& debugging of the BootROM, also enabled EDK2 \& ACPI for true UEFI RISC-V bootflow. Not limited to that, also did extensive labour on: U-boot (\& SPL), Linux and propietary firmware bits.}
+        \resumeItem{Linux kernel drivers}
+          {Wrote a Rust Linux kernel drivers to do AP (Application processor) initialization from within the CMC: MMR initialization, firmware loading, CPU unhalting... Also wrote a second Rust driver to enable fast, efficient \& secure RPMI communication flow between CMCs \& APs for RT-enabled Linux.}
+        \resumeItem{Emulation}
+          {Developed the full, in-house QEMU emulation models for all our prototypes \& commercial products. Wrote an academic method of having multi-chiplet boards on QEMU that can harbor multiple, physically-separated CPUs. This enabled the software organization to write and test the entire software stack (From BootROM to userspace), including the CPU kickstarting (From within the CMCs). The models are completely parametrizable and scalable, can have a variety of NUMA configurations and you can have true SMP for homogeneous-but-physically-separated CPUs. Also wrote `pciem`, a novel way of developing PCIe card drivers *directly* on your host Linux machines w/o needing complex VMM schemes or deeply nested virtual platforms that only hinder the developing process.}
+        \resumeItem{Hardware}
+          {Briged the gap (HW-SW co-design) between the firmware and hardware teams to enable the accelerator cards. Helped hardware teams diagnose RTL bugs and enabled them to prototype certain aspects with QEMU.}
+        \resumeItem{Open-source}
+          {Contributed back to the community for Coreboot, Spike \& QEMU to name a few.}
+        \resumeItem{Management}
+          {In charge of designing, creating \& release of emulation models for the European DARE project. Helped coordinate the emulation team of the company when it was hired: goals and work-wise. Hosted internship, bachelor and master thesis students on the company. Candidate interviewing for for all seniority levels.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Rambus Inc.}{Valencia, Spain}
+      {Junior Security Engineer}{Jun 2024 - Nov 2024}
+      \resumeItemListStart
+        \resumeItem{Root-of-Trust hardware accelerator}
+          {Worked with Rambus's-aquired Cryptography Research Inc. MIT group to implement ECDSA algorithm validation on QEMU. Wrote implementations of PQ cryptography algorithms on wolfssl to enable the emulation model to use them.}
+        \resumeItem{QA testing}
+          {Ensured correctness of hardware and software with extensive testing of both hw/sw architecture. Ensured everything ran fine on the FPGA farms to also discard regressions at all levels involved.}
+        \resumeItem{Debugging}
+          {Discovered the root of a full, denial-of-service that would happen with very precise timings when doing sideband communications (IRQ handling would stall due to an overflow in the propietary IP). Discovered an uptream GCC compiler bug involving incorrect register trashing when hitting certain edge-cases related to casting promotions.}
+        \resumeItem{Hardware}
+          {Provided fixes to hardware team (Co-debugged with waveform data from them). Investigated RTL issues. Helped come up with the FPGA pipeline to test new bitstreams when WFH.}
+      \resumeItemListEnd
+\newpage
+    \resumeSubheading
+      {Deutsche Telekom}{Reus, Spain}
+      {Senior Software Engineer}{Sep 2023 - May 2024}
+      \resumeItemListStart
+        \resumeItem{Cloud}
+          {Provisioned a full cloud environment for our client (Volkswagen Group). Ensured strict policies for good software development flow.}
+        \resumeItem{Architecture}
+          {Re-architected an entire, legacy microservices pool for cloud-ready-ness and secure operations (WSO2, SSO...). Manually and incrementally upgraded every component of the entire architecture to upgrade it from the old, legacy, on-premises system.}
+        \resumeItem{Efficiency}
+          {Met the client's deadlines with excellence and lots of spare room for miscellaneous changes. Ever-changing environment and requisites were obstacles but fast-learning and out-of-the-box thinking enabled me to come up with the perfect solution.}
+      \resumeItemListEnd
+      \resumeSubheading
+      {Deutsche Telekom}{Reus, Spain}
+      {Junior Software Engineer}{Sep 2022 - Sep 2023}
+      \resumeItemListStart
+        \resumeItem{Leadership}
+          {Led a team of 4 junior software engineers in the challenge of implementing and improving certain parts of Switzerland's SBB train system. Was in charge of distributing tasks to the rest of the colleagues and helped laying down the organization.}
+        \resumeItem{DevOps}
+          {Developed full CI/CD pipelines to ensure proper testing and release cycles for the software stack we were developing for the agency.}
+        \resumeItem{International}
+          {Was able to navigate without hassle the challenge of efficiently coordinating with an international team.}
+      \resumeItemListEnd
+  \resumeSubHeadingListEnd
+
+
+%-----------EDUCATION-----------------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {Universitat Rovira i Virgili (URV), Tarragona}{Tarragona, Spain}
+      {BSc. Chemistry}{Sep. 2019 -- Jun. 2021}
+    \resumeSubheading
+      {Universitat Rovira i Virgili (URV), Tarragona}{Tarragona, Catalunya}
+      {BSc. Computer Engineering}{Sep. 2021 -- Jun. 2022}
+    \resumeSubheading
+      {Universitat Oberta de Catalunya (UOC), Barcelona}{Barcelona, Catalunya}
+      {BSc. Computer Science}{Sep. 2022 -- May. 2026}
+  \resumeSubHeadingListEnd
+
+
+
+%-----------PROJECTS-----------------
+\section{CERTIFICATIONS AND ACHIEVEMENTS}
+  \resumeSubHeadingListStart
+    \resumeSubItem{AWS Certified Cloud Developer (2023)}
+      {Learned AWSs architecture on a not-so-deep level to help me land inside the team that was migrating some legacy, on-premises services for Volkswagen Group to the cloud.}
+  \resumeSubHeadingListEnd
+  
+%-----------PROJECTS-----------------
+\section{PROJECTS}
+  \resumeSubHeadingListStart
+    \resumeSubItem{PCIem}
+      {Full Linux framework to develop drivers for PCIe cards *directly* on the host machine. Uses a combination of novel techniques to enable synthetic PCI devices to appear on bus enumeration. Enables access interception and MMIO forwarding to userspace.}
+    \resumeSubItem{RustEE}
+      {A Rust, Sony PlayStation 2 emulator with hardware-accelerated graphics, JIT recompiler for the MIPS R5900 and MIPS R3000A cores and hardware fastmem leveraging the host MMU for native-speed emulated memory accesses using novel memory protection and instruction backpatching methodologies.}
+    \resumeSubItem{rasterrage}
+      {A bit-banged VGA firmware for the Raspberry Pi Pico (2040 \& 2530) using the Pico's PIO state machines and cycle-tight DMA. Able to display tear-free, double-buffered 320x240 RGB555 framebuffer at constant, flicker-free 60Hz.}
+    \resumeSubItem{aether}
+      {A soon-to-be Motorola 68000 Homebrew SBC featuring custom Kicad-designed boards and readily-available components (Minus new-old-stock 68K).}
+  \resumeSubHeadingListEnd
+  
+  %-----------PROJECTS-----------------
+\section{LANGUAGE PROFICIENCY}
+  \resumeSubHeadingListStart
+    \resumeSubItem{Spanish}
+      {Native.}
+    \resumeSubItem{Catalan}
+      {Native.}
+    \resumeSubItem{English}
+      {Cambridge English, Certificate in Advanced English (C1 level).}
+  \resumeSubHeadingListEnd
+
+%
+
+\end{document}

@@ -49,6 +49,10 @@ url = "$BASE_URL/tags"
 name = "Docs"
 url = "$BASE_URL/docs"
 
+[[extra.menu]]
+name = "CV"
+url = "$BASE_URL/cv"
+
 [extra.profile]
 name = "cakehonolulu"
 bio = "A blog containing my personal rants and findings about software"
