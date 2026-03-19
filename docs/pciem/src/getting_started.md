@@ -39,15 +39,19 @@ In short, the way this framework works is by loading the `pciem.ko` kernel drive
                                └────────────┘
 ```
 
-### PCIem parameters
+## PCIem parameters
 
-#### pciem_phys_region
+### pciem_phys_region module argument
 
 Let's start with the preface that, we're obviously going to use `insmod` to load `pciem.ko`, but the way we do it changes the behaviour of the framework.
 
 Starting from PCIem 0.1, one can specify kernel module arguments to alter/instruct certain logic on the code.
 
-`pciem_phys_region`: This basically specifies what physically-contiguous memory region is reserved and free to use by PCIem. This is attained by passing the `memmap=` argument to Linux's `cmdline`.
+`pciem_phys_region`: This basically specifies what physically-contiguous memory region is reserved and free to use by PCIem.
+
+#### Reserving memory with memmap command line argument
+
+This is attained by passing the `memmap=` argument to Linux's `cmdline`.
 
 As per kernel.org's [`memmap`](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html):
 
@@ -78,7 +82,70 @@ sudo insmod kernel/pciem.ko pciem_phys_region="0x1bf000000:0x8000000"
 
 What this does is, tell PCIem that it basically has 128MBs to play starting from physical ```0x1bf000000```:
 
-#### p2p_regions
+> **Note:** On some AArch64 platforms (such as the Raspberry Pi 4B), `memmap=` may not be honoured by the bootloader or may not be available at all. In those cases, the preferred alternative is to reserve memory via a [Device Tree overlay](#reserving-memory-with-a-custom-device-tree-overlay) instead.
+
+#### Reserving memory with a custom device tree overlay
+
+Create a file named `reserve-mem.dts` with the following contents, adjusting the base address and size to match your desired reservation:
+
+```dts
+/dts-v1/;
+/plugin/;
+/ {
+    compatible = "brcm,bcm2711";
+    fragment@0 {
+        target-path = "/";
+        __overlay__ {
+            #address-cells = <2>;
+            #size-cells = <1>;
+            reserved-memory {
+                #address-cells = <2>;
+                #size-cells = <1>;
+                ranges;
+                pciem_reservation@50000000 {
+                    reg = <0x0 0x50000000 0x10000000>;
+                    no-map;
+                    status = "okay";
+                };
+            };
+        };
+    };
+};
+```
+
+In this example, `0x50000000` is the base address and `0x10000000` is the size (256MB). Adjust these to fit your target platform's memory layout.
+
+Compile the overlay and install it:
+
+```bash
+dtc -@ -I dts -O dtb -o reserve-mem.dtbo reserve-mem.dts
+sudo cp reserve-mem.dtbo /boot/firmware/overlays/
+```
+
+Then enable it by appending the following line to `/boot/firmware/config.txt`:
+
+```
+dtoverlay=reserve-mem
+```
+
+> **Note:** For RPi 4B (Or similar) boards you should add the line within the `[all]` node.
+
+Reboot for the reservation to take effect. You can verify it was applied by checking:
+
+```bash
+cat /proc/iomem | grep -i reserved
+```
+
+Once confirmed, load PCIem pointing at the same region specified in the overlay:
+
+```bash
+sudo insmod kernel/pciem.ko pciem_phys_region="0x50000000:0x10000000"
+```
+
+> **Note:** The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution (64-bit version). Some aarch64 kernels/boards may be fine with `memmap=` or even `mem=` (Even though the latest hasn't been tested) but it's best to try and decide which one works.
+
+
+### p2p_regions
 
 The `p2p_regions` argument is a bit more complex; think of it as a whitelist for DMA accesses within PCIem.
 
@@ -111,7 +178,7 @@ sudo insmod kernel/pciem.ko p2p_regions="0xe00000000:0x1000"
 
 This will, in turn, give PCIem access to that BAR so PCIe shims can do P2P DMA.
 
-### General functionality
+## General functionality
 
 PCIem exposes an interface at `/dev/pciem` which you can freely call into to construct your PCIe shim from within the userspace.
 
