@@ -305,7 +305,7 @@ sudo cp reserve-mem.dtbo /boot/firmware/overlays/
 <p><strong>Note:</strong> The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution and a VisionFive 2 running Debian sid (64-bit version). Some aarch64/riscv kernels/boards may be fine with <code>memmap=</code> or even <code>mem=</code> (Even though the latest hasn’t been tested) but it’s best to try and decide which one works.</p>
 </blockquote>
 <h4 id="reserving-memory-with-fully-replaced-device-tree"><a class="header" href="#reserving-memory-with-fully-replaced-device-tree">Reserving memory with fully replaced device tree</a></h4>
-<p>If the platform doesn’t have <code>dtoverlay</code> support you can, instead, dump the device-tree from the live-running system and include/modify the <a href="#reserved-memory">reserved-memory</a> node on it.</p>
+<p>If the platform doesn’t have <code>dtoverlay</code> support you can, instead, dump the device-tree from the live-running system and include/modify the <a href="#reserved-memory-node">reserved-memory</a> node on it.</p>
 <p>There’s a bunch of ways of having the firmware load a prebuilt device-tree instead of the default (Probably built-in) one.</p>
 <p>This is left up as an exercise for the reader as it varies wildly from device to device; but for the VisionFive 2, what worked is:</p>
 <ul>
