@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0a78e1a6.js";
+            window.path_to_searchindex_js = "searchindex-5710929e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -224,10 +224,11 @@
 </code></pre>
 <p>What this does is, tell PCIem that it basically has 128MBs to play starting from physical <code>0x1bf000000</code>:</p>
 <blockquote>
-<p><strong>Note:</strong> On some AArch64 platforms (such as the Raspberry Pi 4B), <code>memmap=</code> may not be honoured by the bootloader or may not be available at all. In those cases, the preferred alternative is to reserve memory via a <a href="#reserving-memory-with-a-custom-device-tree-overlay">Device Tree overlay</a> instead.</p>
+<p><strong>Note:</strong> On some AArch64/riscv platforms (such as the Raspberry Pi 4B or VisionFive 2), <code>memmap=</code> may not be honoured by the bootloader or may not be available at all. In those cases, the preferred alternative is to reserve memory via a <a href="#reserving-memory-with-a-custom-device-tree-overlay">Device Tree overlay</a> instead. If platform doesn’t have <code>dtoverlay</code> access/support in an easy way, <a href="#reserving-memory-with-fully-replaced-device-tree">an alternate method is possible</a>.</p>
 </blockquote>
 <h4 id="reserving-memory-with-a-custom-device-tree-overlay"><a class="header" href="#reserving-memory-with-a-custom-device-tree-overlay">Reserving memory with a custom device tree overlay</a></h4>
 <p>Create a file named <code>reserve-mem.dts</code> with the following contents, adjusting the base address and size to match your desired reservation:</p>
+<h5 id="reserved-memory-node"><a class="header" href="#reserved-memory-node">reserved-memory node</a></h5>
 <pre><code class="language-dts">/dts-v1/;
 /plugin/;
 / {
@@ -269,8 +270,15 @@ sudo cp reserve-mem.dtbo /boot/firmware/overlays/
 <pre><code class="language-bash">sudo insmod kernel/pciem.ko pciem_phys_region="0x50000000:0x10000000"
 </code></pre>
 <blockquote>
-<p><strong>Note:</strong> The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution (64-bit version). Some aarch64 kernels/boards may be fine with <code>memmap=</code> or even <code>mem=</code> (Even though the latest hasn’t been tested) but it’s best to try and decide which one works.</p>
+<p><strong>Note:</strong> The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution and a VisionFive 2 running Debian sid (64-bit version). Some aarch64/riscv kernels/boards may be fine with <code>memmap=</code> or even <code>mem=</code> (Even though the latest hasn’t been tested) but it’s best to try and decide which one works.</p>
 </blockquote>
+<h4 id="reserving-memory-with-fully-replaced-device-tree"><a class="header" href="#reserving-memory-with-fully-replaced-device-tree">Reserving memory with fully replaced device tree</a></h4>
+<p>If the platform doesn’t have <code>dtoverlay</code> support you can, instead, dump the device-tree from the live-running system and include/modify the <a href="#reserved-memory">reserved-memory</a> node on it.</p>
+<p>There’s a bunch of ways of having the firmware load a prebuilt device-tree instead of the default (Probably built-in) one.</p>
+<p>This is left up as an exercise for the reader as it varies wildly from device to device; but for the VisionFive 2, what worked is:</p>
+<ul>
+<li>Assuming your device is using <code>GRUB</code> as bootloader you can modify your menuentry to point to the modified <code>dtb</code> file, which is placed alongside the <code>vmlinuz-*</code>, <code>initrd-*</code> files so that it can locate it. Then just add below everything on the menuentry: <code>devicetree /path/to/modified.dtb</code> and that’ll do it.</li>
+</ul>
 <h3 id="p2p_regions"><a class="header" href="#p2p_regions">p2p_regions</a></h3>
 <p>The <code>p2p_regions</code> argument is a bit more complex; think of it as a whitelist for DMA accesses within PCIem.</p>
 <p>The framework supports Peer-to-Peer DMA, but in order to add a little bit of security; one has to manually whitelist the target BAR region of the device we want to P2P from/to.</p>
