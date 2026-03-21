@@ -82,11 +82,13 @@ sudo insmod kernel/pciem.ko pciem_phys_region="0x1bf000000:0x8000000"
 
 What this does is, tell PCIem that it basically has 128MBs to play starting from physical ```0x1bf000000```:
 
-> **Note:** On some AArch64 platforms (such as the Raspberry Pi 4B), `memmap=` may not be honoured by the bootloader or may not be available at all. In those cases, the preferred alternative is to reserve memory via a [Device Tree overlay](#reserving-memory-with-a-custom-device-tree-overlay) instead.
+> **Note:** On some AArch64/riscv platforms (such as the Raspberry Pi 4B or VisionFive 2), `memmap=` may not be honoured by the bootloader or may not be available at all. In those cases, the preferred alternative is to reserve memory via a [Device Tree overlay](#reserving-memory-with-a-custom-device-tree-overlay) instead. If platform doesn't have `dtoverlay` access/support in an easy way, [an alternate method is possible](#reserving-memory-with-fully-replaced-device-tree).
 
 #### Reserving memory with a custom device tree overlay
 
 Create a file named `reserve-mem.dts` with the following contents, adjusting the base address and size to match your desired reservation:
+
+##### reserved-memory node
 
 ```dts
 /dts-v1/;
@@ -142,8 +144,17 @@ Once confirmed, load PCIem pointing at the same region specified in the overlay:
 sudo insmod kernel/pciem.ko pciem_phys_region="0x50000000:0x10000000"
 ```
 
-> **Note:** The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution (64-bit version). Some aarch64 kernels/boards may be fine with `memmap=` or even `mem=` (Even though the latest hasn't been tested) but it's best to try and decide which one works.
+> **Note:** The method written above has been tested on a Raspberry Pi 4B with the stock Raspbian distribution and a VisionFive 2 running Debian sid (64-bit version). Some aarch64/riscv kernels/boards may be fine with `memmap=` or even `mem=` (Even though the latest hasn't been tested) but it's best to try and decide which one works.
 
+#### Reserving memory with fully replaced device tree
+
+If the platform doesn't have `dtoverlay` support you can, instead, dump the device-tree from the live-running system and include/modify the [reserved-memory](#reserved-memory-node) node on it.
+
+There's a bunch of ways of having the firmware load a prebuilt device-tree instead of the default (Probably built-in) one.
+
+This is left up as an exercise for the reader as it varies wildly from device to device; but for the VisionFive 2, what worked is:
+
+* Assuming your device is using `GRUB` as bootloader you can modify your menuentry to point to the modified `dtb` file, which is placed alongside the `vmlinuz-*`, `initrd-*` files so that it can locate it. Then just add below everything on the menuentry: `devicetree /path/to/modified.dtb` and that'll do it.
 
 ### p2p_regions
 
