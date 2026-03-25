@@ -37,7 +37,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-5710929e.js";
+            window.path_to_searchindex_js = "searchindex-d15b630e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-942b1139.js"></script>
@@ -575,7 +575,7 @@ while (1) {
 <pre><code class="language-c">struct pciem_irq_inject irq = { .vector = 0 };
 ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="529add6">
+<div style="break-before: page; page-break-before: always;"></div><meta name="pciem-doc-version" content="67d7997">
 <h1 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h1>
 <p>This page is <strong>auto-generated</strong> from the PCIem kernel headers. Do not edit it by hand — run <code>make docs</code> to regenerate.</p>
 <p>PCIem exposes a userspace-facing API through <code>/dev/pciem</code> that lets developers configure and emulate PCIe devices entirely from userspace.</p>
@@ -626,6 +626,18 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </li>
 </ul>
 <h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<h3 id="pciem_max_"><a class="header" href="#pciem_max_"><code>PCIEM_MAX_*</code></a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Name</th><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>PCIEM_MAX_FUNCTIONS</code></td><td><code>8</code></td><td></td></tr>
+<tr><td><code>PCIEM_MAX_IRQFDS</code></td><td><code>32</code></td><td></td></tr>
+</tbody>
+</table>
+</div>
 <h3 id="pciem_cap_"><a class="header" href="#pciem_cap_"><code>PCIEM_CAP_*</code></a></h3>
 <div class="table-wrapper">
 <table>
@@ -744,7 +756,6 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><th>Name</th><th>Value</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>PCIEM_MAX_IRQFDS</code></td><td><code>32</code></td><td></td></tr>
 <tr><td><code>PCIEM_RING_SIZE</code></td><td><code>256</code></td><td></td></tr>
 </tbody>
 </table>
@@ -754,9 +765,12 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <p><em>Defined in <code>pciem_api.h</code></em></p>
 </blockquote>
 <h3 id="struct-pciem-create-device"><a class="header" href="#struct-pciem-create-device"><code>pciem_create_device</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_CREATE_DEVICE.</p>
 <pre><code class="language-c">struct pciem_create_device
 {
     uint32_t flags;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -765,18 +779,22 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><th>Field</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>flags</code></td><td><code>uint32_t</code></td><td>Bus-mode flags (PCIEM_CREATE_FLAG_BUS_MODE_*).</td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index to create (0–PCIEM_MAX_FUNCTIONS-1). Must be 0 for the first function on a slot. Functions 1–7 must be created after func 0. For single-function devices, leave at 0 (zero-init is fine).</td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td>Must be zero.</td></tr>
 </tbody>
 </table>
 </div>
 <p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-create-device"><code>PCIEM_IOCTL_CREATE_DEVICE</code></a></p>
 <h3 id="struct-pciem-bar-config"><a class="header" href="#struct-pciem-bar-config"><code>pciem_bar_config</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_ADD_BAR.</p>
 <pre><code class="language-c">struct pciem_bar_config
 {
     uint32_t bar_index;
     uint32_t flags;
     uint64_t size;
-    uint32_t reserved;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -788,7 +806,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>bar_index</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>size</code></td><td><code>uint64_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index this BAR belongs to (0–PCIEM_MAX_FUNCTIONS-1). Defaults to 0 if zero-initialised.</td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -864,9 +883,12 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </table>
 </div>
 <h3 id="struct-pciem-cap-config"><a class="header" href="#struct-pciem-cap-config"><code>pciem_cap_config</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_ADD_CAPABILITY.</p>
 <pre><code class="language-c">struct pciem_cap_config
 {
     uint32_t cap_type;
+    uint8_t func;
+    uint8_t reserved[3];
     struct pciem_cap_msi_userspace msi;
     struct pciem_cap_msix_userspace msix;
     struct pciem_cap_pasid_userspace pasid;
@@ -879,6 +901,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </thead>
 <tbody>
 <tr><td><code>cap_type</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index this capability belongs to (0–PCIEM_MAX_FUNCTIONS-1). Defaults to 0 if zero-initialised.</td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 <tr><td><code>msi</code></td><td><a href="#struct-pciem-cap-msi-userspace"><code>struct pciem_cap_msi_userspace</code></a></td><td></td></tr>
 <tr><td><code>msix</code></td><td><a href="#struct-pciem-cap-msix-userspace"><code>struct pciem_cap_msix_userspace</code></a></td><td></td></tr>
 <tr><td><code>pasid</code></td><td><a href="#struct-pciem-cap-pasid-userspace"><code>struct pciem_cap_pasid_userspace</code></a></td><td></td></tr>
@@ -887,8 +911,11 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </div>
 <p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-add-capability"><code>PCIEM_IOCTL_ADD_CAPABILITY</code></a></p>
 <h3 id="struct-pciem-config-space"><a class="header" href="#struct-pciem-config-space"><code>pciem_config_space</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_SET_CONFIG.</p>
 <pre><code class="language-c">struct pciem_config_space
 {
+    uint8_t func;
+    uint8_t reserved_func[3];
     uint16_t vendor_id;
     uint16_t device_id;
     uint16_t subsys_vendor_id;
@@ -905,6 +932,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><th>Field</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index to configure (0–PCIEM_MAX_FUNCTIONS-1). Defaults to 0 if zero-initialised.</td></tr>
+<tr><td><code>reserved_func</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 <tr><td><code>vendor_id</code></td><td><code>uint16_t</code></td><td></td></tr>
 <tr><td><code>device_id</code></td><td><code>uint16_t</code></td><td></td></tr>
 <tr><td><code>subsys_vendor_id</code></td><td><code>uint16_t</code></td><td></td></tr>
@@ -974,7 +1003,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <pre><code class="language-c">struct pciem_irq_inject
 {
     uint32_t vector;
-    uint32_t reserved;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -984,7 +1014,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 </thead>
 <tbody>
 <tr><td><code>vector</code></td><td><code>uint32_t</code></td><td>MSI/MSI-X vector number to inject into the guest.</td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td>Must be zero.</td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td>Must be zero.</td></tr>
 </tbody>
 </table>
 </div>
@@ -997,7 +1028,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
     uint32_t length;
     uint32_t pasid;
     uint32_t flags;
-    uint32_t reserved;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1011,7 +1043,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>length</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -1025,6 +1058,7 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
     uint32_t op_type;
     uint32_t pasid;
     uint64_t result;
+    uint8_t func;
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1039,6 +1073,7 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>op_type</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>result</code></td><td><code>uint64_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -1050,6 +1085,7 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
     uint64_t user_addr;
     uint32_t length;
     uint32_t flags;
+    uint8_t func;
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1062,17 +1098,21 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>user_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
 <tr><td><code>length</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
 <p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-p2p"><code>PCIEM_IOCTL_P2P</code></a></p>
 <h3 id="struct-pciem-bar-info-query"><a class="header" href="#struct-pciem-bar-info-query"><code>pciem_bar_info_query</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_GET_BAR_INFO.</p>
 <pre><code class="language-c">struct pciem_bar_info_query
 {
     uint32_t bar_index;
     uint64_t phys_addr;
     uint64_t size;
     uint32_t flags;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1085,6 +1125,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>phys_addr</code></td><td><code>uint64_t</code></td><td></td></tr>
 <tr><td><code>size</code></td><td><code>uint64_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index to query (0–PCIEM_MAX_FUNCTIONS-1). Defaults to 0 if zero-initialised.</td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -1114,7 +1156,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
     int32_t eventfd;
     uint32_t vector;
     uint32_t flags;
-    uint32_t reserved;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1126,7 +1169,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>eventfd</code></td><td><code>int32_t</code></td><td></td></tr>
 <tr><td><code>vector</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
@@ -1141,7 +1185,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
     uint32_t page_size;
     uint32_t pasid;
     uint32_t flags;
-    uint32_t reserved;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1157,16 +1202,20 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tr><td><code>page_size</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>pasid</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
-<tr><td><code>reserved</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td></td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
 <p><strong>Used by:</strong> <a href="#ioctl-pciem-ioctl-dma-indirect"><code>PCIEM_IOCTL_DMA_INDIRECT</code></a></p>
 <h3 id="struct-pciem-trace-bar"><a class="header" href="#struct-pciem-trace-bar"><code>pciem_trace_bar</code></a></h3>
+<p>Parameters for PCIEM_IOCTL_TRACE_BAR.</p>
 <pre><code class="language-c">struct pciem_trace_bar
 {
     uint32_t bar_index;
     uint32_t flags;
+    uint8_t func;
+    uint8_t reserved[3];
 };
 </code></pre>
 <div class="table-wrapper">
@@ -1177,6 +1226,8 @@ ioctl(fd, PCIEM_IOCTL_INJECT_IRQ, &amp;irq);
 <tbody>
 <tr><td><code>bar_index</code></td><td><code>uint32_t</code></td><td></td></tr>
 <tr><td><code>flags</code></td><td><code>uint32_t</code></td><td></td></tr>
+<tr><td><code>func</code></td><td><code>uint8_t</code></td><td>Function index whose BAR should be traced (0–PCIEM_MAX_FUNCTIONS-1). Defaults to 0 if zero-initialised.</td></tr>
+<tr><td><code>reserved</code></td><td><code>uint8_t[3]</code></td><td></td></tr>
 </tbody>
 </table>
 </div>
