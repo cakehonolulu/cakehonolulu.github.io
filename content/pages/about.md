@@ -173,6 +173,10 @@ Building end-to-end web applications.
 
 [hw/block/m25p80: Fix Winbond Fast Read dummy cycles](https://lore.kernel.org/qemu-devel/20251221105340.2699327-1-buenocalvachejoel@gmail.com/)
 
+### OpenSBI
+
+[firmware: fw_base: make stack guard setup conditional on Zkr](https://lists.infradead.org/pipermail/opensbi/2026-March/009671.html)
+
 ---
 
 <picture>
