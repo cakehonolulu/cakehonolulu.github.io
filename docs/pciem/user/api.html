@@ -36,7 +36,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-d15b630e.js";
+            window.path_to_searchindex_js = "../searchindex-afc19fd1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-677b952a.js"></script>
@@ -175,7 +175,7 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <meta name="pciem-doc-version" content="b8ac29c">
+                        <meta name="pciem-doc-version" content="36c0e8b">
 <h1 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h1>
 <p>This page is <strong>auto-generated</strong> from the PCIem kernel headers. Do not edit it by hand — run <code>make docs</code> to regenerate.</p>
 <p>PCIem exposes a userspace-facing API through <code>/dev/pciem</code> that lets developers configure and emulate PCIe devices entirely from userspace.</p>
@@ -835,8 +835,8 @@
 <h3 id="struct-pciem-shared-ring"><a class="header" href="#struct-pciem-shared-ring"><code>pciem_shared_ring</code></a></h3>
 <p>Lock-free single-producer/single-consumer event ring shared between the
 kernel and userspace.</p>
-<p>The kernel writes events by advancing @head; userspace consumes them by
-advancing @tail. Each counter is cache-line padded.
+<p>The kernel writes events by advancing @tail; userspace consumes them by
+advancing @head. Each counter is cache-line padded.
 The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
 <p>@head from @tail.</p>
 <p>@tail from the event array.</p>
@@ -855,9 +855,9 @@ The ring is mapped read-only into userspace via mmap on the PCIem fd.</p>
 <tr><th>Field</th><th>Type</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code>head</code></td><td><code>atomic_t</code></td><td>Write index, owned by the kernel. Incremented atomically after each event is committed.</td></tr>
+<tr><td><code>head</code></td><td><code>atomic_t</code></td><td>Read index, owned by userspace. Incremented after each event is consumed.</td></tr>
 <tr><td><code>_pad1</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate</td></tr>
-<tr><td><code>tail</code></td><td><code>atomic_t</code></td><td>Read index, owned by userspace. Incremented after each event is consumed.</td></tr>
+<tr><td><code>tail</code></td><td><code>atomic_t</code></td><td>Write index, owned by the kernel. Incremented atomically after each event is committed.</td></tr>
 <tr><td><code>_pad2</code></td><td><code>char[60]</code></td><td>Cache-line padding to isolate</td></tr>
 <tr><td><code>events</code></td><td><a href="#struct-pciem-event"><code>struct pciem_event</code></a><code>[PCIEM_RING_SIZE]</code></td><td>Circular buffer of PCIEM_RING_SIZE events.</td></tr>
 </tbody>
