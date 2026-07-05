@@ -9,7 +9,6 @@ path = "about"
 
 - Systems Software Engineer specializing in Firmware, Operating Systems, and Security.
 - Lifelong passion for technology and computers.
-- Pursuing a Computer Science degree at the Universitat Oberta de Catalunya (UOC) while balancing work and study.
 - Previous experience as a Full-stack and AWS Cloud Engineer.
 - Currently focused professionally on low-level programming and engineering.
 - Enjoys listening to music, debating, and retro gaming consoles.
@@ -172,6 +171,8 @@ Building end-to-end web applications.
 ### QEMU
 
 [hw/block/m25p80: Fix Winbond Fast Read dummy cycles](https://lore.kernel.org/qemu-devel/20251221105340.2699327-1-buenocalvachejoel@gmail.com/)
+
+[tcg/riscv: raise VLEN limit to the specification's maximum](https://lists.nongnu.org/archive/html/qemu-riscv/2026-06/msg00298.html)
 
 ### OpenSBI
 
