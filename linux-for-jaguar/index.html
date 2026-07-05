@@ -1,0 +1,530 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>
+    &#x27;Desktop-ifying&#x27; the Atari Jaguar - cakehonolulu&#x27;s blog
+  </title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  <meta name="description" content="The challenges around porting Linux to an old videogame console by Atari" />
+  <meta name="author" content="cakehonolulu" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="&#x27;Desktop-ifying&#x27; the Atari Jaguar" />
+  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:description" content="The challenges around porting Linux to an old videogame console by Atari" />
+  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-for-jaguar&#x2F;" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://cakehonolulu.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>
+    renderMathInElement(document.body, {
+      // customised options
+      // • auto-render specific keys, e.g.:
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      // • rendering keys, e.g.:
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Mermaid -->
+  
+  <!---->
+  <script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+  const initMermaid = (isDark) => {
+    mermaid.initialize({
+      theme: isDark ? "dark" : "default",
+      startOnLoad: false,
+    });
+    mermaid.run();
+  };
+
+  // Add data-mermaid-code attribute on all mermaid block.
+  document.querySelectorAll(".mermaid").forEach((element) => {
+    element.setAttribute("data-mermaid-code", element.innerHTML);
+  });
+
+  // Re-render mermaid when theme changed.
+  document.body.addEventListener("set-theme", (e) => {
+    document.querySelectorAll(".mermaid").forEach((element) => {
+      const mermaidCode = element.getAttribute("data-mermaid-code");
+      if (mermaidCode != null) {
+        element.removeAttribute("data-processed");
+        element.innerHTML = mermaidCode;
+      }
+    });
+    initMermaid(e.detail === "dark");
+  });
+
+  // The es module script will load defer, so the localStorage should already be set by script in header.
+  // If this script is loaded first, the script in header will dispatch an event to re-render mermaid, it's works too.
+  initMermaid(localStorage.getItem("dark") === "true");
+</script>
+
+  <!---->
+  
+  <!---->
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://cakehonolulu.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+  <!---->
+  
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title="Atom"
+    href="https://cakehonolulu.github.io/atom.xml"
+  />
+   
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="https://cakehonolulu.github.io/rss.xml"
+  />
+  
+  <!---->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-for-jaguar&#x2F;" />
+
+  <!-- Head inject -->
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+      <div
+        class="btn-menu relative z-50 flex h-8 w-8 shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+        role="button"
+        aria-label="Menu"
+      ></div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
+          htmlClass.add("dark");
+        } else {
+          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
+          htmlClass.remove("dark");
+        }
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/about"
+            >About</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/projects"
+            >Projects</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/blog"
+            >Blog</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/tags"
+            >Tags</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/docs"
+            >Docs</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/cv"
+            >CV</a
+          >
+        </li>
+        
+      </ul>
+      <!-- Header Nav inject -->
+      
+    </nav>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+      >
+        
+<article>
+  <!-- Page Start inject -->
+  
+
+  <header class="mb-16">
+    <h1 class="my-0! pb-2.5">&#x27;Desktop-ifying&#x27; the Atari Jaguar</h1>
+    <div class="text-sm antialiased opacity-60">
+  
+  <time>2026-07-05</time>
+  <span class="mx-1">&middot;</span>
+  <span>4min</span>
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <span class="mx-1">&middot;</span>
+  <span>cakehonolulu</span>
+  
+  <!-- Page Info inject -->
+  
+</div>
+
+  </header>
+
+  
+
+  <!-- TOC -->
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
+  <details>
+    <summary class="cursor-pointer py-1 pl-4">
+      <span class="ml-2">Table of Contents</span>
+    </summary>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#what-in-the-tarnation-is-an-atari-jaguar">What in the tarnation is an Atari Jaguar?</a>
+        
+      </li>
+      
+      <li>
+        <a href="#why-in-the-tarnation-linux-of-all-things">Why in the tarnation Linux of all things?</a>
+        
+      </li>
+      
+      <li>
+        <a href="#getting-our-hands-dirty-and-technical-challenges-that-were-overcomed">Getting our hands dirty and technical challenges that were overcomed</a>
+        
+      </li>
+      
+    </ul>
+  </details>
+</nav>
+
+<!---->
+
+  <!-- Content -->
+  <section><h2 id="what-in-the-tarnation-is-an-atari-jaguar">What in the tarnation is an Atari Jaguar?</h2>
+<p>Released in North America in November of 1993, the Atari Jaguar promised to be the new cool kid in the block thanks to it's (Debatable) 64 bits of pure power.</p>
+<div style="text-align: center;">
+<p><img src="https://www.hwlegend.tech/wp-content/uploads/2011/03/Atari-Jaguar.png" alt="Atari Jaguar" />
+<em>The Atari Jaguar</em></p>
+</div>
+<p>The console itself ended up being a commercial disaster, even after the release of the CD addon, the Jaguar CD; which managed to sell even less units in a desperate attempt to try and compete with the Sony Playstation and the Sega Saturn.</p>
+<h2 id="why-in-the-tarnation-linux-of-all-things">Why in the tarnation Linux of all things?</h2>
+<p>Interestingly enough, to this day, Linux has code for the base 68000 processor. It's under <code>arch/m68k/68000</code>.</p>
+<p>As a refresher, the Motorola 68000 was a CISC processor with mixed 16-32 bit capabilities (It's usually described as being 32-bit internally due to the register width length and 16-bit because the data bus was 16-bit, so 2-byte transfers at a time).</p>
+<p>It had a 24-bit address bus, 2 to the power 24; thereabout a maximum of 16MBs of addressable memory.</p>
+<p>It was released on 1979 to compete with the soon-to-be-released 16-bit CPUs of the era.</p>
+<div style="text-align: center;">
+<p><img src="https://www.autoitscript.com/site/wp-content/uploads/2019/03/mc68000_640x314.jpg" alt="M68000" />
+<em>The Motorola 68000</em></p>
+</div>
+<p>Overall, it got lots of traction commercially; it ended up being incoporated in lots of popular commercial hardware. Biggest contenders are the original Macintosh (And Apple Lisa), the Commodore Amiga series of computers (With varying generations of the 68000), the Sega Genesis/Megadrive, the Neo-Geo AES, Plexus workstations... and the Jaguar.</p>
+<p>Let's now address the elephant in the room, why Linux.</p>
+<p>Well, it's easy; <code>because we can</code> (<em>-ish</em>).</p>
+<h2 id="getting-our-hands-dirty-and-technical-challenges-that-were-overcomed">Getting our hands dirty and technical challenges that were overcomed</h2>
+<p>This design choices basically involved tip-toeing around the very limited characteristics of the machine (Mostly the memory). So you can imagine that lots of kernel features had to be turned off.</p>
+<p>The Jaguar has 2 megabytes of RAM (Mapped at $000000), (up to) 6 megabytes of ROM (The cartridge, basically) mapped at $80000 and 2 custom ICs (Tom &amp; Jerry, a "GPU" and a DSP) which are also memory-mapped.</p>
+<p>Jerry, which is the DSP on the board (Which does lots of things, one of them being audio) has 2 dedicated TXD and RXD pins so I figured I'd repurpose to develop a dead simple UART state machine (So I could basically get <code>earlyprintk</code> and <code>earlycon</code> logging).</p>
+<p>Most of the issues with the bringup process were mostly related to design choices I had to do, for instance, we leaverage Linux's mechanism where it lets us have <code>vmlinux</code> XIP'd (Execute-in-place: So, <code>.text</code>, <code>.rodata</code> within ROM boundaries and <code>.bss</code>+ <code>.data</code> remapped onto RAM at boot).</p>
+<p>We also have the issue of what do we want to run when Linux finishes loading; I initially played around with <code>toybox</code> and a few other initramfs solutions but fortunately enough,</p>
+<p>I initially thought of using <code>m68k-linux-gnu-</code> but strangely (Even after passing <code>-68000</code>) it emitted unaligned memory accesses (Which are <em>no bueno</em> on the base 68000) and I had to resort to doing toolchain building.</p>
+<p><code>crosstool-ng</code> has recently got support to build for the base 68000 (With <code>nommu</code>); which I basically used as a "trampoline" to have a decent toolchain built for the processor; it also takes care of adding one of the features we need toolchain-wise: <code>elf2flt</code>.</p>
+<p>Since we don't have an MMU, we basically need to enable support for loading the so-called <code>FLAT</code> binaries, which can be obtained by linking with <code>-W,-elf2flt</code> (Or running <code>elf2flt</code> afterwards). This is a complex topic but the gist of it is that it basically needs to pre-handle the relocations (Again, no MMU) the loader may do so that it can be used.</p>
+<p>There's a few interesting tidbits that you can basically configure in that regard (Load the entire binary to RAM, do GOT/PLT relocation... all of which can be checked with <code>flthdr</code>).</p>
+<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>❯ flthdr ~/jagfs/rootfs/bin/busybox</span></span>
+<span class="giallo-l"><span>/home/cakehonolulu/jagfs/rootfs/bin/busybox</span></span>
+<span class="giallo-l"><span>    Magic:        bFLT</span></span>
+<span class="giallo-l"><span>    Rev:          4</span></span>
+<span class="giallo-l"><span>    Build Date:   Thu Jul  2 03:08:09 2026</span></span>
+<span class="giallo-l"><span>    Entry:        0x44</span></span>
+<span class="giallo-l"><span>    Data Start:   0x1e0a0</span></span>
+<span class="giallo-l"><span>    Data End:     0x25808</span></span>
+<span class="giallo-l"><span>    BSS End:      0x2a1c0</span></span>
+<span class="giallo-l"><span>    Stack Size:   0x10000</span></span>
+<span class="giallo-l"><span>    Reloc Start:  0x25808</span></span>
+<span class="giallo-l"><span>    Reloc Count:  0x100e</span></span>
+<span class="giallo-l"><span>    Flags:        0x1 ( Load-to-Ram )</span></span></code></pre>
+<p>Pretty nifty thing...</p>
+<p>With all this, we basically built a very stripped down <code>busybox</code> (We also had to tune <code>uClibc</code> malloc strategies to set it as <code>malloc-simple</code> else busybox would OOM).</p>
+<p>There were some other porting hurdles (The Jaguar has a custom handler on romvec for the #64 which basically routes the TIM0 and VBLANK interrupts which need to be demuxed) but they were mostly easy to overcome thanks to how Linux is programmed (And the amount stuff it let's you override to bring up a platform).</p>
+<p>Find the modified Linux repository over at: https://github.com/cakehonolulu/linux_jag</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/linux_jaguar/boot.png" alt="boot" /></p>
+</div>
+</section>
+
+  <hr />
+
+  <!-- Post Taxonomies -->
+  
+<footer class="mt-12 flex flex-col">
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <div class="mb-2 flex flex-wrap">
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/c/"
+      >c</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/linux/"
+      >linux</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/kernel/"
+      >kernel</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/atari/"
+      >atari</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/jaguar/"
+      >jaguar</a
+    >
+    
+  </div>
+  
+</footer>
+
+<!---->
+
+  <!-- Post Nav -->
+  
+<nav class="block-bg mt-12 flex flex-wrap rounded-lg text-lg">
+  
+  <a
+    class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
+    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;"
+    ><span class="mr-1.5">←</span><span>Introducing PCIem</span></a
+  >
+  <!---->
+  
+</nav>
+
+<!---->
+
+  <!-- Comment -->
+  <!---->
+  <!---->
+<!---->
+  
+
+  <!-- Page End inject -->
+  
+</article>
+
+      </main>
+    </div>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2022 - 2026<!---->
+    
+    <a class="link" href="https://cakehonolulu.github.io">
+      cakehonolulu
+    </a>
+     |<!---->
+    <!---->
+    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+      MIT
+    </a>
+    <!---->
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+</footer>
+
+
+    <!-- Body End inject -->
+    
+  </body>
+</html>

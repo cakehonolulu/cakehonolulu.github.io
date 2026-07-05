@@ -7,7 +7,64 @@
       <generator>Zola</generator>
       <language>en</language>
       <atom:link href="https://cakehonolulu.github.io/rss.xml" rel="self" type="application/rss+xml"/>
-      <lastBuildDate>Sun, 02 Nov 2025 00:00:00 +0000</lastBuildDate>
+      <lastBuildDate>Sun, 05 Jul 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>&#x27;Desktop-ifying&#x27; the Atari Jaguar</title>
+          <pubDate>Sun, 05 Jul 2026 00:00:00 +0000</pubDate>
+          <author>cakehonolulu</author>
+          <link>https://cakehonolulu.github.io/linux-for-jaguar/</link>
+          <guid>https://cakehonolulu.github.io/linux-for-jaguar/</guid>
+          <description xml:base="https://cakehonolulu.github.io/linux-for-jaguar/">&lt;h2 id=&quot;what-in-the-tarnation-is-an-atari-jaguar&quot;&gt;What in the tarnation is an Atari Jaguar?&lt;&#x2F;h2&gt;
+&lt;p&gt;Released in North America in November of 1993, the Atari Jaguar promised to be the new cool kid in the block thanks to it&#x27;s (Debatable) 64 bits of pure power.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;www.hwlegend.tech&#x2F;wp-content&#x2F;uploads&#x2F;2011&#x2F;03&#x2F;Atari-Jaguar.png&quot; alt=&quot;Atari Jaguar&quot; &#x2F;&gt;
+&lt;em&gt;The Atari Jaguar&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The console itself ended up being a commercial disaster, even after the release of the CD addon, the Jaguar CD; which managed to sell even less units in a desperate attempt to try and compete with the Sony Playstation and the Sega Saturn.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-in-the-tarnation-linux-of-all-things&quot;&gt;Why in the tarnation Linux of all things?&lt;&#x2F;h2&gt;
+&lt;p&gt;Interestingly enough, to this day, Linux has code for the base 68000 processor. It&#x27;s under &lt;code&gt;arch&#x2F;m68k&#x2F;68000&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;As a refresher, the Motorola 68000 was a CISC processor with mixed 16-32 bit capabilities (It&#x27;s usually described as being 32-bit internally due to the register width length and 16-bit because the data bus was 16-bit, so 2-byte transfers at a time).&lt;&#x2F;p&gt;
+&lt;p&gt;It had a 24-bit address bus, 2 to the power 24; thereabout a maximum of 16MBs of addressable memory.&lt;&#x2F;p&gt;
+&lt;p&gt;It was released on 1979 to compete with the soon-to-be-released 16-bit CPUs of the era.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;www.autoitscript.com&#x2F;site&#x2F;wp-content&#x2F;uploads&#x2F;2019&#x2F;03&#x2F;mc68000_640x314.jpg&quot; alt=&quot;M68000&quot; &#x2F;&gt;
+&lt;em&gt;The Motorola 68000&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Overall, it got lots of traction commercially; it ended up being incoporated in lots of popular commercial hardware. Biggest contenders are the original Macintosh (And Apple Lisa), the Commodore Amiga series of computers (With varying generations of the 68000), the Sega Genesis&#x2F;Megadrive, the Neo-Geo AES, Plexus workstations... and the Jaguar.&lt;&#x2F;p&gt;
+&lt;p&gt;Let&#x27;s now address the elephant in the room, why Linux.&lt;&#x2F;p&gt;
+&lt;p&gt;Well, it&#x27;s easy; &lt;code&gt;because we can&lt;&#x2F;code&gt; (&lt;em&gt;-ish&lt;&#x2F;em&gt;).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;getting-our-hands-dirty-and-technical-challenges-that-were-overcomed&quot;&gt;Getting our hands dirty and technical challenges that were overcomed&lt;&#x2F;h2&gt;
+&lt;p&gt;This design choices basically involved tip-toeing around the very limited characteristics of the machine (Mostly the memory). So you can imagine that lots of kernel features had to be turned off.&lt;&#x2F;p&gt;
+&lt;p&gt;The Jaguar has 2 megabytes of RAM (Mapped at $000000), (up to) 6 megabytes of ROM (The cartridge, basically) mapped at $80000 and 2 custom ICs (Tom &amp;amp; Jerry, a &quot;GPU&quot; and a DSP) which are also memory-mapped.&lt;&#x2F;p&gt;
+&lt;p&gt;Jerry, which is the DSP on the board (Which does lots of things, one of them being audio) has 2 dedicated TXD and RXD pins so I figured I&#x27;d repurpose to develop a dead simple UART state machine (So I could basically get &lt;code&gt;earlyprintk&lt;&#x2F;code&gt; and &lt;code&gt;earlycon&lt;&#x2F;code&gt; logging).&lt;&#x2F;p&gt;
+&lt;p&gt;Most of the issues with the bringup process were mostly related to design choices I had to do, for instance, we leaverage Linux&#x27;s mechanism where it lets us have &lt;code&gt;vmlinux&lt;&#x2F;code&gt; XIP&#x27;d (Execute-in-place: So, &lt;code&gt;.text&lt;&#x2F;code&gt;, &lt;code&gt;.rodata&lt;&#x2F;code&gt; within ROM boundaries and &lt;code&gt;.bss&lt;&#x2F;code&gt;+ &lt;code&gt;.data&lt;&#x2F;code&gt; remapped onto RAM at boot).&lt;&#x2F;p&gt;
+&lt;p&gt;We also have the issue of what do we want to run when Linux finishes loading; I initially played around with &lt;code&gt;toybox&lt;&#x2F;code&gt; and a few other initramfs solutions but fortunately enough,&lt;&#x2F;p&gt;
+&lt;p&gt;I initially thought of using &lt;code&gt;m68k-linux-gnu-&lt;&#x2F;code&gt; but strangely (Even after passing &lt;code&gt;-68000&lt;&#x2F;code&gt;) it emitted unaligned memory accesses (Which are &lt;em&gt;no bueno&lt;&#x2F;em&gt; on the base 68000) and I had to resort to doing toolchain building.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;crosstool-ng&lt;&#x2F;code&gt; has recently got support to build for the base 68000 (With &lt;code&gt;nommu&lt;&#x2F;code&gt;); which I basically used as a &quot;trampoline&quot; to have a decent toolchain built for the processor; it also takes care of adding one of the features we need toolchain-wise: &lt;code&gt;elf2flt&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Since we don&#x27;t have an MMU, we basically need to enable support for loading the so-called &lt;code&gt;FLAT&lt;&#x2F;code&gt; binaries, which can be obtained by linking with &lt;code&gt;-W,-elf2flt&lt;&#x2F;code&gt; (Or running &lt;code&gt;elf2flt&lt;&#x2F;code&gt; afterwards). This is a complex topic but the gist of it is that it basically needs to pre-handle the relocations (Again, no MMU) the loader may do so that it can be used.&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s a few interesting tidbits that you can basically configure in that regard (Load the entire binary to RAM, do GOT&#x2F;PLT relocation... all of which can be checked with &lt;code&gt;flthdr&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo z-code&quot;&gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;❯ flthdr ~&#x2F;jagfs&#x2F;rootfs&#x2F;bin&#x2F;busybox&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;&#x2F;home&#x2F;cakehonolulu&#x2F;jagfs&#x2F;rootfs&#x2F;bin&#x2F;busybox&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Magic:        bFLT&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Rev:          4&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Build Date:   Thu Jul  2 03:08:09 2026&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Entry:        0x44&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Data Start:   0x1e0a0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Data End:     0x25808&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    BSS End:      0x2a1c0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Stack Size:   0x10000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Reloc Start:  0x25808&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Reloc Count:  0x100e&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;    Flags:        0x1 ( Load-to-Ram )&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Pretty nifty thing...&lt;&#x2F;p&gt;
+&lt;p&gt;With all this, we basically built a very stripped down &lt;code&gt;busybox&lt;&#x2F;code&gt; (We also had to tune &lt;code&gt;uClibc&lt;&#x2F;code&gt; malloc strategies to set it as &lt;code&gt;malloc-simple&lt;&#x2F;code&gt; else busybox would OOM).&lt;&#x2F;p&gt;
+&lt;p&gt;There were some other porting hurdles (The Jaguar has a custom handler on romvec for the #64 which basically routes the TIM0 and VBLANK interrupts which need to be demuxed) but they were mostly easy to overcome thanks to how Linux is programmed (And the amount stuff it let&#x27;s you override to bring up a platform).&lt;&#x2F;p&gt;
+&lt;p&gt;Find the modified Linux repository over at: https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;linux_jag&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;linux_jaguar&#x2F;boot.png&quot; alt=&quot;boot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+</description>
+      </item>
       <item>
           <title>Introducing PCIem</title>
           <pubDate>Sun, 02 Nov 2025 00:00:00 +0000</pubDate>
