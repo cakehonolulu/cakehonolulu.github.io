@@ -11,8 +11,7 @@ tags = ["c", "linux", "kernel", "atari", "jaguar"]
 
 ## What in the tarnation is an Atari Jaguar?
 
-Released in North America in November of 1993, the Atari Jaguar promised to be the new cool kid in the block thanks to it's (Debatable) 64 bits of pure power.
-
+Released in North America in November of 1993, the Atari Jaguar promised to be the new cool kid in the block thanks to it's (Highly debated) 64 bits of pure power.
 
 <div style="text-align: center;">
 
@@ -22,9 +21,15 @@ _The Atari Jaguar_
 
 The console itself ended up being a commercial disaster, even after the release of the CD addon, the Jaguar CD; which managed to sell even less units in a desperate attempt to try and compete with the Sony Playstation and the Sega Saturn.
 
+<div style="text-align: center;">
+
+![Atari Jaguar CD](https://techcentre.com/wp-content/uploads/2025/10/atari-jaguar-cd.png)
+_The Atari Jaguar CD Add-on_
+</div>
+
 ## Why in the tarnation Linux of all things?
 
-Interestingly enough, to this day, Linux has code for the base 68000 processor. It's under ```arch/m68k/68000```.
+Interestingly enough, to this day, Linux has architecture code for the 68000-family of processors. 68040, 68030, 68010... and even the original base 68000 processor. All neatly structured under ```arch/m68k/```.
 
 As a refresher, the Motorola 68000 was a CISC processor with mixed 16-32 bit capabilities (It's usually described as being 32-bit internally due to the register width length and 16-bit because the data bus was 16-bit, so 2-byte transfers at a time).
 
@@ -44,25 +49,110 @@ Let's now address the elephant in the room, why Linux.
 
 Well, it's easy; `because we can` (_-ish_).
 
-## Getting our hands dirty and technical challenges that were overcomed
+## jmp _linux?
 
-This design choices basically involved tip-toeing around the very limited characteristics of the machine (Mostly the memory). So you can imagine that lots of kernel features had to be turned off.
+Doing a bringup for a new 68000-based Linux port should be easy... right? Well... you're in for a good time.
 
-The Jaguar has 2 megabytes of RAM (Mapped at $000000), (up to) 6 megabytes of ROM (The cartridge, basically) mapped at $80000 and 2 custom ICs (Tom & Jerry, a "GPU" and a DSP) which are also memory-mapped. 
+As you may know (Or not), there's an extended thought that Linux requires an MMU to run (You know, being able to use virtual memory is a good thing if we want to run software w/o having day-long headaches).
 
-Jerry, which is the DSP on the board (Which does lots of things, one of them being audio) has 2 dedicated TXD and RXD pins so I figured I'd repurpose to develop a dead simple UART state machine (So I could basically get `earlyprintk` and `earlycon` logging).
+Technically you are _kind of_ right, but there's *uClinux*; which precisely makes this feasible. At some point it stopped being a downstream fork of Linux to become part of it; thankfully it's baked in for `m68k` (And well, the flat memory model and the rest of requirements you can imagine that an MMU-less system has).
 
-Most of the issues with the bringup process were mostly related to design choices I had to do, for instance, we leaverage Linux's mechanism where it lets us have `vmlinux` XIP'd (Execute-in-place: So, `.text`, `.rodata` within ROM boundaries and `.bss`+ `.data` remapped onto RAM at boot).
+Okay so, we enable all the required configuration flags on the Linux `menuconfig` (To basically tell it not to use an MMU and use the [Flat Memory model](https://en.wikipedia.org/wiki/Flat_memory_model)), we compile and it should run right? Well yes... but no.
 
-We also have the issue of what do we want to run when Linux finishes loading; I initially played around with `toybox` and a few other initramfs solutions but fortunately enough, 
+## What actually jmp _linux involves
 
-I initially thought of using `m68k-linux-gnu-` but strangely (Even after passing `-68000`) it emitted unaligned memory accesses (Which are _no bueno_ on the base 68000) and I had to resort to doing toolchain building.
+The Jaguar has 2 megabytes of RAM (Mapped at 0x000000), (up to) 6 megabytes of ROM (The cartridge, basically) mapped at 0x80000 and 2 custom ICs (Tom & Jerry, a "GPU" and a DSP) which are also memory-mapped. 
 
-`crosstool-ng` has recently got support to build for the base 68000 (With `nommu`); which I basically used as a "trampoline" to have a decent toolchain built for the processor; it also takes care of adding one of the features we need toolchain-wise: `elf2flt`.
+The main hurdle we have is the memory footprint; while it's true that it's a good amount, it's still not infinite (We're talking megabytes, not _gigabytes_).
 
-Since we don't have an MMU, we basically need to enable support for loading the so-called `FLAT` binaries, which can be obtained by linking with `-W,-elf2flt` (Or running `elf2flt` afterwards). This is a complex topic but the gist of it is that it basically needs to pre-handle the relocations (Again, no MMU) the loader may do so that it can be used.
+We basically need to find a way to try and optimize our RAM usage. We can do the easy things first, removing features from the kernel, disabling debug... the usual suspects; but we'll still probably have the issue where we can't load the kernel to RAM w/o going OOM (Heck, we're not even considering an initramfs at this point, which are also bulky).
 
-There's a few interesting tidbits that you can basically configure in that regard (Load the entire binary to RAM, do GOT/PLT relocation... all of which can be checked with `flthdr`).
+Thankfully, Linux is smart enough to let us "split" the kernel in 2 separate memory regions. One can take advantage of the fact that we can store the read-only sections of it (Think, `.rodata` or `.text`) on the cartidge (The ROM) and the dynamic sections (`.data` or `.bss`) in RAM.
+
+Fortunately for us, it's a matter of telling it where we have the RAM, and where we have the ROM and it handles the relocations for us.
+
+Cool, we can now fit Linux on the Jaguar and it should be able to execute... right? Well sure, you can try specifying the base of the kernel (Remember, `PIC`) and loading it there and just doing a `jmp $80000`... but how do we know what is happening under the hood?
+
+## What Linux needs to boot
+
+In the context of booting Linux, we need 2 things (At least, when doing the bringup):
+
+* Any type of output so we can see kernel messages
+* Any way to tick the system (A timer, basically)
+
+The first requisite usually involves `ye' good ol'` UART. The Jaguar's DSP (Jerry) has TXD & RXD pins that (At least for booting Linux) can be repurposed to do serial output (If we ignore anything that has to do with sound). Writing a small console driver that bitbangs the pins is enough to start seeing some `earlyprintk` messages.
+
+The second one, is a bit tougher. But we can basically use any of the 2 timers that the Jerry IC has; commercial games & software use them for sound-related tasks but we'll use them to basically enable Linux to calibrate and setup the scheduler and the systems that also depend on a `PIT`. It's useful that they can both trigger an interrupt on the Jerry itself but also on the 68000. We can basically override the board-specific init of the 68000 on Linux and designate that as the PIT that Linux will use from now on.
+
+We compile, we try to run...
+
+...
+
+Nothing?
+
+Okay... that's strange; we should be getting something? I mean, everything checks out... kernel config: check... addresses: check... compiler... compiler?
+
+Turns out that the bundled `m68k-linux-` cross compiler on Ubuntu repositories emits unaligned memory accesses (Even after passing `-68000`) so it was, effectively, crashing.
+
+Using a compiler built from sources seems to fix this, but it's definitely a strange thing.
+
+This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself. This needed a separate `memcpy` to the base of RAM to fix.
+
+Cool, we get now finally output:
+
+```
+Linux version 7.2.0-rc1+ (cakehonolulu@jaguar) (m68k-elf-gcc (GCC) 16.1.0, GNU ld (GNU Binutils) 2.46.1) #38 Sun Jul  5 11:56:37 CEST 2026
+printk: legacy bootconsole [early_jerry0] enabled
+uClinux with CPU MC68000
+Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne
+Zone ranges:
+  DMA      [mem 0x0000000000000000-0x00000000001fffff]
+  Normal   empty
+Movable zone start for each node
+Early memory node ranges
+  node   0: [mem 0x0000000000000000-0x00000000001fffff]
+Initmem setup node 0 [mem 0x0000000000000000-0x00000000001fffff]
+On node 0, zone DMA: 512 pages in unavailable ranges
+printk: log buffer data + meta data: 4096 + 12800 = 16896 bytes
+Dentry cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Inode-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Built 1 zonelists, mobility grouping off.  Total pages: 512
+mem auto-init: stack:all(zero), heap alloc:off, heap free:off
+SLUB: HWalign=16, Order=0-1, MinObjects=0, CPUs=1, Nodes=1
+NR_IRQS: 32
+clocksource: jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+Calibrating delay loop... 1.04 BogoMIPS (lpj=5248)
+pid_max: default: 32768 minimum: 301
+Mount-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+Mountpoint-cache hash table entries: 1024 (order: 0, 4096 bytes, linear)
+```
+
+Now it tries to find and execute an `init` process... which we don't have... so it crashes again.
+
+## Userspace
+
+One of the many limitations we have is, since we can't use ELF files (We use FLAT binaries, mainly due to the `nommu` situation); so this complicates our toolchain setup a bit.
+
+I wasn't really able to find ways to compile `elf2flt` (The utility that basically converts from one format to the other) in a standalone way, but strangely, `buildroot` seems to have had a recent update where they figured it all out for us for the base 68000.
+
+So I basically had it do the thing for me and also decided to go for `busybox` which was one of the few (If not only) project of this kind that supports a `nommu` target.
+
+There were some issues (Mostly related to me not having dealt with flat binaries ever) but again, nothing a few minutes of debugging and logging wouldn't fix. The most glaring issue I was having was OOM issues everywhere when trying to execute init. I basically just did this:
+
+```
+❯ cat ~/jagfs/rootfs/init 
+#!/bin/busybox sh
+
+/bin/busybox sh
+
+❯ 
+```
+
+Usually you ask `busybox` to populate the rest of the utilities (It's just symlinks to itself, with different names; what they call the `applet` design where based on `argv[1]` it knows which applet to dispatch: `echo`, `ls`, `cat`...), but for some reason that was OOMing the kernel; so it's just `sh` for now (The `shebang` part also gets executed but seems not to eat up all the memory like `--install` does).
+
+We now have a rootfs, we pack it as `cpio` and embed it into the `vmlinux` image itself... and voila!
+
+As an exercise left to the reader, there's a few interesting tidbits that you can basically check on Linux in regards of FLAT binaries (F.e, there's different ways of handling the execution of them: Load the entire binary to RAM, do GOT/PLT relocation... all of which can be checked with `flthdr`).
 
 ```
 ❯ flthdr ~/jagfs/rootfs/bin/busybox
@@ -82,9 +172,13 @@ There's a few interesting tidbits that you can basically configure in that regar
 
 Pretty nifty thing...
 
-With all this, we basically built a very stripped down `busybox` (We also had to tune `uClibc` malloc strategies to set it as `malloc-simple` else busybox would OOM).
+There's a separate tune we had to do on the toolchain's `libc` (Which is `uClibc`) that involves modiyfing the malloc strategy to `malloc-simple`; else the metadata associated with faster and smarter allocations eat up our memory very fast and we'd panic again.
 
-There were some other porting hurdles (The Jaguar has a custom handler on romvec for the #64 which basically routes the TIM0 and VBLANK interrupts which need to be demuxed) but they were mostly easy to overcome thanks to how Linux is programmed (And the amount stuff it let's you override to bring up a platform).
+I also got some time to implement a simple Tom (GPU but not a GPU, more like word/object processor & blitter) console driver so this can be tested on real hardware too.
+
+Don't forget that if you run on real hardware, the converted-to-binary `vmlinux` needs to be compiled at a fixed offset from 0x80000 so that the Jaguar cart header can be added (Which in turn, jumps to whichever location you say it to).
+
+That's it!
 
 Find the modified Linux repository over at: https://github.com/cakehonolulu/linux_jag
 
