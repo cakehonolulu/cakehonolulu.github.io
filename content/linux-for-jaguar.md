@@ -1,5 +1,5 @@
 +++
-title = "'Desktop-ifying' the Atari Jaguar"
+title = "Linux on the Atari Jaguar. No, really."
 date = 2026-07-05
 description = "The challenges around porting Linux to an old videogame console by Atari"
 [extra]
