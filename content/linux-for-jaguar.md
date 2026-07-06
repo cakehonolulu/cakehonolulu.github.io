@@ -57,7 +57,7 @@ As you may know (Or not), there's an extended thought that Linux requires an MMU
 
 Technically you are _kind of_ right, but there's *uClinux*; which precisely makes this feasible. At some point it stopped being a downstream fork of Linux to become part of it; thankfully it's baked in for `m68k` (And well, the flat memory model and the rest of requirements you can imagine that an MMU-less system has).
 
-Okay so, we enable all the required configuration flags on the Linux `menuconfig` (To basically tell it not to use an MMU and use the [Flat Memory model](https://en.wikipedia.org/wiki/Flat_memory_model)), we compile and it should run right? Well yes... but no.
+Okay so, we enable all the required configuration flags on the Linux [`menuconfig`](https://github.com/cakehonolulu/linux_jag/commit/7b769c4bfa748f689463ba4d53eecc811c7d42f2) (To basically tell it not to use an MMU and use the [Flat Memory model](https://en.wikipedia.org/wiki/Flat_memory_model)), we compile and it should run right? Well yes... but no.
 
 ## What actually jmp _linux involves
 
@@ -67,11 +67,11 @@ The main hurdle we have is the memory footprint; while it's true that it's a goo
 
 We basically need to find a way to try and optimize our RAM usage. We can do the easy things first, removing features from the kernel, disabling debug... the usual suspects; but we'll still probably have the issue where we can't load the kernel to RAM w/o going OOM (Heck, we're not even considering an initramfs at this point, which are also bulky).
 
-Thankfully, Linux is smart enough to let us "split" the kernel in 2 separate memory regions. One can take advantage of the fact that we can store the read-only sections of it (Think, `.rodata` or `.text`) on the cartidge (The ROM) and the dynamic sections (`.data` or `.bss`) in RAM.
+Thankfully, Linux is smart enough to let us "split" the kernel in 2 separate memory regions. One can take advantage of the fact that we can store the read-only sections of it (Think, `.rodata` or `.text`) on the cartidge (The ROM) and the dynamic sections (`.data` or `.bss`) in RAM (Think, `XIP`; [eXecute-In-Place](https://en.wikipedia.org/wiki/Execute_in_place)).
 
-Fortunately for us, it's a matter of telling it where we have the RAM, and where we have the ROM and it handles the relocations for us.
+Fortunately for us, it's a matter of telling it where we have the RAM, and where we have the ROM and it (Liunx) handles the relocations for us.
 
-Cool, we can now fit Linux on the Jaguar and it should be able to execute... right? Well sure, you can try specifying the base of the kernel (Remember, `PIC`) and loading it there and just doing a `jmp $80000`... but how do we know what is happening under the hood?
+Cool, we can now fit Linux on the Jaguar and it should be able to execute... right? Well sure, you can try specifying the base of the kernel (Remember, `non-PIC` code) and loading it there and just doing a `jmp $80000`... but how do we know what is happening under the hood?
 
 ## What Linux needs to boot
 
@@ -92,13 +92,13 @@ Nothing?
 
 Okay... that's strange; we should be getting something? I mean, everything checks out... kernel config: check... addresses: check... compiler... compiler?
 
-Turns out that the bundled `m68k-linux-` cross compiler on Ubuntu repositories emits unaligned memory accesses (Even after passing `-68000`) so it was, effectively, crashing.
+Turns out that the bundled `m68k-linux-` cross compiler on Ubuntu repositories emits unaligned memory accesses (Even after passing `-68000`) so it was, effectively, crashing (Since the base 68000 doesn't implement unaligned memory access handling).
 
-Using a compiler built from sources seems to fix this, but it's definitely a strange thing.
+Using a compiler built from sources specifically targetting `m68k-elf-` for the 68000 seems to fix this, but it's definitely a strange thing.
 
-This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself. This needed a separate `memcpy` to the base of RAM to fix.
+This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself and burns down. This needed a separate `memcpy` of the so-called `vectors` to the base of RAM to fix in the Jaguar platform-specific Linux code.
 
-Cool, we get now finally output:
+Cool, we get now finally get _some_ output:
 
 ```
 Linux version 7.2.0-rc1+ (cakehonolulu@jaguar) (m68k-elf-gcc (GCC) 16.1.0, GNU ld (GNU Binutils) 2.46.1) #38 Sun Jul  5 11:56:37 CEST 2026
@@ -133,7 +133,14 @@ Now it tries to find and execute an `init` process... which we don't have... so 
 
 One of the many limitations we have is, since we can't use ELF files (We use FLAT binaries, mainly due to the `nommu` situation); so this complicates our toolchain setup a bit.
 
-I wasn't really able to find ways to compile `elf2flt` (The utility that basically converts from one format to the other) in a standalone way, but strangely, `buildroot` seems to have had a recent update where they figured it all out for us for the base 68000.
+I wasn't really able to find ways to compile `elf2flt` (The utility that basically converts from one format to the other) in a standalone way, it basically needs you to provide some `.a` and some `.h` files (Related to `libiberty` and akin) and those seem to have vanished from default configurations of `binutils`+`gcc` for the 68000... but strangely, `buildroot` seems to have had a recent update where they figured it all out for us for the base 68000.
+
+<div style="text-align: center;">
+
+![Buildroot](https://cakehonolulu.github.io/images/linux_jaguar/buildroot.png)
+</div>
+
+Kudos to the [`linuxmd`](https://github.com/LinuxMD/) project, the [patch to enable m68k nommu](https://github.com/buildroot/buildroot/commit/e5c7b43494c4d6aa57c6ef314bd4e636aacc14fc) is dated May 2026 (So as of writing this blog, 2 months old!)
 
 So I basically had it do the thing for me and also decided to go for `busybox` which was one of the few (If not only) project of this kind that supports a `nommu` target.
 
@@ -174,9 +181,21 @@ Pretty nifty thing...
 
 There's a separate tune we had to do on the toolchain's `libc` (Which is `uClibc`) that involves modiyfing the malloc strategy to `malloc-simple`; else the metadata associated with faster and smarter allocations eat up our memory very fast and we'd panic again.
 
+This memory allocation change was done within `buildroot`'s `uClibC` menuconfig.
+
+<div style="text-align: center;">
+
+![M68000](https://cakehonolulu.github.io/images/linux_jaguar/uclibc.png)
+_make uclibc-menuconfig_
+</div>
+
 I also got some time to implement a simple Tom (GPU but not a GPU, more like word/object processor & blitter) console driver so this can be tested on real hardware too.
 
-Don't forget that if you run on real hardware, the converted-to-binary `vmlinux` needs to be compiled at a fixed offset from 0x80000 so that the Jaguar cart header can be added (Which in turn, jumps to whichever location you say it to).
+Don't forget that if you run on real hardware, the converted-to-binary `vmlinux` (Using `objcopy`) needs to be compiled at a fixed offset from 0x80000 so that the Jaguar cart header can be added (Which in turn, jumps to whichever location you say it to). So you need to add an offset of 8KB to `CONFIG_ROM_START`, `CONFIG_ROM_LENGTH` (Which will be a bit smaller due to the increase in base address), `CONFIG_ROMVEC` and `CONFIG_ROMSTART`.
+
+The basic idea to replicate the setup is, compile buildroot targetting the 68000 (With the `malloc` strategy changed). You can ask it to build busybox with a custom `.config` file path (Provided at end of post) so it'll get you the FLAT binary. You then populate a simple initramfs file structure (There's resources online on what you need to do, usually involves creating `/{dev,bin,usr,sbin...}` directories and adding some `mknode` magic to `/dev/` to prop up the `/dev/console/` nodes plus an `init` script; which is also provided at the end of this post).
+
+Then you tell Linux where you have your newly-built `initramfs.cpio` file and voilà!
 
 That's it!
 
@@ -186,3 +205,10 @@ Find the modified Linux repository over at: https://github.com/cakehonolulu/linu
 
 ![boot](https://cakehonolulu.github.io/images/linux_jaguar/boot.png)
 </div>
+
+In contrast with `linuxmd`, we don't have special cartridge mappers (`SSF2`, which gives an extra 4MBs of RAM on the MegaDruve) so I couldn't really justify (Memory-wise) adding any bootloader (`u-boot`, for instance) so I basically went with the approach I documented on the blog (Of basically doing `jmp _linux`).
+
+## Misc. config. files if anyone wants to try
+
+[Busybox config](https://cakehonolulu.github.io/misc/linux_jaguar/busybox.config)
+[Init script](https://cakehonolulu.github.io/misc/linux_jaguar/init)
