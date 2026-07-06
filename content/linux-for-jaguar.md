@@ -98,6 +98,8 @@ Using a compiler built from sources specifically targetting `m68k-elf-` for the 
 
 This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself and burns down. This needed a separate `memcpy` of the so-called `vectors` to the base of RAM to fix in the Jaguar platform-specific Linux code.
 
+I also had to compile `gdb` from source to get it to behave with MAME's `gdbtsub`. For some reason `gdb-multiarch` was incorrectly orchestrating the stub and it'd jump around all the address space; which was fun until I decided to test with an `m68k` specific build.
+
 Cool, we get now finally get _some_ output:
 
 ```
@@ -206,7 +208,7 @@ Find the modified Linux repository over at: https://github.com/cakehonolulu/linu
 ![boot](https://cakehonolulu.github.io/images/linux_jaguar/boot.png)
 </div>
 
-In contrast with `linuxmd`, we don't have special cartridge mappers (`SSF2`, which gives an extra 4MBs of RAM on the MegaDruve) so I couldn't really justify (Memory-wise) adding any bootloader (`u-boot`, for instance) so I basically went with the approach I documented on the blog (Of basically doing `jmp _linux`).
+In contrast with `linuxmd`, we don't have special cartridge mappers (`SSF2`, which gives an extra 4MBs of RAM on the MegaDrive) so I couldn't really justify (Memory-wise) adding any bootloader (`u-boot`, for instance) so I basically went with the approach I documented on the blog (Of basically doing `jmp _linux`).
 
 ## Misc. config. files if anyone wants to try
 
