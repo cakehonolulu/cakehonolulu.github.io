@@ -438,6 +438,7 @@
 <p>Turns out that the bundled <code>m68k-linux-</code> cross compiler on Ubuntu repositories emits unaligned memory accesses (Even after passing <code>-68000</code>) so it was, effectively, crashing (Since the base 68000 doesn't implement unaligned memory access handling).</p>
 <p>Using a compiler built from sources specifically targetting <code>m68k-elf-</code> for the 68000 seems to fix this, but it's definitely a strange thing.</p>
 <p>This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself and burns down. This needed a separate <code>memcpy</code> of the so-called <code>vectors</code> to the base of RAM to fix in the Jaguar platform-specific Linux code.</p>
+<p>I also had to compile <code>gdb</code> from source to get it to behave with MAME's <code>gdbtsub</code>. For some reason <code>gdb-multiarch</code> was incorrectly orchestrating the stub and it'd jump around all the address space; which was fun until I decided to test with an <code>m68k</code> specific build.</p>
 <p>Cool, we get now finally get <em>some</em> output:</p>
 <pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>Linux version 7.2.0-rc1+ (cakehonolulu@jaguar) (m68k-elf-gcc (GCC) 16.1.0, GNU ld (GNU Binutils) 2.46.1) #38 Sun Jul  5 11:56:37 CEST 2026</span></span>
 <span class="giallo-l"><span>printk: legacy bootconsole [early_jerry0] enabled</span></span>
@@ -511,7 +512,7 @@
 <div style="text-align: center;">
 <p><img src="https://cakehonolulu.github.io/images/linux_jaguar/boot.png" alt="boot" /></p>
 </div>
-<p>In contrast with <code>linuxmd</code>, we don't have special cartridge mappers (<code>SSF2</code>, which gives an extra 4MBs of RAM on the MegaDruve) so I couldn't really justify (Memory-wise) adding any bootloader (<code>u-boot</code>, for instance) so I basically went with the approach I documented on the blog (Of basically doing <code>jmp _linux</code>).</p>
+<p>In contrast with <code>linuxmd</code>, we don't have special cartridge mappers (<code>SSF2</code>, which gives an extra 4MBs of RAM on the MegaDrive) so I couldn't really justify (Memory-wise) adding any bootloader (<code>u-boot</code>, for instance) so I basically went with the approach I documented on the blog (Of basically doing <code>jmp _linux</code>).</p>
 <h2 id="misc-config-files-if-anyone-wants-to-try">Misc. config. files if anyone wants to try</h2>
 <p><a rel="external" href="https://cakehonolulu.github.io/misc/linux_jaguar/busybox.config">Busybox config</a>
 <a rel="external" href="https://cakehonolulu.github.io/misc/linux_jaguar/init">Init script</a></p>
