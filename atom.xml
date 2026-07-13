@@ -5,8 +5,152 @@
     <link rel="self" type="application/atom+xml" href="https://cakehonolulu.github.io/atom.xml"/>
     <link rel="alternate" type="text/html" href="https://cakehonolulu.github.io"/>
     <generator uri="https://www.getzola.org/">Zola</generator>
-    <updated>2026-07-05T00:00:00+00:00</updated>
+    <updated>2026-07-13T00:00:00+00:00</updated>
     <id>https://cakehonolulu.github.io/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Linux on the Sega 32X. Who needs hardware atomic primitives anyway?</title>
+        <published>2026-07-13T00:00:00+00:00</published>
+        <updated>2026-07-13T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              cakehonolulu
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://cakehonolulu.github.io/linux-on-32x/"/>
+        <id>https://cakehonolulu.github.io/linux-on-32x/</id>
+        
+        <content type="html" xml:base="https://cakehonolulu.github.io/linux-on-32x/">&lt;h2 id=&quot;preface&quot;&gt;Preface&lt;&#x2F;h2&gt;
+&lt;p&gt;I couldn&#x27;t start this entry in any other way possible but by thanking everyone who enjoyed the &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-for-jaguar&#x2F;&quot;&gt;Linux on Jaguar&lt;&#x2F;a&gt; post.&lt;&#x2F;p&gt;
+&lt;p&gt;Also special props to the &lt;code&gt;linuxmd&lt;&#x2F;code&gt; project again.&lt;&#x2F;p&gt;
+&lt;p&gt;It was a very fun experience and we&#x27;ve even made it into a few news outlets:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;linux_32x&#x2F;hackaday.png&quot; alt=&quot;Hackaday&quot; &#x2F;&gt;
+&lt;i&gt;&lt;a href=&quot;https:&#x2F;&#x2F;hackaday.com&#x2F;2026&#x2F;07&#x2F;07&#x2F;the-atari-jaguar-runs-linux&#x2F;&quot;&gt;Hackaday&lt;&#x2F;a&gt;&lt;&#x2F;i&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;or&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;linux_32x&#x2F;tomhw.png&quot; alt=&quot;Tom&amp;#39;s Hardware&quot; &#x2F;&gt;
+&lt;i&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.tomshardware.com&#x2F;software&#x2F;linux&#x2F;dev-ports-linux-to-ataris-notorious-jaguar-console-from-1993-the-first-64-bit-console-features-2mb-of-ram-13-3-mhz-cpu-and-tom-and-jerry-co-processors-the-jag-was-notoriously-difficult-to-program-and-flopped&quot;&gt;Tom&#x27;s Hardware&lt;&#x2F;a&gt;&lt;&#x2F;i&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;I also posted it on &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;news.ycombinator.com&#x2F;item?id=48808663&quot;&gt;Hacker News&lt;&#x2F;a&gt; and it recieved some good interest (And nice questions!).&lt;&#x2F;p&gt;
+&lt;p&gt;So, yes; thanks everyone again!&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;why-is-this-linux-trend-continuing&quot;&gt;Why is this (Linux) trend continuing?&lt;&#x2F;h2&gt;
+&lt;p&gt;I have an easy answer to this question, it&#x27;s mainly to improve my board bringup skills.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve been working professionally on the Firmware&#x2F;Operating Systems&#x2F;Embedded area for well over 2 years now (Professionally-speaking) and one of the usual suspects you see when trying to land a new job is &quot;the ability to handle board bringups from the ground up&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;I know it doesn&#x27;t sound too fascinating but for me, other than job hunting (Which is not my bread and butter anyway), bringing up a piece of silicon and having it run something you made&#x2F;helped making is super fun. You get to experiment with many of the different layers that make the result up: Emulators, Technical documentation, Experimentation, Investigation... you know; the usual engineering stuff.&lt;&#x2F;p&gt;
+&lt;p&gt;Not that reading early-90s scanned datasheets is my passion (There&#x27;s some documents that are plain images embedded onto a PDF) but there&#x27;s something to it that makes me come back every time.&lt;&#x2F;p&gt;
+&lt;p&gt;I actually started doing this in &#x27;13&#x2F;&#x27;14. I was 12&#x2F;13 at that time and I vividly recall my parents buying me my first phone. It was a MediaTek-based 6589 quad-core processor with a gig of RAM. Powerful stuff eh!&lt;&#x2F;p&gt;
+&lt;p&gt;At that time (Not much soon after), Google released Android 5.0 Lollipop; but the vendor of the phone decided that it would not update it to that version. And I was really sad... so I had to get my hands dirty.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ll sum up the story a bit because it&#x27;s a bit large, but the gist of it is that I asked the company to comply with GPL and release the Linux kernel source code for the phone; for which they opposed, but as a community we got together and they released it (Along some other phone&#x27;s trees).&lt;&#x2F;p&gt;
+&lt;p&gt;Picture me surprised when the source code was half-assed and the board configuration didn&#x27;t boot on the phone. Fortunately at that time, I found a leak of the full-source of &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;wiki.postmarketos.org&#x2F;wiki&#x2F;ALPS&quot;&gt;MediaTek ALPS&lt;&#x2F;a&gt; targetting a variation of the 6589 that seemed promising enough (Had the full Little-Kernel bootloader, Baseband, Preloader, Linux kernel and AOSP) for me to check.&lt;&#x2F;p&gt;
+&lt;p&gt;I spent a few months trying to reverse-engineer parts of the zImage that was bundled on the stock boot image provided by the phone vendor to fill parts of the MediaTek code (Mostly related to lcm, battery, chipset quirks and whatnot) and after some good amount of digging and experimenting (And good chats with the cool people over at &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;xdaforums.com&#x2F;t&#x2F;cyanogenmod-for-mediatek-devices.2274332&#x2F;&quot;&gt;xda-developers&lt;&#x2F;a&gt;) I had Android 5.0 running on my phone; mind you, it wasn&#x27;t perfect. No Bluetooth, no HWComposer (Hardware acceleration), no Media engines... but seeing the pure, unadultered new Material Design on my phone blew my mind.&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;developer.android.com&#x2F;static&#x2F;images&#x2F;home&#x2F;l-hero_2x.png?hl=es-419&quot; alt=&quot;Android 5.0 Lollipop&quot; &#x2F;&gt;
+&lt;em&gt;Android 5.0 Lollipop&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;I should probably try to make a separate post of this story... someday.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-mighty-sega-32x&quot;&gt;The mighty Sega 32X&lt;&#x2F;h2&gt;
+&lt;p&gt;Released in November 1994 in America&#x2F;Europe (December 1994 on Japan); the Sega 32X was an add-on that promised to be an intermediate step between the 16-bit era Genesis and the soon-to-be 32-bit Sega Saturn. I&#x27;m not a good writer so the story that led up to that particular moment (For SEGA, that is) is a bit tumultuous (SEGA Japan vs SEGA of America) so I&#x27;ll leave it as a task for the reader.&lt;&#x2F;p&gt;
+&lt;p&gt;Anyhow, prior to the 32X, SEGA launched a CD add-on; the Sega CD (Or Mega CD, if you are european&#x2F;japanese). It plugged into the expansion slot of the Genesis and it enabled CD-quality audio streaming (And well, game&#x2F;game asset streaming). It was a machine on it&#x27;s own (It had a higher clocked 68000 in comparison with the Genesis). There were 2 separate models, the first &quot;generation&quot;, which was front-loading...:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;0&#x2F;0c&#x2F;MegaCD.png&quot; alt=&quot;Sega CD 1&quot; &#x2F;&gt;
+&lt;em&gt;Sega [Mega]CD Model 1 with Mega Drive&#x2F;Genesis Model 1&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;...and the second, top-loading one:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;d&#x2F;d1&#x2F;Sega-CD-Model2-Set.png&quot; alt=&quot;Sega CD 2&quot; &#x2F;&gt;
+&lt;em&gt;Sega [Mega]CD Model 2 with Mega Drive&#x2F;Genesis Model 2&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;But this post is about the 32X... so here it is:&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;static.wikia.nocookie.net&#x2F;sonic&#x2F;images&#x2F;d&#x2F;d5&#x2F;Genesis_32X.png&#x2F;revision&#x2F;latest&#x2F;scale-to-width-down&#x2F;1200?cb=20220607204134&quot; alt=&quot;Sega 32X&quot; &#x2F;&gt;
+&lt;em&gt;Sega 32X&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The actual addon was plugged into the cartridge slot of the Genesis (It had a separate power brick and video output, later of which was &quot;combined&quot; on-top of the Genesis video out timing&#x2F;video&#x2F;color channel signals).&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;upload.wikimedia.org&#x2F;wikipedia&#x2F;commons&#x2F;8&#x2F;8c&#x2F;Sega-Genesis-Model2-32X.png&quot; alt=&quot;Sega 32X &amp;amp; Genesis Model 2&quot; &#x2F;&gt;
+&lt;em&gt;Sega 32X &amp;amp; Genesis Model 2&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;If you&#x27;ve ever had the pleasure of building the &lt;em&gt;Tower of Power&lt;&#x2F;em&gt;, you&#x27;ll know that having 3 separate power bricks, plus the cables to get stereo output out of the 32X, the &lt;em&gt;&quot;patch&quot;&lt;&#x2F;em&gt; cables and the many missing tidbits I&#x27;m probably forgetting now, wasn&#x27;t anything short of fancy.&lt;&#x2F;p&gt;
+&lt;p&gt;But what did all of that power?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;32x-hardware-specifications&quot;&gt;32X Hardware specifications&lt;&#x2F;h2&gt;
+&lt;p&gt;Admittedly, the addon is far more powerful than the base console:&lt;&#x2F;p&gt;
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th style=&quot;text-align: center&quot;&gt;Component(s)&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;Sega Genesis&#x2F;Mega Drive&lt;&#x2F;th&gt;&lt;th style=&quot;text-align: center&quot;&gt;Sega 32X&lt;&#x2F;th&gt;&lt;&#x2F;tr&gt;&lt;&#x2F;thead&gt;&lt;tbody&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;Main CPU&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;1 x Motorola 68000 @ 7.6 MHz&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;2 x Hitachi SuperH SH2s (SH7604) @ 23 MHz&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;Bits&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;16-bits&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;32-bits&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;Max. on-screen colors&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;64&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;32768&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;System RAM&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;64KB&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;+256KB SDRAM (Along Genesis&#x27;s 64K)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;Video RAM&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;64KB&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;256KB (Double-buffered)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;tr&gt;&lt;td style=&quot;text-align: center&quot;&gt;Graphics&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;Sprite-based&lt;&#x2F;td&gt;&lt;td style=&quot;text-align: center&quot;&gt;Software-rendered 3D (Flat shaded, goraud shaded, simple texture-mapped polygons)&lt;&#x2F;td&gt;&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;&lt;&#x2F;table&gt;
+&lt;p&gt;As you can see, quite the difference. I&#x27;ve not even listed all the differences, but the main ones I can think are those.&lt;&#x2F;p&gt;
+&lt;p&gt;Unfortunately for SEGA, the launch happened almost at the same time as Sony&#x27;s PlayStation 1; which was primed to overcome the gaming industry with a much simpler architecture. It also didn&#x27;t help in any way that the SEGA Saturn was close to launch date too (So consumers were puzzled as to which one to get). All in true SEGA fashion!&lt;&#x2F;p&gt;
+&lt;p&gt;Anyway, if we got Linux running on the Jaguar, we should be able to do similarly for the 32X; right?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;jmp-linux-the-rendezvouz&quot;&gt;jmp _linux, &lt;em&gt;the rendezvouz&lt;&#x2F;em&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Getting Linux to run on the SH2s (Running as in, having it print anything meaningful over UART) required some brainstorm.&lt;&#x2F;p&gt;
+&lt;p&gt;We&#x27;d need to set up 3 different CPUs, the 2 x SH2s and the 68000. Fortunately there&#x27;s readily-available examples for that on Github so I picked what seemed the most popular 32X Hello World example: &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;viciious&#x2F;32XDK&#x2F;releases&quot;&gt;Chilly Willy&#x27;s Sega MD&#x2F;CD&#x2F;32X devkit&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The basic example sets up a communication channel between the 32X(s) and the 68000 (So you can ask the 68000 do some stuff the 32X can&#x27;t) through specific memory-mapped IO addresses; prepares the SH2s (Sets up the caches, uploads the SH2 code from the cart directly off of 68000 machine code...) and makes the primary SH2 jump to it; whilst the secondary gets parked.&lt;&#x2F;p&gt;
+&lt;p&gt;What I did was, expand this so that I could have a simple state machine that pushed characters to the UART on the Genesis (Since the 32X doesn&#x27;t have direct access to it); but there was a problem...&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;256k-64k&quot;&gt;256K + 64K&lt;&#x2F;h2&gt;
+&lt;p&gt;The biggest hurdle when porting Linux to a new (And newer-ish, in terms of when it launched) platform is mostly about doing the wiring to get it up and running; that&#x27;s usually the case if you have the memory to even load it. This is not the case for us...&lt;&#x2F;p&gt;
+&lt;p&gt;Fortunately, there&#x27;s FPGA-based flash carts for the console (Enables you to run games for both the base model and the 32X; and there&#x27;s even specialized &quot;cores&quot; that provide Sega CD support if you don&#x27;t have the add-on!). One of those (series) of carts comes from &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;krikzz.com&#x2F;&quot;&gt;Krikkz&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;He basically did what flashcarts do but went the extra mile for pretty much everything, it&#x27;s not just about running games!&lt;&#x2F;p&gt;
+&lt;p&gt;There&#x27;s a special bit of those carts that we&#x27;re interested on:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;krikzz.com&#x2F;pub&#x2F;support&#x2F;mega-everdrive&#x2F;x3x5x7&#x2F;dev&#x2F;extended_ssf-v2.txt&quot;&gt;Extended SSFv2 Mapper&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Older cartridge-based systems often had this notion about &quot;mappers&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;Mappers are basically ICs that sat on the cartridge which enhanced the capabilities of what the console can handle in terms of memory.&lt;&#x2F;p&gt;
+&lt;p&gt;They could also offer other features not related to memory, an example is Sega&#x27;s Virtua Processor (SVP), which had a Samsung-engineered DSP to do heavy math computation (To enable Virtua Racer to display all it&#x27;s 3D polygon glory on a base Genesis); or Nintendo&#x27;s SuperFX chip; which provided similar capabilities to the SVP and was made by the creators of Days of Thunder or Birds of Prey: Argonaut Games.&lt;&#x2F;p&gt;
+&lt;p&gt;Usually mappers were used to enable more ROM space for larger&#x2F;more detailed games in a bank-switch fashion. You&#x27;d write to a certain memory address&#x2F;do a specific set of accesses and the IC would internally remap parts of the &quot;extended&quot; ROM to the memory window the console can directly address. Kinda like MS-DOS&#x27;s &lt;code&gt;HIMEM.SYS&lt;&#x2F;code&gt; in spirit if you think about it.&lt;&#x2F;p&gt;
+&lt;p&gt;So Krikkz basically did us all the work here, turns out we can have ROM as RAM (ROM which can be made &quot;writeable&quot; by arranging certain configuration bits). This gets us 4 MBs of RAM.&lt;&#x2F;p&gt;
+&lt;p&gt;I had to basically extend the SDK example to do the ROM-&amp;gt;RAM mappings but had to leave a bit of space for the Linux + initramfs binary to live on (The actual ROM within the cart memory window, basically). I ended up finding a sweet spot of 540~KBs of ROM and rest of RAM. The Linux loader basically copies the binary on the memory location it was linked at and jumps to it.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;compiling-and-running-linux&quot;&gt;Compiling and running Linux&lt;&#x2F;h2&gt;
+&lt;p&gt;So, I made a &lt;code&gt;sh2eb-elf&lt;&#x2F;code&gt; cross-compiler and got to compile Linux... but the compilation failed rather soon.&lt;&#x2F;p&gt;
+&lt;p&gt;Out of all the issues I&#x27;ve had with toolchains, this one was probably the funniest.&lt;&#x2F;p&gt;
+&lt;p&gt;For some reason GCC was having an &lt;code&gt;ICE&lt;&#x2F;code&gt; (Internal compiler error) when compiling &lt;code&gt;kernel&#x2F;nstree.c&lt;&#x2F;code&gt;. I was able to find a &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;torvalds&#x2F;linux&#x2F;commit&#x2F;6fea4c411fe0ca70fe0ea2147eefd37faf41a0bd&quot;&gt;workaround&lt;&#x2F;a&gt; (Didn&#x27;t have the time at that moment to file a bug report) fortunately.&lt;&#x2F;p&gt;
+&lt;p&gt;After all this work (And writing a small earlycon driver to get some UART output carried from the 32X to the Genesis) I had the very first Linux messages.&lt;&#x2F;p&gt;
+&lt;p&gt;There was a separate issue, at some point Linux seemed to stop the boot process and was hanging indefinitely.&lt;&#x2F;p&gt;
+&lt;p&gt;I then discovered another set of issues, this time regarding: &lt;code&gt;ashlsi3, ashrsi3 &amp;amp; lshrsi3&lt;&#x2F;code&gt;. I&#x27;m not really sure how those are written (Do they get copied&#x2F;inspired from their &lt;code&gt;libgcc&lt;&#x2F;code&gt;-counterpart or something similar?) but comparing what the cross-compiler did for those and what Linux did, it was obvious that we were clobbering a register we should not be clobbering. I found this because I started noticing that some &lt;code&gt;pr_info&lt;&#x2F;code&gt;(s) and &lt;code&gt;pr_notice&lt;&#x2F;code&gt;(s) were getting it&#x27;s stack corrupted (And never returned to the caller) and was able to trace it &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;torvalds&#x2F;linux&#x2F;commit&#x2F;a72625dbf9687b975d9565df8e56fccd5c628921&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I then made an additional (Similar) &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;torvalds&#x2F;linux&#x2F;commit&#x2F;e3ec8b05a8f6d83f8b1d513ab470bd930a96682d&quot;&gt;fix&lt;&#x2F;a&gt; for &lt;code&gt;arch&#x2F;sh&#x2F;lib&#x2F;checksum.S&lt;&#x2F;code&gt; just to be on the safe side of things; where I basically gated &lt;code&gt;shrd&lt;&#x2F;code&gt; because it doesn&#x27;t exist on the SH2s contained within the 32X (And if used... &lt;code&gt;Illegal Opcode&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;This basically got us through the entire boot process right before the clock calibration; for which I decided to make a simple driver for the SH2(s) &lt;code&gt;FRT&lt;&#x2F;code&gt; (Free running timer); this also got us further and we were at the verge of launching the &lt;code&gt;init&lt;&#x2F;code&gt; process.&lt;&#x2F;p&gt;
+&lt;p&gt;Fortunately, this time around I was able to leverage &lt;code&gt;ELF FDPIC&lt;&#x2F;code&gt; support (Which made my life easier in comparison with Jaguar&#x27;s &lt;code&gt;FLAT&lt;&#x2F;code&gt; binary support) to build my &lt;code&gt;rootfs&lt;&#x2F;code&gt;. I was also blessed by &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;richfelker&#x2F;musl-cross-make&quot;&gt;musl-cross-make&lt;&#x2F;a&gt;; which landed me a &lt;code&gt;sh2eb-linux-muslfdpic-&lt;&#x2F;code&gt; toolchain I could use (I must say I battled hard with &lt;code&gt;crosstool-ng&lt;&#x2F;code&gt;, &lt;code&gt;buildroot&lt;&#x2F;code&gt; and a few others but didn&#x27;t succeed).&lt;&#x2F;p&gt;
+&lt;p&gt;So with this, everything was booting.&lt;&#x2F;p&gt;
+&lt;p&gt;Case... closed...?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;smp&quot;&gt;SMP&lt;&#x2F;h2&gt;
+&lt;p&gt;Yeah, I couldn&#x27;t help myself.&lt;&#x2F;p&gt;
+&lt;p&gt;It turns out that you need some hardware primitives to enable inter-CPU synchronization... which the SH2s on the 32X don&#x27;t have¹.&lt;&#x2F;p&gt;
+&lt;p&gt;¹: TAS.B opcode seems to be used on projects like D32XR even after the developer manuals asked not to do so due to the adapter bus not having the locked read-modify-write cycle mechanism.&lt;&#x2F;p&gt;
+&lt;p&gt;We also don&#x27;t have cache coherency so another problem to add to our bag.&lt;&#x2F;p&gt;
+&lt;p&gt;But I thought, hey, both SH2s are equal features-wise; we sure can come up with something... right?&lt;&#x2F;p&gt;
+&lt;p&gt;It turns out that &lt;code&gt;sparc32&lt;&#x2F;code&gt; has precisely &lt;em&gt;some&lt;&#x2F;em&gt; code to aid in that.&lt;&#x2F;p&gt;
+&lt;p&gt;We can basically leverage &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Peterson%27s_algorithm&quot;&gt;Peterson&#x27;s algorithm&lt;&#x2F;a&gt; to implement the required primitives entirely in software. Mind you that this isn&#x27;t performant but it does work.&lt;&#x2F;p&gt;
+&lt;p&gt;I basically had to do the bringup for all the primitives that needed care (&lt;code&gt;cmpxchg&lt;&#x2F;code&gt;, for instance) with the ideas that Peterson described.&lt;&#x2F;p&gt;
+&lt;p&gt;I also needed to wire the 68000&#x27;s code (Which for now was only handling UART stuff) to aid on delivering IPIs to both SH2s (I extended the commands the 68000 can receive so that it could correctly do it&#x27;s thing) plus setting up the shared memory region to aid on the syncronization tasks. Think of the 68000 as being a bus arbiter&#x2F;extra interrupt router at this point.&lt;&#x2F;p&gt;
+&lt;p&gt;From the SH2s I just send an &quot;IPI&quot; command which the 68000 parses and decides which interrupt line to assert based on a bit of the data word (0 primary, 1 secondary).&lt;&#x2F;p&gt;
+&lt;p&gt;Then there&#x27;s the cache-coherency issue, which I solved by not using cached mappings (And well, cache is disabled, regardless) to place Peterson&#x27;s &lt;code&gt;flag&lt;&#x2F;code&gt; and &lt;code&gt;turn&lt;&#x2F;code&gt; variables (You know, to avoid SH2s spinning on stale cache values for &lt;code&gt;flag&lt;&#x2F;code&gt;; for instance).&lt;&#x2F;p&gt;
+&lt;p&gt;There was another issue I faced, how do I identify which CPU is which (So Linux can properly manage and issue &lt;code&gt;hard_smp_processor_id()&lt;&#x2F;code&gt;): Well, considering I was doing &lt;code&gt;softfloat&lt;&#x2F;code&gt; regardless; I just made the &lt;code&gt;CPUID_REG&lt;&#x2F;code&gt; point to the SH2-private hardware divider register (&lt;code&gt;DVSR&lt;&#x2F;code&gt;) which had no other use so it effectively became my &lt;code&gt;what cpu am i&lt;&#x2F;code&gt; register. That register is written by the Linux loader at boot for both the primary and secondary SH2s.&lt;&#x2F;p&gt;
+&lt;p&gt;Performance is abysmal, bus contention is bonkers; but it does work, and that&#x27;s fine by me.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;giallo z-code&quot;&gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;smp: Bringing up secondary CPUs ...&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;MARS SMP: released secondary SH2 to 22082000&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;smp: Brought up 1 node, 2 CPUs&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I must admit that it wasn&#x27;t as easy as that, it really involved lots of tinkering and (Mostly) trial-and-error (I also spent 2 nights chasing why both CPUs would get woken but soon after they&#x27;d idle, turns out I needed a &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;torvalds&#x2F;linux&#x2F;commit&#x2F;c816358004d5ab6ce59c985d07847431bbedb41a&quot;&gt;fix&lt;&#x2F;a&gt; on &lt;code&gt;default_idle()&lt;&#x2F;code&gt; that was making the scheduler bug out and not correctly continue execution).&lt;&#x2F;p&gt;
+&lt;p&gt;But it was well worth it.&lt;&#x2F;p&gt;
+&lt;p&gt;I just then basically made a simple console display driver (So you know, you could see it in action in your actual screen)...&lt;&#x2F;p&gt;
+&lt;div style=&quot;text-align: center;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;linux_32x&#x2F;linux.png&quot; alt=&quot;Linux on 32X&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;&lt;em&gt;Voilà&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Needless to say that all of this required lots of fine-tuning (I was also OOM-ing constantly and needed to put both Linux and Busybox through a good diet) but it was again, a very rewarding experience.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;misc-config-files-if-anyone-wants-to-try&quot;&gt;Misc. config. files if anyone wants to try&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;linux_ports&#x2F;tree&#x2F;sega&#x2F;32x&quot;&gt;Linux tree&lt;&#x2F;a&gt; (&lt;code&gt;mars_defconfig&lt;&#x2F;code&gt;)&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_32x&#x2F;busybox.config&quot;&gt;Busybox config&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_32x&#x2F;init&quot;&gt;Init script&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
     <entry xml:lang="en">
         <title>Linux on the Atari Jaguar. No, really.</title>
         <published>2026-07-05T00:00:00+00:00</published>
@@ -149,8 +293,8 @@
 &lt;&#x2F;div&gt;
 &lt;p&gt;In contrast with &lt;code&gt;linuxmd&lt;&#x2F;code&gt;, we don&#x27;t have special cartridge mappers (&lt;code&gt;SSF2&lt;&#x2F;code&gt;, which gives an extra 4MBs of RAM on the MegaDrive) so I couldn&#x27;t really justify (Memory-wise) adding any bootloader (&lt;code&gt;u-boot&lt;&#x2F;code&gt;, for instance) so I basically went with the approach I documented on the blog (Of basically doing &lt;code&gt;jmp _linux&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
 &lt;h2 id=&quot;misc-config-files-if-anyone-wants-to-try&quot;&gt;Misc. config. files if anyone wants to try&lt;&#x2F;h2&gt;
-&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_jaguar&#x2F;busybox.config&quot;&gt;Busybox config&lt;&#x2F;a&gt;
-&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_jaguar&#x2F;init&quot;&gt;Init script&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_jaguar&#x2F;busybox.config&quot;&gt;Busybox config&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;misc&#x2F;linux_jaguar&#x2F;init&quot;&gt;Init script&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 </content>
         
     </entry>
