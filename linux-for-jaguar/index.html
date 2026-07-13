@@ -508,7 +508,7 @@
 <p>The basic idea to replicate the setup is, compile buildroot targetting the 68000 (With the <code>malloc</code> strategy changed). You can ask it to build busybox with a custom <code>.config</code> file path (Provided at end of post) so it'll get you the FLAT binary. You then populate a simple initramfs file structure (There's resources online on what you need to do, usually involves creating <code>/{dev,bin,usr,sbin...}</code> directories and adding some <code>mknode</code> magic to <code>/dev/</code> to prop up the <code>/dev/console/</code> nodes plus an <code>init</code> script; which is also provided at the end of this post).</p>
 <p>Then you tell Linux where you have your newly-built <code>initramfs.cpio</code> file and voilà!</p>
 <p>That's it!</p>
-<p>Find the modified Linux repository over at: https://github.com/cakehonolulu/linux_jag</p>
+<p>Find the modified Linux repository over at: <a rel="external" href="https://github.com/cakehonolulu/linux_ports/tree/atari/jaguar">linux_ports atari/jaguar</a></p>
 <div style="text-align: center;">
 <p><img src="https://cakehonolulu.github.io/images/linux_jaguar/boot.png" alt="boot" /></p>
 </div>

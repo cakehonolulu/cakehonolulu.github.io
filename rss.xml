@@ -134,7 +134,7 @@
 &lt;p&gt;The basic idea to replicate the setup is, compile buildroot targetting the 68000 (With the &lt;code&gt;malloc&lt;&#x2F;code&gt; strategy changed). You can ask it to build busybox with a custom &lt;code&gt;.config&lt;&#x2F;code&gt; file path (Provided at end of post) so it&#x27;ll get you the FLAT binary. You then populate a simple initramfs file structure (There&#x27;s resources online on what you need to do, usually involves creating &lt;code&gt;&#x2F;{dev,bin,usr,sbin...}&lt;&#x2F;code&gt; directories and adding some &lt;code&gt;mknode&lt;&#x2F;code&gt; magic to &lt;code&gt;&#x2F;dev&#x2F;&lt;&#x2F;code&gt; to prop up the &lt;code&gt;&#x2F;dev&#x2F;console&#x2F;&lt;&#x2F;code&gt; nodes plus an &lt;code&gt;init&lt;&#x2F;code&gt; script; which is also provided at the end of this post).&lt;&#x2F;p&gt;
 &lt;p&gt;Then you tell Linux where you have your newly-built &lt;code&gt;initramfs.cpio&lt;&#x2F;code&gt; file and voilà!&lt;&#x2F;p&gt;
 &lt;p&gt;That&#x27;s it!&lt;&#x2F;p&gt;
-&lt;p&gt;Find the modified Linux repository over at: https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;linux_jag&lt;&#x2F;p&gt;
+&lt;p&gt;Find the modified Linux repository over at: &lt;a rel=&quot;external&quot; href=&quot;https:&#x2F;&#x2F;github.com&#x2F;cakehonolulu&#x2F;linux_ports&#x2F;tree&#x2F;atari&#x2F;jaguar&quot;&gt;linux_ports atari&#x2F;jaguar&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
 &lt;div style=&quot;text-align: center;&quot;&gt;
 &lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;images&#x2F;linux_jaguar&#x2F;boot.png&quot; alt=&quot;boot&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
 &lt;&#x2F;div&gt;
