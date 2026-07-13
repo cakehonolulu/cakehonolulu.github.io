@@ -201,7 +201,7 @@ Then you tell Linux where you have your newly-built `initramfs.cpio` file and vo
 
 That's it!
 
-Find the modified Linux repository over at: https://github.com/cakehonolulu/linux_jag
+Find the modified Linux repository over at: [linux_ports atari/jaguar](https://github.com/cakehonolulu/linux_ports/tree/atari/jaguar)
 
 <div style="text-align: center;">
 
