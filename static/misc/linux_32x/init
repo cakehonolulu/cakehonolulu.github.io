@@ -1,0 +1,4 @@
+#!/bin/sh
+/bin/busybox mount -t proc proc /proc
+/bin/busybox cat /proc/cpuinfo
+/bin/busybox sh
