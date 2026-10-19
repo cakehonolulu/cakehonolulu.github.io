@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Title -->
-  <title>
-    Hardware Fastmem 101 - cakehonolulu&#x27;s blog
-  </title>
+  <title>Hardware Fastmem 101 - cakehonolulu&#39;s blog</title>
 
   <!-- Meta -->
   <meta name="theme-color" />
@@ -24,23 +22,22 @@
   
   <!---->
   
-  <!---->
   <meta name="description" content="An ELI5 walkthrough of hardware fastmem on Windows and Linux" />
   <meta name="author" content="cakehonolulu" />
   <!-- The Open Graph protocol -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Hardware Fastmem 101" />
-  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:site_name" content="cakehonolulu&#39;s blog" />
   <meta property="og:description" content="An ELI5 walkthrough of hardware fastmem on Windows and Linux" />
-  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;" />
+  <meta property="og:url" content="https://cakehonolulu.github.io/improving-upon-fastmem-techniques/" />
   
   <!---->
   
   <!---->
   
 
-  <!-- CSS & JS -->
-  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="https://cakehonolulu.github.io/main.css" />
   <style>
     :root {
       --bg: #f4f4f5;
@@ -50,6 +47,16 @@
     }
   </style>
 
+  <!-- Markdown Highlighting -->
+  
+  <!---->
+  
+  <link rel="stylesheet" href="/giallo.css" />
+  
+  <!---->
+  
+
+  <!-- Preload -->
   
 
   <!-- Dark Icon -->
@@ -60,17 +67,17 @@
   <!---->
   <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  href="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.css"
   crossorigin="anonymous"
 />
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.js"
   crossorigin="anonymous"
 ></script>
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/contrib/auto-render.min.js"
   crossorigin="anonymous"
 ></script>
 
@@ -91,17 +98,17 @@
 
   <!---->
   
-  <!---->
 
   <!-- Mermaid -->
   
   <!---->
   <script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs";
 
   const initMermaid = (isDark) => {
     mermaid.initialize({
       theme: isDark ? "dark" : "default",
+      look: "classic",
       startOnLoad: false,
     });
     mermaid.run();
@@ -131,7 +138,6 @@
 
   <!---->
   
-  <!---->
 
   <!-- Favicon -->
   <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
@@ -159,22 +165,23 @@
   
 
   <!-- Canonical -->
-  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;improving-upon-fastmem-techniques&#x2F;" />
+  <link rel="canonical" href="https://cakehonolulu.github.io/improving-upon-fastmem-techniques/" />
 
   <!-- Head inject -->
   
+
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header
-  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+  class="header fixed top-0 z-40 mx-auto min-h-14 w-full"
 >
   <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#39;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:bg-right dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -203,12 +210,13 @@
       // dark theme
       const setDark = (isDark) => {
         if (isDark) {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
           htmlClass.add("dark");
         } else {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
           htmlClass.remove("dark");
         }
+        const mode = isDark ? "dark" : "light";
+        document.body.dispatchEvent(new CustomEvent("set-theme", { detail: mode }));
+        document.querySelector("#giallo")?.setAttribute("href", `/giallo-${mode}.css`);
         localStorage.setItem("dark", isDark);
       };
 
@@ -289,6 +297,7 @@
       </ul>
       <!-- Header Nav inject -->
       
+
     </nav>
     
   </div>
@@ -297,6 +306,7 @@
 
     <!-- Body Start inject -->
     
+
 
     <div class="flex">
       <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
@@ -307,12 +317,13 @@
 
       </aside>
       <main
-        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 wrap-break-word lg:pt-32"
       >
         
 <article>
   <!-- Page Start inject -->
   
+
 
   <header class="mb-16">
     <h1 class="my-0! pb-2.5">Hardware Fastmem 101</h1>
@@ -320,7 +331,7 @@
   
   <time>2025-09-11</time>
   <span class="mx-1">&middot;</span>
-  <span>13min</span>
+  <span>11min</span>
   <!---->
   <!---->
   <!---->
@@ -331,6 +342,7 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
   </header>
@@ -418,7 +430,7 @@
   </details>
 </nav>
 
-<!---->
+
 
   <!-- Content -->
   <section><div style="text-align: center;">
@@ -449,36 +461,36 @@ the accessed value accordingly:</p>
 <details>
   <summary><b>Code snippet</b></summary>
 <p><strong>bus.rs:</strong></p>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span class="z-comment">// Reads a byte from memory</span></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> readb</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-variable z-language">self</span><span class="z-variable">, addr</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u16</span><span>)</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> u8</span><span> {</span></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x2000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">ram[addr</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x4000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> index</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (addr</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 0x2000</span><span>);</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">ppu_registers[index</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x4020</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> index</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (addr</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 0x4000</span><span>);</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">apu_io_registers[index</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &gt;=</span><span class="z-constant z-numeric"> 0x8000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> index</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (addr</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 0x8000</span><span>);</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">rom[index</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">        unreachable!</span><span>();</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-4 z-i">// Reads a byte from memory</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> readb</span><span>(</span><span class="z-16">&amp;</span><span class="z-1 z-i">self</span><span>, addr</span><span class="z-16">:</span><span class="z-3"> u16</span><span>)</span><span class="z-16"> -&gt;</span><span class="z-3"> u8</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x2000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>ram[addr</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x4000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> index</span><span class="z-16"> =</span><span> (addr</span><span class="z-16"> -</span><span class="z-11"> 0x2000</span><span>);</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>ppu_registers[index</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x4020</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> index</span><span class="z-16"> =</span><span> (addr</span><span class="z-16"> -</span><span class="z-11"> 0x4000</span><span>);</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>apu_io_registers[index</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &gt;=</span><span class="z-11"> 0x8000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> index</span><span class="z-16"> =</span><span> (addr</span><span class="z-16"> -</span><span class="z-11"> 0x8000</span><span>);</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>rom[index</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">        unreachable!</span><span>();</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-comment">// Writes a byte to memory</span></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> writeb</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-storage">mut</span><span class="z-variable z-language"> self</span><span class="z-variable">, addr</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u16</span><span class="z-variable">, data</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u8</span><span>) {</span></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x2000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">ram[addr</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> data;</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x4000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> index</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (addr</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 0x2000</span><span>);</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">ppu_registers[index</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> data;</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &lt;</span><span class="z-constant z-numeric"> 0x4020</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> index</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (addr</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 0x4000</span><span>);</span></span>
-<span class="giallo-l"><span class="z-variable z-language">        self</span><span class="z-keyword z-operator">.</span><span class="z-variable">apu_io_registers[index</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>]</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> data;</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else if</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> &gt;=</span><span class="z-constant z-numeric"> 0x8000</span><span> {</span></span>
-<span class="giallo-l"><span class="z-comment">        // ROM is read only</span></span>
+<span class="giallo-l"><span class="z-4 z-i">// Writes a byte to memory</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> writeb</span><span>(</span><span class="z-16">&amp;</span><span class="z-17">mut</span><span class="z-1 z-i"> self</span><span>, addr</span><span class="z-16">:</span><span class="z-3"> u16</span><span>, data</span><span class="z-16">:</span><span class="z-3"> u8</span><span>) {</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x2000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>ram[addr</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span><span class="z-16"> =</span><span> data;</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x4000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> index</span><span class="z-16"> =</span><span> (addr</span><span class="z-16"> -</span><span class="z-11"> 0x2000</span><span>);</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>ppu_registers[index</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span><span class="z-16"> =</span><span> data;</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &lt;</span><span class="z-11"> 0x4020</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> index</span><span class="z-16"> =</span><span> (addr</span><span class="z-16"> -</span><span class="z-11"> 0x4000</span><span>);</span></span>
+<span class="giallo-l"><span class="z-1 z-i">        self</span><span class="z-16">.</span><span>apu_io_registers[index</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>]</span><span class="z-16"> =</span><span> data;</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else if</span><span> addr</span><span class="z-16"> &gt;=</span><span class="z-11"> 0x8000</span><span> {</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // ROM is read only</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre></details>
 <p>This is for systems that have no MMU, when systems have an MMU, you first have to do the virtual-to-physical
@@ -494,34 +506,34 @@ and the write arrays with pointers to page-size-aligned entries (For RAM, scratc
 <details>
   <summary><b>Code snippet</b></summary>
 <p><strong>bus.rs:</strong></p>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> sw_readb</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-storage">mut</span><span class="z-variable z-language"> self</span><span class="z-variable">, va</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u32</span><span>)</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> u8</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> page</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (va</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword z-operator"> &gt;&gt;</span><span class="z-constant z-other"> PAGE_BITS</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> offset</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (va</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword z-operator"> &amp;</span><span> (</span><span class="z-constant z-other">PAGE_SIZE</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 1</span><span>);</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> host</span><span class="z-keyword z-operator"> =</span><span class="z-variable z-language"> self</span><span class="z-keyword z-operator">.</span><span class="z-variable">page_read[page];</span></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-variable"> host</span><span class="z-keyword z-operator"> !=</span><span class="z-constant z-numeric"> 0</span><span> {</span></span>
-<span class="giallo-l"><span class="z-keyword">        unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-variable">            (host</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">const</span><span class="z-entity z-name"> u8</span><span>)</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">                .</span><span class="z-entity z-name z-function">add</span><span class="z-variable">(offset)</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">                .</span><span class="z-entity z-name z-function">cast</span><span class="z-keyword z-operator">::</span><span>&lt;</span><span class="z-entity z-name">u8</span><span>&gt;()</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">                .</span><span class="z-entity z-name z-function">read_unaligned</span><span>()</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> sw_readb</span><span>(</span><span class="z-16">&amp;</span><span class="z-17">mut</span><span class="z-1 z-i"> self</span><span>, va</span><span class="z-16">:</span><span class="z-3"> u32</span><span>)</span><span class="z-16"> -&gt;</span><span class="z-3"> u8</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> page</span><span class="z-16"> =</span><span> (va</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-16"> &gt;&gt;</span><span class="z-7"> PAGE_BITS</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> offset</span><span class="z-16"> =</span><span> (va</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-16"> &amp;</span><span> (</span><span class="z-7">PAGE_SIZE</span><span class="z-16"> -</span><span class="z-11"> 1</span><span>);</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> host</span><span class="z-16"> =</span><span class="z-1 z-i"> self</span><span class="z-16">.</span><span>page_read[page];</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> host</span><span class="z-16"> !=</span><span class="z-11"> 0</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        unsafe</span><span> {</span></span>
+<span class="giallo-l"><span>            (host</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">const</span><span class="z-3"> u8</span><span>)</span></span>
+<span class="giallo-l"><span class="z-16">                .</span><span class="z-18">add</span><span>(offset)</span></span>
+<span class="giallo-l"><span class="z-16">                .</span><span class="z-18">cast</span><span class="z-16">::</span><span>&lt;</span><span class="z-3">u8</span><span>&gt;()</span></span>
+<span class="giallo-l"><span class="z-16">                .</span><span class="z-18">read_unaligned</span><span>()</span></span>
 <span class="giallo-l"><span>        }</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else</span><span> {</span></span>
-<span class="giallo-l"><span class="z-comment">        // IO access</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else</span><span> {</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // IO access</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> sw_writeb</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-storage">mut</span><span class="z-variable z-language"> self</span><span class="z-variable">, va</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u32</span><span class="z-variable">, value</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u8</span><span>) {</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> page</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (va</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword z-operator"> &gt;&gt;</span><span class="z-constant z-other"> PAGE_BITS</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> offset</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> (va</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword z-operator"> &amp;</span><span> (</span><span class="z-constant z-other">PAGE_SIZE</span><span class="z-keyword z-operator"> -</span><span class="z-constant z-numeric"> 1</span><span>);</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> host</span><span class="z-keyword z-operator"> =</span><span class="z-variable z-language"> self</span><span class="z-keyword z-operator">.</span><span class="z-variable">page_write[page];</span></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-variable"> host</span><span class="z-keyword z-operator"> !=</span><span class="z-constant z-numeric"> 0</span><span> {</span></span>
-<span class="giallo-l"><span class="z-keyword">        unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-variable">            (host</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-entity z-name"> u8</span><span>)</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">                .</span><span class="z-entity z-name z-function">add</span><span class="z-variable">(offset)</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">                .</span><span class="z-entity z-name z-function">write_unaligned</span><span class="z-variable">(value)</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> sw_writeb</span><span>(</span><span class="z-16">&amp;</span><span class="z-17">mut</span><span class="z-1 z-i"> self</span><span>, va</span><span class="z-16">:</span><span class="z-3"> u32</span><span>, value</span><span class="z-16">:</span><span class="z-3"> u8</span><span>) {</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> page</span><span class="z-16"> =</span><span> (va</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-16"> &gt;&gt;</span><span class="z-7"> PAGE_BITS</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> offset</span><span class="z-16"> =</span><span> (va</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-16"> &amp;</span><span> (</span><span class="z-7">PAGE_SIZE</span><span class="z-16"> -</span><span class="z-11"> 1</span><span>);</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> host</span><span class="z-16"> =</span><span class="z-1 z-i"> self</span><span class="z-16">.</span><span>page_write[page];</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> host</span><span class="z-16"> !=</span><span class="z-11"> 0</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        unsafe</span><span> {</span></span>
+<span class="giallo-l"><span>            (host</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">mut</span><span class="z-3"> u8</span><span>)</span></span>
+<span class="giallo-l"><span class="z-16">                .</span><span class="z-18">add</span><span>(offset)</span></span>
+<span class="giallo-l"><span class="z-16">                .</span><span class="z-18">write_unaligned</span><span>(value)</span></span>
 <span class="giallo-l"><span>        }</span></span>
-<span class="giallo-l"><span>    }</span><span class="z-keyword"> else</span><span> {</span></span>
-<span class="giallo-l"><span class="z-comment">        // IO access</span></span>
+<span class="giallo-l"><span>    }</span><span class="z-17"> else</span><span> {</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // IO access</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre></details>
 <p>As you can see, this approach is much, much more faster; since we "delegate" the costly part on startup (The actual filling
@@ -544,19 +556,19 @@ basis will tank our performance, so from now on, we'll assume that this is targe
 <p>For instance, under Linux, one would issue a call to <code>mmap()</code>:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> size</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> base</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name z-function"> mmap</span><span>(</span></span>
-<span class="giallo-l"><span class="z-entity z-name">    ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-variable">    size,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">    PROT_NONE</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">    MAP_PRIVATE</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> MAP_ANONYMOUS</span><span>,</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    -</span><span class="z-constant z-numeric">1</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">    0</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> size</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> base</span><span class="z-16"> =</span><span class="z-18"> mmap</span><span>(</span></span>
+<span class="giallo-l"><span class="z-3">    ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span>    size,</span></span>
+<span class="giallo-l"><span class="z-7">    PROT_NONE</span><span>,</span></span>
+<span class="giallo-l"><span class="z-7">    MAP_PRIVATE</span><span class="z-16"> |</span><span class="z-7"> MAP_ANONYMOUS</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">    -</span><span class="z-11">1</span><span>,</span></span>
+<span class="giallo-l"><span class="z-11">    0</span><span>,</span></span>
 <span class="giallo-l"><span>);</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>For this specific case, we ask the kernel for a chunk of <code>size</code>, mapped wherever it wants (<code>ptr::null_mut()</code>), initially w/o any access to it (<code>PROT_NONE</code>) and
 not backed by a file, we4 also don't specify a file descriptor (<code>-1</code>) since the second flag we specified to <code>mmap()</code> is <code>MAP_ANONYMOUS</code>. Changes are also private to
 the process thanks to <code>MAP_PRIVATE</code>.</p>
@@ -566,22 +578,22 @@ the process thanks to <code>MAP_PRIVATE</code>.</p>
 <a rel="external" href="https://devblogs.microsoft.com/oldnewthing/20031008-00/?p=42223">for legacy reasons</a>.</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> size</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> base</span><span class="z-keyword z-operator"> =</span><span class="z-keyword"> unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    VirtualAlloc2</span><span>(</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-variable">        size,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        MEM_RESERVE</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> MEM_RESERVE_PLACEHOLDER</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        PAGE_NOACCESS</span><span>,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">        0</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> size</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> base</span><span class="z-16"> =</span><span class="z-17"> unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">    VirtualAlloc2</span><span>(</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span>        size,</span></span>
+<span class="giallo-l"><span class="z-7">        MEM_RESERVE</span><span class="z-16"> |</span><span class="z-7"> MEM_RESERVE_PLACEHOLDER</span><span>,</span></span>
+<span class="giallo-l"><span class="z-7">        PAGE_NOACCESS</span><span>,</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-11">        0</span><span>,</span></span>
 <span class="giallo-l"><span>    )</span></span>
 <span class="giallo-l"><span>};</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>Again, <code>ptr::null_mut()</code>'s are, in order, to let the kernel choose the base address, and then so we don't specify extended parameters.</p>
 <p><code>MEM_RESERVE | MEM_RESERVE_PLACEHOLDER</code>, the crucial bit is <code>MEM_RESERVE_PLACEHOLDER</code>, since that's why we use <code>VirtualAlloc2()</code> in the first place.</p>
 <p>This creates a reservation that can be split and replaced, working around Windows' legacy 64K allocation granularity that made precise memory layout control impossible with the regular <code>VirtualAlloc()</code>.</p>
@@ -593,129 +605,129 @@ the process thanks to <code>MAP_PRIVATE</code>.</p>
 <p>First, we open a shared memory file:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> name</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> c</span><span class="z-string">&quot;...&quot;</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> fd</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name z-function"> shm_open</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">    name,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">    OFlag</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">O_CREAT</span><span class="z-keyword z-operator"> |</span><span class="z-entity z-name"> OFlag</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">O_RDWR</span><span>,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">    Mode</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">S_IRUSR</span><span class="z-keyword z-operator"> |</span><span class="z-entity z-name"> Mode</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">S_IWUSR</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> name</span><span class="z-16"> =</span><span> c</span><span class="z-8">&quot;...&quot;</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> fd</span><span class="z-16"> =</span><span class="z-18"> shm_open</span><span>(</span></span>
+<span class="giallo-l"><span>    name,</span></span>
+<span class="giallo-l"><span class="z-3">    OFlag</span><span class="z-16">::</span><span class="z-3">O_CREAT</span><span class="z-16"> |</span><span class="z-3"> OFlag</span><span class="z-16">::</span><span class="z-3">O_RDWR</span><span>,</span></span>
+<span class="giallo-l"><span class="z-3">    Mode</span><span class="z-16">::</span><span class="z-3">S_IRUSR</span><span class="z-16"> |</span><span class="z-3"> Mode</span><span class="z-16">::</span><span class="z-3">S_IWUSR</span><span>,</span></span>
 <span class="giallo-l"><span>);</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>When we have the file descriptor for it, we truncate the size of the fd itself; we can use <code>ftruncate()</code> for that:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> fd_size</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">ftruncate</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-variable">fd, fd_size);</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> fd_size</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-18">ftruncate</span><span>(</span><span class="z-16">&amp;</span><span>fd, fd_size);</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>(Worth noting I'm omitting error handling and stuff not to clutter the post with that).</p>
 <p>After this, it's a matter of actually adding the mapping to our "base" pointer of virtual addresses:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> target</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> base</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">add</span><span>(</span><span class="z-keyword z-operator">...</span><span>);</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> map_sz</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> prot</span><span class="z-keyword z-operator"> =</span><span class="z-constant z-other"> PROT_READ</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> PROT_WRITE</span><span>;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">mmap</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">    target</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-variable"> c_void,</span></span>
-<span class="giallo-l"><span class="z-variable">    size,</span></span>
-<span class="giallo-l"><span class="z-variable">    prot,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">    MAP_SHARED</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> MAP_FIXED</span><span>,</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    &amp;</span><span class="z-variable">fd</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">as_raw_fd</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">    0</span><span>,</span><span class="z-comment"> /* offset */</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> target</span><span class="z-16"> =</span><span> base</span><span class="z-16">.</span><span class="z-18">add</span><span>(</span><span class="z-16">...</span><span>);</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> map_sz</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> prot</span><span class="z-16"> =</span><span class="z-7"> PROT_READ</span><span class="z-16"> |</span><span class="z-7"> PROT_WRITE</span><span>;</span></span>
+<span class="giallo-l"><span class="z-18">mmap</span><span>(</span></span>
+<span class="giallo-l"><span>    target</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">mut</span><span> c_void,</span></span>
+<span class="giallo-l"><span>    size,</span></span>
+<span class="giallo-l"><span>    prot,</span></span>
+<span class="giallo-l"><span class="z-7">    MAP_SHARED</span><span class="z-16"> |</span><span class="z-7"> MAP_FIXED</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">    &amp;</span><span>fd</span><span class="z-16">.</span><span class="z-18">as_raw_fd</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-11">    0</span><span>,</span><span class="z-4 z-i"> /* offset */</span></span>
 <span class="giallo-l"><span>);</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>This would suffice to have the region mapped. You can also map R/O regions by doing: <code>PROT_READ</code> instead of <code>PROT_READ | PROT_WRITE</code> (Think
 BootROMs and such).</p>
 <p>If you need to copy a BootROM/BIOS/proprietary binary over the mapping, you can do it by <code>mmap()</code>-ing (Or the Windows alternative) with <code>PROT_READ | PROT_WRITE</code>,
 then copying the bytes to it and finally remapping it correctly as R/O (Using <code>mprotect()</code>/<code>VirtualProtect/()</code>):</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> binary</span><span class="z-keyword z-operator">:</span><span class="z-comment"> /* Vec&lt;u8&gt; */</span><span class="z-keyword z-operator"> ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-entity z-name">std</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">copy_nonoverlapping</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">    binary</span><span class="z-keyword z-operator">.</span><span>bytes</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">as_ptr</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-variable">    ptr</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-entity z-name"> u8</span><span>,</span></span>
-<span class="giallo-l"><span class="z-variable">    binary</span><span class="z-keyword z-operator">.</span><span>bytes</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">len</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> binary</span><span class="z-16">:</span><span class="z-4 z-i"> /* Vec&lt;u8&gt; */</span><span class="z-16"> ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-3">std</span><span class="z-16">::</span><span class="z-3">ptr</span><span class="z-16">::</span><span class="z-18">copy_nonoverlapping</span><span>(</span></span>
+<span class="giallo-l"><span>    binary</span><span class="z-16">.</span><span>bytes</span><span class="z-16">.</span><span class="z-18">as_ptr</span><span>(),</span></span>
+<span class="giallo-l"><span>    ptr</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">mut</span><span class="z-3"> u8</span><span>,</span></span>
+<span class="giallo-l"><span>    binary</span><span class="z-16">.</span><span>bytes</span><span class="z-16">.</span><span class="z-18">len</span><span>(),</span></span>
 <span class="giallo-l"><span>);</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">mprotect</span><span class="z-variable">(ptr, binary</span><span class="z-keyword z-operator">.</span><span>bytes</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">len</span><span>(),</span><span class="z-constant z-other"> PROT_READ</span><span>)</span><span class="z-keyword z-operator">?</span><span>;</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-18">mprotect</span><span>(ptr, binary</span><span class="z-16">.</span><span>bytes</span><span class="z-16">.</span><span class="z-18">len</span><span>(),</span><span class="z-7"> PROT_READ</span><span>)</span><span class="z-16">?</span><span>;</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <hr />
 <p>On the Windows side of things, we'll use <code>CreateFileMapping2()</code> to achieve similar results.</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> sz</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> fd</span><span class="z-keyword z-operator"> =</span><span class="z-keyword"> unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    CreateFileMapping2</span><span>(</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        INVALID_HANDLE_VALUE</span><span>,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        FILE_MAP_READ</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> FILE_MAP_WRITE</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        PAGE_READWRITE</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">        0</span><span>,</span></span>
-<span class="giallo-l"><span class="z-variable">        sz,</span></span>
-<span class="giallo-l"><span class="z-comment">        /* OsStr */</span><span>,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">        0</span><span>,</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> sz</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> fd</span><span class="z-16"> =</span><span class="z-17"> unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">    CreateFileMapping2</span><span>(</span></span>
+<span class="giallo-l"><span class="z-7">        INVALID_HANDLE_VALUE</span><span>,</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-7">        FILE_MAP_READ</span><span class="z-16"> |</span><span class="z-7"> FILE_MAP_WRITE</span><span>,</span></span>
+<span class="giallo-l"><span class="z-7">        PAGE_READWRITE</span><span>,</span></span>
+<span class="giallo-l"><span class="z-11">        0</span><span>,</span></span>
+<span class="giallo-l"><span>        sz,</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        /* OsStr */</span><span>,</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-11">        0</span><span>,</span></span>
 <span class="giallo-l"><span>    )</span></span>
 <span class="giallo-l"><span>};</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>This grants us a memory mapped file.</p>
 <p>We then "initialize" the region we'll place the mapping on the pool by issuing a <code>VirtualFree()</code> with a special bit set...</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> sz</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> addr</span><span class="z-keyword z-operator"> = ...</span><span>;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">VirtualFree</span><span class="z-variable">(addr, sz,</span><span class="z-constant z-other"> MEM_RELEASE</span><span class="z-keyword z-operator"> |</span><span class="z-constant z-other"> MEM_PRESERVE_PLACEHOLDER</span><span>)</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-17">let</span><span> sz</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> addr</span><span class="z-16"> = ...</span><span>;</span></span>
+<span class="giallo-l"><span class="z-18">VirtualFree</span><span>(addr, sz,</span><span class="z-7"> MEM_RELEASE</span><span class="z-16"> |</span><span class="z-7"> MEM_PRESERVE_PLACEHOLDER</span><span>)</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>...and we map the fd to the virtual address pool using <code>MapViewOfFile3()</code>:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage">let</span><span class="z-variable"> res</span><span class="z-keyword z-operator"> =</span><span class="z-keyword"> unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    MapViewOfFile3</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">        fd,</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">        GetCurrentProcess</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-variable">        base</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">add</span><span class="z-variable">(offset)</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">const</span><span class="z-variable"> c_void,</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">        0</span><span>,</span></span>
-<span class="giallo-l"><span class="z-variable">        sz,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        MEM_REPLACE_PLACEHOLDER</span><span>,</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        PAGE_READWRITE</span><span>,</span></span>
-<span class="giallo-l"><span class="z-entity z-name">        ptr</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">null_mut</span><span>(),</span></span>
-<span class="giallo-l"><span class="z-constant z-numeric">        0</span><span>,</span></span>
+<span class="giallo-l"><span class="z-17">let</span><span> res</span><span class="z-16"> =</span><span class="z-17"> unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">    MapViewOfFile3</span><span>(</span></span>
+<span class="giallo-l"><span>        fd,</span></span>
+<span class="giallo-l"><span class="z-18">        GetCurrentProcess</span><span>(),</span></span>
+<span class="giallo-l"><span>        base</span><span class="z-16">.</span><span class="z-18">add</span><span>(offset)</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">const</span><span> c_void,</span></span>
+<span class="giallo-l"><span class="z-11">        0</span><span>,</span></span>
+<span class="giallo-l"><span>        sz,</span></span>
+<span class="giallo-l"><span class="z-7">        MEM_REPLACE_PLACEHOLDER</span><span>,</span></span>
+<span class="giallo-l"><span class="z-7">        PAGE_READWRITE</span><span>,</span></span>
+<span class="giallo-l"><span class="z-3">        ptr</span><span class="z-16">::</span><span class="z-18">null_mut</span><span>(),</span></span>
+<span class="giallo-l"><span class="z-11">        0</span><span>,</span></span>
 <span class="giallo-l"><span>    )</span></span>
 <span class="giallo-l"><span>};</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span></code></pre></details>
+<span class="giallo-l"><span class="z-16">...</span></span></code></pre></details>
 <p>Again, if you need to copy any proprietary binary to those sections; the approach is similar to that of Linux's.</p>
 <h2 id="handling-accesses">Handling accesses</h2>
 <p>Thanks to leveraging the host's MMU we can now do memory accesses as follows:</p>
 <details>
   <summary><b>Code snippet</b></summary>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> hw_read32</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-storage">mut</span><span class="z-variable z-language"> self</span><span class="z-variable">, addr</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u32</span><span>)</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> u32</span><span> {</span></span>
-<span class="giallo-l"><span class="z-keyword">    unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> host_ptr</span><span class="z-keyword z-operator"> =</span><span class="z-variable z-language"> self</span><span class="z-keyword z-operator">.</span><span>base</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">add</span><span class="z-variable">(addr</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">const</span><span class="z-entity z-name"> u32</span><span>;</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">        *</span><span class="z-variable">host_ptr</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> hw_read32</span><span>(</span><span class="z-16">&amp;</span><span class="z-17">mut</span><span class="z-1 z-i"> self</span><span>, addr</span><span class="z-16">:</span><span class="z-3"> u32</span><span>)</span><span class="z-16"> -&gt;</span><span class="z-3"> u32</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">    unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> host_ptr</span><span class="z-16"> =</span><span class="z-1 z-i"> self</span><span class="z-16">.</span><span>base</span><span class="z-16">.</span><span class="z-18">add</span><span>(addr</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">const</span><span class="z-3"> u32</span><span>;</span></span>
+<span class="giallo-l"><span class="z-16">        *</span><span>host_ptr</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> hw_write32</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-storage">mut</span><span class="z-variable z-language"> self</span><span class="z-variable">, addr</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u32</span><span class="z-variable">, val</span><span class="z-keyword z-operator">:</span><span class="z-entity z-name"> u32</span><span>) {</span></span>
-<span class="giallo-l"><span class="z-keyword">    unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">        let</span><span class="z-variable"> host_ptr</span><span class="z-keyword z-operator"> =</span><span class="z-variable z-language"> self</span><span class="z-keyword z-operator">.</span><span>base</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">add</span><span class="z-variable">(addr</span><span class="z-keyword"> as</span><span class="z-entity z-name"> usize</span><span>)</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-entity z-name"> u32</span><span>;</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">        *</span><span class="z-variable">host_ptr</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> val;</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> hw_write32</span><span>(</span><span class="z-16">&amp;</span><span class="z-17">mut</span><span class="z-1 z-i"> self</span><span>, addr</span><span class="z-16">:</span><span class="z-3"> u32</span><span>, val</span><span class="z-16">:</span><span class="z-3"> u32</span><span>) {</span></span>
+<span class="giallo-l"><span class="z-17">    unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">        let</span><span> host_ptr</span><span class="z-16"> =</span><span class="z-1 z-i"> self</span><span class="z-16">.</span><span>base</span><span class="z-16">.</span><span class="z-18">add</span><span>(addr</span><span class="z-17"> as</span><span class="z-3"> usize</span><span>)</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">mut</span><span class="z-3"> u32</span><span>;</span></span>
+<span class="giallo-l"><span class="z-16">        *</span><span>host_ptr</span><span class="z-16"> =</span><span> val;</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre></details>
 <p>As you can see, this is a vast improvement in comparison with what we had for previous methods.</p>
@@ -737,20 +749,20 @@ the exact bytes to look for) by the function call to the slower, IO handler.</p>
 </ul>
 <h2 id="general-flow">General flow</h2>
 <pre class="mermaid bg-inherit">
-  %%{init: { &#x27;themeVariables&#x27;: { &#x27;fontSize&#x27;: &#x27;20px&#x27;}, &#x27;flowchart&#x27;: {&#x27;subGraphTitleMargin&#x27;: {&#x27;bottom&#x27;: 35}} }}%%
+  %%{init: { 'themeVariables': { 'fontSize': '20px'}, 'flowchart': {'subGraphTitleMargin': {'bottom': 35}} }}%%
 flowchart TD
-  subgraph JIT [&quot;JIT context&quot;]
-    A[Machine code] --&gt; B[Memory access]
-    B --&gt; C[Continue execution]
-    B --&gt; S[Fault SIGSEGV]
+  subgraph JIT ["JIT context"]
+    A[Machine code] --> B[Memory access]
+    B --> C[Continue execution]
+    B --> S[Fault SIGSEGV]
   end
-  subgraph SIG [&quot;Signal handler context&quot;]
-    S --&gt; D[Retrieve fault address]
-    D --&gt; E[Retrieve memory access length and type]
-    E --&gt; F[&quot;Patch callsite on JIT (Block) context&quot;]
-    F --&gt; G[Return to JIT]
+  subgraph SIG ["Signal handler context"]
+    S --> D[Retrieve fault address]
+    D --> E[Retrieve memory access length and type]
+    E --> F["Patch callsite on JIT (Block) context"]
+    F --> G[Return to JIT]
   end
-  G --&gt; C
+  G --> C
 </pre>
 <div style="text-align: center;">
 <i>General flow schema for patching the JIT callsite</i>
@@ -764,58 +776,58 @@ flowchart TD
 method of action, patch the access accordingly.</p>
 <p>At this stage, you may want to try and encapsulate the logic to abstract the OSs underneath. Let's assume you have a per-OS structure.</p>
 <p>For Linux, we need to install the sighandlers as previously mentioned:</p>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(unix)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage">extern</span><span class="z-string"> &quot;C&quot;</span><span class="z-keyword"> fn</span><span class="z-entity z-name z-function"> segv_handler</span><span class="z-variable">(signum</span><span class="z-keyword z-operator">:</span><span class="z-variable"> c_int, info</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-entity z-name"> libc</span><span class="z-keyword z-operator">::</span><span class="z-variable">siginfo_t, ctx</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-variable"> c_void) {</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> ctx</span><span class="z-keyword z-operator"> =</span><span class="z-variable"> ctx</span><span class="z-keyword"> as</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-variable"> ucontext_t;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    generic_segv_handler</span><span class="z-variable">(signum, info, ctx)</span></span>
+<span class="giallo-l"><span class="z-17">extern</span><span class="z-8"> &quot;C&quot;</span><span class="z-17"> fn</span><span class="z-18"> segv_handler</span><span>(signum</span><span class="z-16">:</span><span> c_int, info</span><span class="z-16">: *</span><span class="z-17">mut</span><span class="z-3"> libc</span><span class="z-16">::</span><span>siginfo_t, ctx</span><span class="z-16">: *</span><span class="z-17">mut</span><span> c_void) {</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> ctx</span><span class="z-16"> =</span><span> ctx</span><span class="z-17"> as</span><span class="z-16"> *</span><span class="z-17">mut</span><span> ucontext_t;</span></span>
+<span class="giallo-l"><span class="z-18">    generic_segv_handler</span><span>(signum, info, ctx)</span></span>
 <span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> generic_segv_handler</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">    signum</span><span class="z-keyword z-operator">:</span><span class="z-variable"> c_int,</span></span>
-<span class="giallo-l"><span class="z-variable">    info</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-entity z-name"> libc</span><span class="z-keyword z-operator">::</span><span class="z-variable">siginfo_t,</span></span>
-<span class="giallo-l"><span class="z-variable">    ctx</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-entity z-name"> H</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">Context</span><span>,</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> generic_segv_handler</span><span>(</span></span>
+<span class="giallo-l"><span>    signum</span><span class="z-16">:</span><span> c_int,</span></span>
+<span class="giallo-l"><span>    info</span><span class="z-16">: *</span><span class="z-17">mut</span><span class="z-3"> libc</span><span class="z-16">::</span><span>siginfo_t,</span></span>
+<span class="giallo-l"><span>    ctx</span><span class="z-16">: *</span><span class="z-17">mut</span><span class="z-3"> H</span><span class="z-16">::</span><span class="z-3">Context</span><span>,</span></span>
 <span class="giallo-l"><span>) {</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
 <span class="giallo-l"><span>}</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> install_linux_handler</span><span>()</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> Result</span><span>&lt;()&gt;</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> handler</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> SigHandler</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">SigAction</span><span class="z-variable">(segv_handler</span><span class="z-keyword z-storage"> as extern</span><span class="z-string"> &quot;C&quot;</span><span class="z-keyword"> fn</span><span class="z-variable">(_, _,</span><span class="z-keyword z-operator"> *</span><span class="z-storage">mut</span><span class="z-variable"> c_void));</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> flags</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> SaFlags</span><span class="z-keyword z-operator">::</span><span class="z-constant z-other">SA_SIGINFO</span><span>;</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> mask</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> SigSet</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">empty</span><span>();</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> action</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> SigAction</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">new</span><span class="z-variable">(handler, flags, mask);</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> install_linux_handler</span><span>()</span><span class="z-16"> -&gt;</span><span class="z-3"> Result</span><span>&lt;()&gt;</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> handler</span><span class="z-16"> =</span><span class="z-3"> SigHandler</span><span class="z-16">::</span><span class="z-18">SigAction</span><span>(segv_handler</span><span class="z-17"> as extern</span><span class="z-8"> &quot;C&quot;</span><span class="z-17"> fn</span><span>(_, _,</span><span class="z-16"> *</span><span class="z-17">mut</span><span> c_void));</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> flags</span><span class="z-16"> =</span><span class="z-3"> SaFlags</span><span class="z-16">::</span><span class="z-7">SA_SIGINFO</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> mask</span><span class="z-16"> =</span><span class="z-3"> SigSet</span><span class="z-16">::</span><span class="z-18">empty</span><span>();</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> action</span><span class="z-16"> =</span><span class="z-3"> SigAction</span><span class="z-16">::</span><span class="z-18">new</span><span>(handler, flags, mask);</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">    unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">        sigaction</span><span>(</span><span class="z-entity z-name">Signal</span><span class="z-keyword z-operator">::</span><span class="z-constant z-other">SIGSEGV</span><span>,</span><span class="z-keyword z-operator"> &amp;</span><span class="z-variable">action)</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">map_err</span><span>(</span><span class="z-keyword z-operator">|</span><span class="z-variable">e</span><span class="z-keyword z-operator">|</span><span class="z-entity z-name"> io</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">Error</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">new</span><span>(</span><span class="z-entity z-name">io</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">ErrorKind</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">Other</span><span class="z-variable">, e))</span><span class="z-keyword z-operator">?</span><span>;</span></span>
+<span class="giallo-l"><span class="z-17">    unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">        sigaction</span><span>(</span><span class="z-3">Signal</span><span class="z-16">::</span><span class="z-7">SIGSEGV</span><span>,</span><span class="z-16"> &amp;</span><span>action)</span><span class="z-16">.</span><span class="z-18">map_err</span><span>(</span><span class="z-16">|</span><span>e</span><span class="z-16">|</span><span class="z-3"> io</span><span class="z-16">::</span><span class="z-3">Error</span><span class="z-16">::</span><span class="z-18">new</span><span>(</span><span class="z-3">io</span><span class="z-16">::</span><span class="z-3">ErrorKind</span><span class="z-16">::</span><span class="z-3">Other</span><span>, e))</span><span class="z-16">?</span><span>;</span></span>
 <span class="giallo-l"><span>    }</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre>
 <p>And similarly for Windows, but using <code>AddVectoredExceptionHandler()</code> instead:</p>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span>#[cfg(windows)]</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage">extern</span><span class="z-string"> &quot;system&quot;</span><span class="z-keyword"> fn</span><span class="z-entity z-name z-function"> veh_handler</span><span class="z-variable">(info</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-constant z-other"> EXCEPTION_POINTERS</span><span>)</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> i32</span><span> {</span><span class="z-keyword"> unsafe</span><span> {</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    generic_segv_handler</span><span class="z-variable">(info)</span></span>
+<span class="giallo-l"><span class="z-17">extern</span><span class="z-8"> &quot;system&quot;</span><span class="z-17"> fn</span><span class="z-18"> veh_handler</span><span>(info</span><span class="z-16">: *</span><span class="z-17">mut</span><span class="z-7"> EXCEPTION_POINTERS</span><span>)</span><span class="z-16"> -&gt;</span><span class="z-3"> i32</span><span> {</span><span class="z-17"> unsafe</span><span> {</span></span>
+<span class="giallo-l"><span class="z-18">    generic_segv_handler</span><span>(info)</span></span>
 <span class="giallo-l"><span>}}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> generic_segv_handler</span><span>(</span></span>
-<span class="giallo-l"><span class="z-variable">    info</span><span class="z-keyword z-operator">: *</span><span class="z-storage">mut</span><span class="z-constant z-other"> EXCEPTION_POINTERS</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> generic_segv_handler</span><span>(</span></span>
+<span class="giallo-l"><span>    info</span><span class="z-16">: *</span><span class="z-17">mut</span><span class="z-7"> EXCEPTION_POINTERS</span></span>
 <span class="giallo-l"><span>) {</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
 <span class="giallo-l"><span>}</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
+<span class="giallo-l"><span class="z-16">...</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> install_windows_handler</span><span>()</span><span class="z-keyword z-operator"> -&gt;</span><span class="z-entity z-name"> Result</span><span>&lt;()&gt;</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
-<span class="giallo-l"><span class="z-storage">    let</span><span class="z-variable"> handle</span><span class="z-keyword z-operator"> =</span><span class="z-keyword"> unsafe</span><span> {</span><span class="z-entity z-name z-function"> AddVectoredExceptionHandler</span><span>(</span><span class="z-constant z-numeric">1</span><span>,</span><span class="z-entity z-name"> Some</span><span class="z-variable">(veh_handler)) };</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> install_windows_handler</span><span>()</span><span class="z-16"> -&gt;</span><span class="z-3"> Result</span><span>&lt;()&gt;</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
+<span class="giallo-l"><span class="z-17">    let</span><span> handle</span><span class="z-16"> =</span><span class="z-17"> unsafe</span><span> {</span><span class="z-18"> AddVectoredExceptionHandler</span><span>(</span><span class="z-11">1</span><span>,</span><span class="z-3"> Some</span><span>(veh_handler)) };</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre><h2 id="detecting-where-and-what-to-patch">Detecting where and what to patch</h2>
 <p>The objective inside the sighandler, is to patch the JIT callsite that triggered the access fault.</p>
 <p>Whilst there's a few ways of doing so, I chose to have a different set of functions that do the general memory accesses:</p>
 <p><code>hw_read8()</code>, <code>hw_read16()</code>, <code>hw_write32()</code>, <code>hw_write64()</code>... you get the gist.</p>
 <p>The main reason as to why I use functions instead of inlining the pointer dereference is mainly because, while you could probably have a trampoline within JIT bounds and take it from there; it felt easier for me, conceptually-speaking; to patch <code>call</code> opcodes instead - so, if the actual pointer dereference fails, we'll be on a "function boundary", that is, it'll have it's own stack frame and such and it'll be easier to identify using less-obscure code; at least, personally speaking.</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>                                                       ┌───────────────────────────────────────────┐</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>                                                       ┌───────────────────────────────────────────┐</span></span>
 <span class="giallo-l"><span>                                                       │                  fn hw_write32            │</span></span>
 <span class="giallo-l"><span>                                                       │                                           │</span></span>
 <span class="giallo-l"><span>┌─────────────────────────────────────────┐            │ 0x7fff8dc1843df  mov     eax, [ebp+8]     │</span></span>
@@ -837,7 +849,7 @@ method of action, patch the access accordingly.</p>
 <span class="giallo-l"><span>                                                        src=rax                                     </span></span>
 <span class="giallo-l"><span>                                                        dst=rdi                                     </span></span></code></pre>
 <hr />
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>┌───────────────────────┐             ┌────────────────────────────────────────────────────────┐</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>┌───────────────────────┐             ┌────────────────────────────────────────────────────────┐</span></span>
 <span class="giallo-l"><span>│      JIT Context      │             │               Signal Handler Context                   │</span></span>
 <span class="giallo-l"><span>├───────────────────────┤             ├────────────────────────────────────────────────────────┤</span></span>
 <span class="giallo-l"><span>│                       │             │                                                        │</span></span>
@@ -864,40 +876,40 @@ method of action, patch the access accordingly.</p>
 <p>For each function of the ones above, I also (At startup) disassemble them with Capstone (I traverse in reverse from the function's <code>ret</code> until I find the register order for knowing which registers I have to get values out of to properly call the IO stub). I have to do this because of Rust's ABI (Or lack threreof).</p>
 <p>For <code>x86_64</code> it's usually a <code>mov reg, (ptr)</code> so it's easy to distinguish what it's trying to write and where. You can get creative, mine is probably the most hacky solution but reliably works. Else you'd have to generate some sort of trampoline code from within the JIT realm that tries to get all of this on runtime which for my case, was a bit more difficult to grasp around.</p>
 <p>So I end up building something like:</p>
-<pre class="giallo z-code"><code data-lang="rust"><span class="giallo-l"><span class="z-keyword z-operator">...</span></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> init_hw_fastmem</span><span>(</span><span class="z-keyword z-operator">...</span><span>)</span><span class="z-keyword z-operator"> -&gt; ...</span><span> {</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
-<span class="giallo-l"><span class="z-keyword z-storage">    if let</span><span class="z-entity z-name"> Some</span><span class="z-variable">(reg)</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name z-function"> find_memory_access_register</span><span>(</span><span class="z-keyword z-operator">&amp;</span><span class="z-variable">cs,</span><span class="z-keyword z-operator"> *</span><span class="z-variable">func_ptr,</span><span class="z-keyword z-operator"> *</span><span class="z-variable">index) {</span></span>
-<span class="giallo-l"><span class="z-constant z-other">        REGISTER_MAP</span><span>[</span><span class="z-keyword z-operator">*</span><span class="z-variable">index]</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> Some</span><span class="z-variable">(reg);</span></span>
+<pre class="giallo z-code" ><code data-lang="rust"><span class="giallo-l"><span class="z-16">...</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> init_hw_fastmem</span><span>(</span><span class="z-16">...</span><span>)</span><span class="z-16"> -&gt; ...</span><span> {</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
+<span class="giallo-l"><span class="z-17">    if let</span><span class="z-3"> Some</span><span>(reg)</span><span class="z-16"> =</span><span class="z-18"> find_memory_access_register</span><span>(</span><span class="z-16">&amp;</span><span>cs,</span><span class="z-16"> *</span><span>func_ptr,</span><span class="z-16"> *</span><span>index) {</span></span>
+<span class="giallo-l"><span class="z-7">        REGISTER_MAP</span><span>[</span><span class="z-16">*</span><span>index]</span><span class="z-16"> =</span><span class="z-3"> Some</span><span>(reg);</span></span>
 <span class="giallo-l"><span>    }</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
 <span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">fn</span><span class="z-entity z-name z-function"> seghandler</span><span>(</span><span class="z-keyword z-operator">...</span><span>) {</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">    ...</span></span>
-<span class="giallo-l"><span class="z-keyword">    match</span><span class="z-variable"> (access</span><span class="z-keyword z-operator">.</span><span class="z-variable">kind, access</span><span class="z-keyword z-operator">.</span><span>width) {</span></span>
-<span class="giallo-l"><span>        (</span><span class="z-entity z-name">Write</span><span>,</span><span class="z-entity z-name"> B8</span><span>)</span><span class="z-keyword z-operator"> =&gt;</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> reg_id</span><span class="z-keyword z-operator"> =</span><span class="z-constant z-other"> REGISTER_MAP</span><span>[</span><span class="z-constant z-numeric">0</span><span>]</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">expect</span><span>(</span><span class="z-string">&quot;no register cached for write8&quot;</span><span>);</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> value</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> H</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">get_register_value</span><span class="z-variable">(ctx, reg_id)</span><span class="z-keyword"> as</span><span class="z-entity z-name"> u8</span><span>;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            io_write8_stub</span><span class="z-variable">(addr, value);</span></span>
+<span class="giallo-l"><span class="z-17">fn</span><span class="z-18"> seghandler</span><span>(</span><span class="z-16">...</span><span>) {</span></span>
+<span class="giallo-l"><span class="z-16">    ...</span></span>
+<span class="giallo-l"><span class="z-17">    match</span><span> (access</span><span class="z-16">.</span><span>kind, access</span><span class="z-16">.</span><span>width) {</span></span>
+<span class="giallo-l"><span>        (</span><span class="z-3">Write</span><span>,</span><span class="z-3"> B8</span><span>)</span><span class="z-16"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> reg_id</span><span class="z-16"> =</span><span class="z-7"> REGISTER_MAP</span><span>[</span><span class="z-11">0</span><span>]</span><span class="z-16">.</span><span class="z-18">expect</span><span>(</span><span class="z-8">&quot;no register cached for write8&quot;</span><span>);</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> value</span><span class="z-16"> =</span><span class="z-3"> H</span><span class="z-16">::</span><span class="z-18">get_register_value</span><span>(ctx, reg_id)</span><span class="z-17"> as</span><span class="z-3"> u8</span><span>;</span></span>
+<span class="giallo-l"><span class="z-18">            io_write8_stub</span><span>(addr, value);</span></span>
 <span class="giallo-l"><span>        }</span></span>
-<span class="giallo-l"><span>        (</span><span class="z-entity z-name">Write</span><span>,</span><span class="z-entity z-name"> B128</span><span>)</span><span class="z-keyword z-operator"> =&gt;</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> (low_reg, high_reg)</span><span class="z-keyword z-operator"> =</span><span class="z-constant z-other"> REGISTER_PAIR</span><span class="z-keyword z-operator">.</span><span class="z-entity z-name z-function">expect</span><span>(</span><span class="z-string">&quot;no register pair cached&quot;</span><span>);</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> low_u64</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> H</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">get_register_value</span><span class="z-variable">(ctx, low_reg);</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> high_u64</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name"> H</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">get_register_value</span><span class="z-variable">(ctx, high_reg);</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            io_write128_stub</span><span class="z-variable">(bus_ptr, addr, low_u64, high_u64);</span></span>
+<span class="giallo-l"><span>        (</span><span class="z-3">Write</span><span>,</span><span class="z-3"> B128</span><span>)</span><span class="z-16"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> (low_reg, high_reg)</span><span class="z-16"> =</span><span class="z-7"> REGISTER_PAIR</span><span class="z-16">.</span><span class="z-18">expect</span><span>(</span><span class="z-8">&quot;no register pair cached&quot;</span><span>);</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> low_u64</span><span class="z-16"> =</span><span class="z-3"> H</span><span class="z-16">::</span><span class="z-18">get_register_value</span><span>(ctx, low_reg);</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> high_u64</span><span class="z-16"> =</span><span class="z-3"> H</span><span class="z-16">::</span><span class="z-18">get_register_value</span><span>(ctx, high_reg);</span></span>
+<span class="giallo-l"><span class="z-18">            io_write128_stub</span><span>(bus_ptr, addr, low_u64, high_u64);</span></span>
 <span class="giallo-l"><span>        }</span></span>
-<span class="giallo-l"><span>        (</span><span class="z-entity z-name">Read</span><span>,</span><span class="z-entity z-name"> B8</span><span>)</span><span class="z-keyword z-operator"> =&gt;</span><span> {</span></span>
-<span class="giallo-l"><span class="z-storage">            let</span><span class="z-variable"> value</span><span class="z-keyword z-operator"> =</span><span class="z-entity z-name z-function"> io_read8_stub</span><span class="z-variable">(bus_ptr, addr);</span></span>
-<span class="giallo-l"><span class="z-entity z-name">            H</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name z-function">set_register_value</span><span class="z-variable">(ctx,</span><span class="z-entity z-name"> x86_64_impl</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">X86Register</span><span class="z-keyword z-operator">::</span><span class="z-entity z-name">Rax</span><span class="z-variable">, value</span><span class="z-keyword"> as</span><span class="z-entity z-name"> u64</span><span>);</span></span>
+<span class="giallo-l"><span>        (</span><span class="z-3">Read</span><span>,</span><span class="z-3"> B8</span><span>)</span><span class="z-16"> =&gt;</span><span> {</span></span>
+<span class="giallo-l"><span class="z-17">            let</span><span> value</span><span class="z-16"> =</span><span class="z-18"> io_read8_stub</span><span>(bus_ptr, addr);</span></span>
+<span class="giallo-l"><span class="z-3">            H</span><span class="z-16">::</span><span class="z-18">set_register_value</span><span>(ctx,</span><span class="z-3"> x86_64_impl</span><span class="z-16">::</span><span class="z-3">X86Register</span><span class="z-16">::</span><span class="z-3">Rax</span><span>, value</span><span class="z-17"> as</span><span class="z-3"> u64</span><span>);</span></span>
 <span class="giallo-l"><span>        }</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">        ...</span></span>
+<span class="giallo-l"><span class="z-16">        ...</span></span>
 <span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"><span>}</span></span></code></pre>
 <hr />
 <p>After we have the registers that hold the values that called the function that faulted, we can now proceed to patching. Again, here you can leave your imagination free as in to how to implement this, but what I do is I just get the IP out of the frame that triggered the fault (That means, effectively, the IP that points to the memory access itself) and you patch that. In my case, since it's a <code>movabs+call</code> pattern, I just modify the <code>movabs</code> address for the IO access one instead of the current <code>hw_readX()</code>/<code>hw_writeX()</code>; if you are the one emitting the assembly this is probably super easy because you don't probably need heuristics to patch the call. But since I rely on Cranelift (And usually has different emission of machine code depending on factors unrelated to the topic) I need a tiny tiny bit of heuristics to detect what I have to patch accurately.</p>
 <p>A simple, visual example:</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>     JIT Block Prior Patch</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>     JIT Block Prior Patch</span></span>
 <span class="giallo-l"><span>┌──────────────────────────────┐</span></span>
 <span class="giallo-l"><span>│ mov rax, 1                   │</span></span>
 <span class="giallo-l"><span>│ xor rbx, rbx                 │</span></span>
@@ -908,7 +920,7 @@ method of action, patch the access accordingly.</p>
 <span class="giallo-l"></span>
 <span class="giallo-l"><span>(r11 initially points to *0x7fff8dc1843df* -&gt; hw_write32)</span></span></code></pre>
 <p>After patch:</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>     JIT Block After Patch</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>     JIT Block After Patch</span></span>
 <span class="giallo-l"><span>┌──────────────────────────────┐</span></span>
 <span class="giallo-l"><span>│ mov rax, 1                   │</span></span>
 <span class="giallo-l"><span>│ xor rbx, rbx                 │</span></span>
@@ -925,7 +937,7 @@ method of action, patch the access accordingly.</p>
 <p>There's a myriad more ways of doing this more sanely probably, but this should get you going :)</p>
 <h1 id="results">Results</h1>
 <p>Reference:</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>AMD Ryzen 5 5600G</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>AMD Ryzen 5 5600G</span></span>
 <span class="giallo-l"><span>32 GB RAM DDR4 3200MHz (No XMP, purely JEDEC)</span></span></code></pre>
 <p>With <code>sw_fastmem</code> on my PS2 emulator (Built with <code>--release</code>) I get on the ballpark of 250~ FPSs.</p>
 <p>The following image is with <code>hw_fastmem</code>:</p>
@@ -1001,7 +1013,7 @@ method of action, patch the access accordingly.</p>
   
 </footer>
 
-<!---->
+
 
   <!-- Post Nav -->
   
@@ -1009,29 +1021,49 @@ method of action, patch the access accordingly.</p>
   
   <a
     class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;open-source-ifying-the-visionfive-2&#x2F;"
+    href="https://cakehonolulu.github.io/open-source-ifying-the-visionfive-2/"
     ><span class="mr-1.5">←</span><span>Pushing VisionFive 2 RISC-V board into 2025</span></a
   >
   <!---->
   
   <a
     class="block-hover-mask ml-auto flex min-w-[50%] grow items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;"
+    href="https://cakehonolulu.github.io/introducing-pciem/"
     ><span>Introducing PCIem</span><span class="ml-1.5">→</span></a
   >
   
 </nav>
 
-<!---->
+
 
   <!-- Comment -->
   <!---->
-  <!---->
+  
+<div class="giscus mt-12"></div>
+<script
+  src="https://giscus.app/client.js"
+  data-repo="cakehonolulu/cakehonolulu.github.io"
+  data-repo-id="R_kgDOHe4GmA"
+  data-category="General"
+  data-category-id="DIC_kwDOHe4GmM4DI_sO"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="catppuccin_macchiato"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+
 <!---->
   
 
   <!-- Page End inject -->
   
+
 </article>
 
       </main>
@@ -1047,8 +1079,8 @@ method of action, patch the access accordingly.</p>
       cakehonolulu
     </a>
      |<!---->
-    <!---->
-    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+    
+    <a class="link" href="https://mit-license.org/" rel="noopener" target="_blank">
       MIT
     </a>
     <!---->
@@ -1062,10 +1094,12 @@ method of action, patch the access accordingly.</p>
   </div>
   <!-- Footer inject -->
   
+
 </footer>
 
 
     <!-- Body End inject -->
     
+
   </body>
 </html>

@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Title -->
-  <title>
-    Linux on the Atari Jaguar. No, really. - cakehonolulu&#x27;s blog
-  </title>
+  <title>Linux on the Atari Jaguar. No, really. - cakehonolulu&#39;s blog</title>
 
   <!-- Meta -->
   <meta name="theme-color" />
@@ -24,23 +22,22 @@
   
   <!---->
   
-  <!---->
   <meta name="description" content="The challenges around porting Linux to an old videogame console by Atari" />
   <meta name="author" content="cakehonolulu" />
   <!-- The Open Graph protocol -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Linux on the Atari Jaguar. No, really." />
-  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:site_name" content="cakehonolulu&#39;s blog" />
   <meta property="og:description" content="The challenges around porting Linux to an old videogame console by Atari" />
-  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-for-jaguar&#x2F;" />
+  <meta property="og:url" content="https://cakehonolulu.github.io/linux-for-jaguar/" />
   
   <!---->
   
   <!---->
   
 
-  <!-- CSS & JS -->
-  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="https://cakehonolulu.github.io/main.css" />
   <style>
     :root {
       --bg: #f4f4f5;
@@ -50,6 +47,16 @@
     }
   </style>
 
+  <!-- Markdown Highlighting -->
+  
+  <!---->
+  
+  <link rel="stylesheet" href="/giallo.css" />
+  
+  <!---->
+  
+
+  <!-- Preload -->
   
 
   <!-- Dark Icon -->
@@ -60,17 +67,17 @@
   <!---->
   <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  href="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.css"
   crossorigin="anonymous"
 />
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.js"
   crossorigin="anonymous"
 ></script>
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/contrib/auto-render.min.js"
   crossorigin="anonymous"
 ></script>
 
@@ -91,17 +98,17 @@
 
   <!---->
   
-  <!---->
 
   <!-- Mermaid -->
   
   <!---->
   <script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs";
 
   const initMermaid = (isDark) => {
     mermaid.initialize({
       theme: isDark ? "dark" : "default",
+      look: "classic",
       startOnLoad: false,
     });
     mermaid.run();
@@ -131,7 +138,6 @@
 
   <!---->
   
-  <!---->
 
   <!-- Favicon -->
   <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
@@ -159,22 +165,23 @@
   
 
   <!-- Canonical -->
-  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-for-jaguar&#x2F;" />
+  <link rel="canonical" href="https://cakehonolulu.github.io/linux-for-jaguar/" />
 
   <!-- Head inject -->
   
+
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header
-  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+  class="header fixed top-0 z-40 mx-auto min-h-14 w-full"
 >
   <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#39;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:bg-right dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -203,12 +210,13 @@
       // dark theme
       const setDark = (isDark) => {
         if (isDark) {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
           htmlClass.add("dark");
         } else {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
           htmlClass.remove("dark");
         }
+        const mode = isDark ? "dark" : "light";
+        document.body.dispatchEvent(new CustomEvent("set-theme", { detail: mode }));
+        document.querySelector("#giallo")?.setAttribute("href", `/giallo-${mode}.css`);
         localStorage.setItem("dark", isDark);
       };
 
@@ -289,6 +297,7 @@
       </ul>
       <!-- Header Nav inject -->
       
+
     </nav>
     
   </div>
@@ -297,6 +306,7 @@
 
     <!-- Body Start inject -->
     
+
 
     <div class="flex">
       <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
@@ -307,12 +317,13 @@
 
       </aside>
       <main
-        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 wrap-break-word lg:pt-32"
       >
         
 <article>
   <!-- Page Start inject -->
   
+
 
   <header class="mb-16">
     <h1 class="my-0! pb-2.5">Linux on the Atari Jaguar. No, really.</h1>
@@ -320,7 +331,7 @@
   
   <time>2026-07-05</time>
   <span class="mx-1">&middot;</span>
-  <span>10min</span>
+  <span>9min</span>
   <!---->
   <!---->
   <!---->
@@ -331,6 +342,7 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
   </header>
@@ -385,7 +397,7 @@
   </details>
 </nav>
 
-<!---->
+
 
   <!-- Content -->
   <section><h2 id="what-in-the-tarnation-is-an-atari-jaguar">What in the tarnation is an Atari Jaguar?</h2>
@@ -440,7 +452,7 @@
 <p>This also points out a separate problem; since our ROM isn't mapped at 0x00000 but 0x80000, the 68000 tries jumping to VBR (0x0) and since there's no handlers there it basically eats itself and burns down. This needed a separate <code>memcpy</code> of the so-called <code>vectors</code> to the base of RAM to fix in the Jaguar platform-specific Linux code.</p>
 <p>I also had to compile <code>gdb</code> from source to get it to behave with MAME's <code>gdbtsub</code>. For some reason <code>gdb-multiarch</code> was incorrectly orchestrating the stub and it'd jump around all the address space; which was fun until I decided to test with an <code>m68k</code> specific build.</p>
 <p>Cool, we get now finally get <em>some</em> output:</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>Linux version 7.2.0-rc1+ (cakehonolulu@jaguar) (m68k-elf-gcc (GCC) 16.1.0, GNU ld (GNU Binutils) 2.46.1) #38 Sun Jul  5 11:56:37 CEST 2026</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>Linux version 7.2.0-rc1+ (cakehonolulu@jaguar) (m68k-elf-gcc (GCC) 16.1.0, GNU ld (GNU Binutils) 2.46.1) #38 Sun Jul  5 11:56:37 CEST 2026</span></span>
 <span class="giallo-l"><span>printk: legacy bootconsole [early_jerry0] enabled</span></span>
 <span class="giallo-l"><span>uClinux with CPU MC68000</span></span>
 <span class="giallo-l"><span>Flat model support (C) 1998,1999 Kenneth Albanowski, D. Jeff Dionne</span></span>
@@ -474,7 +486,7 @@
 <p>Kudos to the <a rel="external" href="https://github.com/LinuxMD/"><code>linuxmd</code></a> project, the <a rel="external" href="https://github.com/buildroot/buildroot/commit/e5c7b43494c4d6aa57c6ef314bd4e636aacc14fc">patch to enable m68k nommu</a> is dated May 2026 (So as of writing this blog, 2 months old!)</p>
 <p>So I basically had it do the thing for me and also decided to go for <code>busybox</code> which was one of the few (If not only) project of this kind that supports a <code>nommu</code> target.</p>
 <p>There were some issues (Mostly related to me not having dealt with flat binaries ever) but again, nothing a few minutes of debugging and logging wouldn't fix. The most glaring issue I was having was OOM issues everywhere when trying to execute init. I basically just did this:</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>❯ cat ~/jagfs/rootfs/init </span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>❯ cat ~/jagfs/rootfs/init </span></span>
 <span class="giallo-l"><span>#!/bin/busybox sh</span></span>
 <span class="giallo-l"></span>
 <span class="giallo-l"><span>/bin/busybox sh</span></span>
@@ -483,7 +495,7 @@
 <p>Usually you ask <code>busybox</code> to populate the rest of the utilities (It's just symlinks to itself, with different names; what they call the <code>applet</code> design where based on <code>argv[1]</code> it knows which applet to dispatch: <code>echo</code>, <code>ls</code>, <code>cat</code>...), but for some reason that was OOMing the kernel; so it's just <code>sh</code> for now (The <code>shebang</code> part also gets executed but seems not to eat up all the memory like <code>--install</code> does).</p>
 <p>We now have a rootfs, we pack it as <code>cpio</code> and embed it into the <code>vmlinux</code> image itself... and voila!</p>
 <p>As an exercise left to the reader, there's a few interesting tidbits that you can basically check on Linux in regards of FLAT binaries (F.e, there's different ways of handling the execution of them: Load the entire binary to RAM, do GOT/PLT relocation... all of which can be checked with <code>flthdr</code>).</p>
-<pre class="giallo z-code"><code data-lang="plain"><span class="giallo-l"><span>❯ flthdr ~/jagfs/rootfs/bin/busybox</span></span>
+<pre class="giallo z-code" ><code data-lang="plain"><span class="giallo-l"><span>❯ flthdr ~/jagfs/rootfs/bin/busybox</span></span>
 <span class="giallo-l"><span>/home/cakehonolulu/jagfs/rootfs/bin/busybox</span></span>
 <span class="giallo-l"><span>    Magic:        bFLT</span></span>
 <span class="giallo-l"><span>    Rev:          4</span></span>
@@ -565,7 +577,7 @@
   
 </footer>
 
-<!---->
+
 
   <!-- Post Nav -->
   
@@ -573,29 +585,49 @@
   
   <a
     class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;introducing-pciem&#x2F;"
+    href="https://cakehonolulu.github.io/introducing-pciem/"
     ><span class="mr-1.5">←</span><span>Introducing PCIem</span></a
   >
   <!---->
   
   <a
     class="block-hover-mask ml-auto flex min-w-[50%] grow items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;linux-on-32x&#x2F;"
+    href="https://cakehonolulu.github.io/linux-on-32x/"
     ><span>Linux on the Sega 32X. Who needs hardware synchronization primitives anyway?</span><span class="ml-1.5">→</span></a
   >
   
 </nav>
 
-<!---->
+
 
   <!-- Comment -->
   <!---->
-  <!---->
+  
+<div class="giscus mt-12"></div>
+<script
+  src="https://giscus.app/client.js"
+  data-repo="cakehonolulu/cakehonolulu.github.io"
+  data-repo-id="R_kgDOHe4GmA"
+  data-category="General"
+  data-category-id="DIC_kwDOHe4GmM4DI_sO"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="catppuccin_macchiato"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+
 <!---->
   
 
   <!-- Page End inject -->
   
+
 </article>
 
       </main>
@@ -611,8 +643,8 @@
       cakehonolulu
     </a>
      |<!---->
-    <!---->
-    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+    
+    <a class="link" href="https://mit-license.org/" rel="noopener" target="_blank">
       MIT
     </a>
     <!---->
@@ -626,10 +658,12 @@
   </div>
   <!-- Footer inject -->
   
+
 </footer>
 
 
     <!-- Body End inject -->
     
+
   </body>
 </html>

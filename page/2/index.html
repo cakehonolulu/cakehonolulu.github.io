@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Title -->
-  <title>
-    cakehonolulu&#x27;s blog
-  </title>
+  <title>cakehonolulu&#39;s blog</title>
 
   <!-- Meta -->
   <meta name="theme-color" />
@@ -16,20 +14,19 @@
   
   <!-- Author -->
   
-  <!---->
   <meta name="description" content="Get the latest language learning news." />
   <meta name="author" content="cakehonolulu" />
   <!-- The Open Graph protocol -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:title" content="cakehonolulu&#39;s blog" />
   <meta property="og:description" content="Get the latest language learning news." />
   <meta property="og:url" content="https://cakehonolulu.github.io" />
   
   <!---->
   
 
-  <!-- CSS & JS -->
-  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="https://cakehonolulu.github.io/main.css" />
   <style>
     :root {
       --bg: #f4f4f5;
@@ -39,6 +36,16 @@
     }
   </style>
 
+  <!-- Markdown Highlighting -->
+  
+  <!---->
+  
+  <link rel="stylesheet" href="/giallo.css" />
+  
+  <!---->
+  
+
+  <!-- Preload -->
   
 
   <!-- Dark Icon -->
@@ -49,17 +56,17 @@
   <!---->
   <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  href="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.css"
   crossorigin="anonymous"
 />
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.js"
   crossorigin="anonymous"
 ></script>
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/contrib/auto-render.min.js"
   crossorigin="anonymous"
 ></script>
 
@@ -80,17 +87,17 @@
 
   <!---->
   
-  <!---->
 
   <!-- Mermaid -->
   
   <!---->
   <script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs";
 
   const initMermaid = (isDark) => {
     mermaid.initialize({
       theme: isDark ? "dark" : "default",
+      look: "classic",
       startOnLoad: false,
     });
     mermaid.run();
@@ -120,7 +127,6 @@
 
   <!---->
   
-  <!---->
 
   <!-- Favicon -->
   <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
@@ -148,22 +154,23 @@
   
 
   <!-- Canonical -->
-  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io" />
+  <link rel="canonical" href="https://cakehonolulu.github.io" />
 
   <!-- Head inject -->
   
+
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header
-  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+  class="header fixed top-0 z-40 mx-auto min-h-14 w-full"
 >
   <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#39;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:bg-right dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -192,12 +199,13 @@
       // dark theme
       const setDark = (isDark) => {
         if (isDark) {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
           htmlClass.add("dark");
         } else {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
           htmlClass.remove("dark");
         }
+        const mode = isDark ? "dark" : "light";
+        document.body.dispatchEvent(new CustomEvent("set-theme", { detail: mode }));
+        document.querySelector("#giallo")?.setAttribute("href", `/giallo-${mode}.css`);
         localStorage.setItem("dark", isDark);
       };
 
@@ -278,6 +286,7 @@
       </ul>
       <!-- Header Nav inject -->
       
+
     </nav>
     
   </div>
@@ -286,6 +295,7 @@
 
     <!-- Body Start inject -->
     
+
 
     <div class="flex">
       <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
@@ -296,7 +306,7 @@
 
       </aside>
       <main
-        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 wrap-break-word lg:pt-32"
       >
         
 
@@ -312,7 +322,7 @@
 <section
   class="block-bg relative mb-4 rounded-lg p-4 first-of-type:mt-0 last-of-type:mb-0 active:scale-95 lg:mb-6 lg:p-6"
 >
-  <!---->
+  
 
   <h2 class="my-0! pb-1 leading-none! font-bold">Migrating my blog from Hugo to Zola</h2>
 
@@ -337,16 +347,17 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
 
-  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;hugo-to-zola-migration&#x2F;">Migrating my blog from Hugo to Zola</a>
+  <a class="absolute inset-0 text-[0px]" href="https://cakehonolulu.github.io/hugo-to-zola-migration/">Migrating my blog from Hugo to Zola</a>
 </section>
 
 <section
   class="block-bg relative mb-4 rounded-lg p-4 first-of-type:mt-0 last-of-type:mb-0 active:scale-95 lg:mb-6 lg:p-6"
 >
-  <!---->
+  
 
   <h2 class="my-0! pb-1 leading-none! font-bold">How Emulators Work?</h2>
 
@@ -360,7 +371,7 @@
   
   <time>2024-01-09</time>
   <span class="mx-1">&middot;</span>
-  <span>11min</span>
+  <span>9min</span>
   <!---->
   <!---->
   <!---->
@@ -371,16 +382,17 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
 
-  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;">How Emulators Work?</a>
+  <a class="absolute inset-0 text-[0px]" href="https://cakehonolulu.github.io/how-emulators-work/">How Emulators Work?</a>
 </section>
 
 <section
   class="block-bg relative mb-4 rounded-lg p-4 first-of-type:mt-0 last-of-type:mb-0 active:scale-95 lg:mb-6 lg:p-6"
 >
-  <!---->
+  
 
   <h2 class="my-0! pb-1 leading-none! font-bold">Documentation</h2>
 
@@ -403,10 +415,11 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
 
-  <a class="absolute inset-0 text-[0px]" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;docs&#x2F;">Documentation</a>
+  <a class="absolute inset-0 text-[0px]" href="https://cakehonolulu.github.io/docs/">Documentation</a>
 </section>
 
 
@@ -416,7 +429,7 @@
   
   <a
     class="rounded-full bg-black px-4 py-3 text-sm text-white no-underline duration-100 active:scale-95 dark:bg-white/80 dark:text-black"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;"
+    href="https://cakehonolulu.github.io/"
     >← Prev Page</a
   >
   <!---->
@@ -438,8 +451,8 @@
       cakehonolulu
     </a>
      |<!---->
-    <!---->
-    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+    
+    <a class="link" href="https://mit-license.org/" rel="noopener" target="_blank">
       MIT
     </a>
     <!---->
@@ -453,10 +466,12 @@
   </div>
   <!-- Footer inject -->
   
+
 </footer>
 
 
     <!-- Body End inject -->
     
+
   </body>
 </html>

@@ -6,9 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Title -->
-  <title>
-    How Emulators Work? - cakehonolulu&#x27;s blog
-  </title>
+  <title>How Emulators Work? - cakehonolulu&#39;s blog</title>
 
   <!-- Meta -->
   <meta name="theme-color" />
@@ -24,23 +22,22 @@
   
   <!---->
   
-  <!---->
   <meta name="description" content="A 10 minute read detailing how most emulators work nowadays" />
   <meta name="author" content="cakehonolulu" />
   <!-- The Open Graph protocol -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="How Emulators Work?" />
-  <meta property="og:site_name" content="cakehonolulu&#x27;s blog" />
+  <meta property="og:site_name" content="cakehonolulu&#39;s blog" />
   <meta property="og:description" content="A 10 minute read detailing how most emulators work nowadays" />
-  <meta property="og:url" content="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;" />
+  <meta property="og:url" content="https://cakehonolulu.github.io/how-emulators-work/" />
   
   <!---->
   
   <!---->
   
 
-  <!-- CSS & JS -->
-  <link rel="preload stylesheet" as="style" href="https://cakehonolulu.github.io/main.css" />
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="https://cakehonolulu.github.io/main.css" />
   <style>
     :root {
       --bg: #f4f4f5;
@@ -50,6 +47,16 @@
     }
   </style>
 
+  <!-- Markdown Highlighting -->
+  
+  <!---->
+  
+  <link rel="stylesheet" href="/giallo.css" />
+  
+  <!---->
+  
+
+  <!-- Preload -->
   
 
   <!-- Dark Icon -->
@@ -60,17 +67,17 @@
   <!---->
   <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css"
+  href="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.css"
   crossorigin="anonymous"
 />
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.js"
   crossorigin="anonymous"
 ></script>
 <script
   defer
-  src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/contrib/auto-render.min.js"
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/contrib/auto-render.min.js"
   crossorigin="anonymous"
 ></script>
 
@@ -91,17 +98,17 @@
 
   <!---->
   
-  <!---->
 
   <!-- Mermaid -->
   
   <!---->
   <script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs";
 
   const initMermaid = (isDark) => {
     mermaid.initialize({
       theme: isDark ? "dark" : "default",
+      look: "classic",
       startOnLoad: false,
     });
     mermaid.run();
@@ -131,7 +138,6 @@
 
   <!---->
   
-  <!---->
 
   <!-- Favicon -->
   <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
@@ -159,22 +165,23 @@
   
 
   <!-- Canonical -->
-  <link rel="canonical" href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;how-emulators-work&#x2F;" />
+  <link rel="canonical" href="https://cakehonolulu.github.io/how-emulators-work/" />
 
   <!-- Head inject -->
   
+
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header
-  class="header fixed top-0 z-40 mx-auto min-h-[3.5rem] w-full"
+  class="header fixed top-0 z-40 mx-auto min-h-14 w-full"
 >
   <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
     <div class="flex justify-between">
       <div class="flex items-center">
-        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#x27;s blog</a>
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#39;s blog</a>
         <div
-          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:[background-position:right] dark:invert"
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:bg-right dark:invert"
           role="button"
           aria-label="Dark"
         ></div>
@@ -203,12 +210,13 @@
       // dark theme
       const setDark = (isDark) => {
         if (isDark) {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "dark" }));
           htmlClass.add("dark");
         } else {
-          document.body.dispatchEvent(new CustomEvent("set-theme", { detail: "light" }));
           htmlClass.remove("dark");
         }
+        const mode = isDark ? "dark" : "light";
+        document.body.dispatchEvent(new CustomEvent("set-theme", { detail: mode }));
+        document.querySelector("#giallo")?.setAttribute("href", `/giallo-${mode}.css`);
         localStorage.setItem("dark", isDark);
       };
 
@@ -289,6 +297,7 @@
       </ul>
       <!-- Header Nav inject -->
       
+
     </nav>
     
   </div>
@@ -297,6 +306,7 @@
 
     <!-- Body Start inject -->
     
+
 
     <div class="flex">
       <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
@@ -307,12 +317,13 @@
 
       </aside>
       <main
-        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 break-words lg:pt-32"
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 wrap-break-word lg:pt-32"
       >
         
 <article>
   <!-- Page Start inject -->
   
+
 
   <header class="mb-16">
     <h1 class="my-0! pb-2.5">How Emulators Work?</h1>
@@ -320,7 +331,7 @@
   
   <time>2024-01-09</time>
   <span class="mx-1">&middot;</span>
-  <span>11min</span>
+  <span>9min</span>
   <!---->
   <!---->
   <!---->
@@ -331,6 +342,7 @@
   
   <!-- Page Info inject -->
   
+
 </div>
 
   </header>
@@ -431,7 +443,7 @@
   </details>
 </nav>
 
-<!---->
+
 
   <!-- Content -->
   <section><p>I, as many more, grew up playing retro videogames on emulators (And the original hardware!): from sprite-based machines, to more complex, 3D-capable monsters.</p>
@@ -443,7 +455,7 @@
 <h1 id="what-is-an-emulator">What is an emulator?</h1>
 <p>Let's start by defining what an emulator (Not to be confused with simulator) really is.</p>
 <p>According to <a rel="external" href="https://en.wikipedia.org/wiki/Emulator">Wikipedia</a>:</p>
-<pre class="giallo z-code"><code data-lang="html"><span class="giallo-l"><span>In computing, an emulator is hardware or software that</span></span>
+<pre class="giallo z-code" ><code data-lang="html"><span class="giallo-l"><span>In computing, an emulator is hardware or software that</span></span>
 <span class="giallo-l"><span>enables one computer  system (called the host) to behave</span></span>
 <span class="giallo-l"><span>like another computer system (called the guest).</span></span>
 <span class="giallo-l"></span>
@@ -476,38 +488,38 @@
 <p>You must emulate every bit of the system to make it work; that means implementing a CPU core that can execute the foreign instructions; providing an interface for it to send/recieve data to/from peripherals and respecting the timings of all the components to make it as accurate as possible (You can read further on this topic if you look up <a rel="external" href="https://retrocomputing.stackexchange.com/a/1195">Cycle Accuracy</a>).</p>
 <h2 id="hle">HLE</h2>
 <p>HLE on the other hand, can be understood as a MITM between the target library calls and mapping them to host-compatible ones; let's say we have <em>System A</em> which, somewhere on it's code, does this:</p>
-<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// System A function responsible of init-ing the FB</span></span>
-<span class="giallo-l"><span class="z-storage z-type">int</span><span class="z-entity z-name z-function"> libGfxInitFramebuffer</span><span class="z-punctuation z-section">()</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-punctuation z-section"> (</span><span class="z-entity z-name z-function">libGfxSetupFramebuffer</span><span class="z-punctuation z-section">())</span></span>
-<span class="giallo-l"><span class="z-keyword">        goto</span><span> fail</span><span class="z-punctuation z-terminator">;</span></span>
+<pre class="giallo z-code" ><code data-lang="c"><span class="giallo-l"><span class="z-4 z-i">// System A function responsible of init-ing the FB</span></span>
+<span class="giallo-l"><span class="z-3">int</span><span class="z-18"> libGfxInitFramebuffer</span><span>()</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> (</span><span class="z-18">libGfxSetupFramebuffer</span><span>())</span></span>
+<span class="giallo-l"><span class="z-17">        goto</span><span> fail</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">    if</span><span class="z-punctuation z-section"> (</span><span class="z-entity z-name z-function">libGfxClearFramebuffer</span><span class="z-punctuation z-section">())</span></span>
-<span class="giallo-l"><span class="z-keyword">        goto</span><span> fail</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> (</span><span class="z-18">libGfxClearFramebuffer</span><span>())</span></span>
+<span class="giallo-l"><span class="z-17">        goto</span><span> fail</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">    return</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-17">    return</span><span class="z-11"> 0</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
 <span class="giallo-l"><span>fail:</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    libDebugPrint</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Failed to initialize the framebuffer!&quot;</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-keyword">    return</span><span class="z-constant z-numeric"> 1</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span></code></pre>
+<span class="giallo-l"><span class="z-18">    libDebugPrint</span><span>(</span><span class="z-8">&quot;Failed to initialize the framebuffer!&quot;</span><span>)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-17">    return</span><span class="z-11"> 1</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
 <p>If we're trying to HLE System A, we need to figure out a way to first, detect that this function is being called (Normally, there's a piece of code responsible for intercepting, for example, syscalls) and instead of executing the target code, executing a function written for the host architecture that archieves the same but without relying on the target-specific hardware details.</p>
 <p>We could for example, intercept it and call the following code in a PC:</p>
-<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// Host system function responsible of init-ing the FB</span></span>
-<span class="giallo-l"><span class="z-comment">// Assuming we&#39;re using SDL and renderer is a SDL_Renderer</span></span>
-<span class="giallo-l"><span class="z-storage z-type">int</span><span class="z-entity z-name z-function"> libGfxInitFramebuffer</span><span class="z-punctuation z-section">()</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_SetRenderDrawColor</span><span class="z-punctuation z-section">(renderer</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 0</span><span class="z-punctuation z-separator">,</span><span class="z-constant z-numeric"> 255</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_RenderClear</span><span class="z-punctuation z-section">(renderer)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">    SDL_RenderPresent</span><span class="z-punctuation z-section">(renderer)</span><span class="z-punctuation z-terminator">;</span></span>
+<pre class="giallo z-code" ><code data-lang="c"><span class="giallo-l"><span class="z-4 z-i">// Host system function responsible of init-ing the FB</span></span>
+<span class="giallo-l"><span class="z-4 z-i">// Assuming we&#39;re using SDL and renderer is a SDL_Renderer</span></span>
+<span class="giallo-l"><span class="z-3">int</span><span class="z-18"> libGfxInitFramebuffer</span><span>()</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span class="z-18">    SDL_SetRenderDrawColor</span><span>(renderer</span><span class="z-9">,</span><span class="z-11"> 0</span><span class="z-9">,</span><span class="z-11"> 0</span><span class="z-9">,</span><span class="z-11"> 0</span><span class="z-9">,</span><span class="z-11"> 255</span><span>)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-18">    SDL_RenderClear</span><span>(renderer)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-18">    SDL_RenderPresent</span><span>(renderer)</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-comment">    // We do not handle error-checking for simplicity&#39;s sake</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span></code></pre>
+<span class="giallo-l"><span class="z-4 z-i">    // We do not handle error-checking for simplicity&#39;s sake</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
 <p>And that's the basic principle behind HLE. You also need a way to intercept those library calls; for example, let's say we're interpreting target (System A) CPU instructions, and suddenly, we encounter a <code>syscall</code> instruction.</p>
 <p>Let's assume this <code>syscall</code> instruction in System A works by specifying the <code>syscall</code> type on register <code>A</code> and the required arguments on registers <code>B</code> and <code>C</code>.</p>
 <p>Imagine we find this:</p>
-<pre class="giallo z-code"><code data-lang="asm"><span class="giallo-l"><span>move </span><span class="z-constant z-numeric">3</span><span>, $A</span></span>
-<span class="giallo-l"><span class="z-keyword z-operator">syscall</span></span></code></pre>
+<pre class="giallo z-code" ><code data-lang="asm"><span class="giallo-l"><span>move </span><span class="z-11">3</span><span>, $A</span></span>
+<span class="giallo-l"><span class="z-16">syscall</span></span></code></pre>
 <p>This basically would call syscall number 3 on the syscall table, which, for example, could be our previously explained <code>libGfxInitFramebuffer()</code>.</p>
 <p>You'd then need to detect this behaviour whilst executing the target code, intercept it and redirect execution and adjust the emulation state accordingly (Maybe adjusting cycle count to account for the original length of the syscall function... etc).</p>
 <p>It's also important to note, that nowadays (Moreso with more recent consoles), there's a trend to mix both LLE and HLE techniques to get thehe benefits of both approaches. There's some components that you can HLE to reduce the processing hurdle of more complex subsystems a machine can have.</p>
@@ -544,57 +556,57 @@
 <h2 id="interpreter">Interpreter</h2>
 <p>We'll start with the more easier type of technique; an Interpreter.</p>
 <p>Let's have some pseudocode explain the rest, we'll do some assumptions that don't map to the real Z80A, to simplify the explanation and the code (We assume opcode size == 1 byte, no addressing modes, no banked register set...):</p>
-<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"><span class="z-comment">// Ignoring the boilerplate code, such as headers, irrelevant functions and such</span></span>
+<pre class="giallo z-code" ><code data-lang="c"><span class="giallo-l"><span class="z-4 z-i">// Ignoring the boilerplate code, such as headers, irrelevant functions and such</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage z-type">struct</span><span class="z-punctuation z-section"> Bus {</span></span>
-<span class="giallo-l"><span class="z-variable">    byte ram[</span><span class="z-constant z-numeric">64</span><span> KiB]</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-3">struct</span><span> Bus {</span></span>
+<span class="giallo-l"><span>    byte ram[</span><span class="z-11">64</span><span> KiB]</span><span class="z-9">;</span></span>
 <span class="giallo-l"><span>    ....</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-storage z-type">struct</span><span class="z-punctuation z-section"> Cpu {</span></span>
-<span class="giallo-l"><span>    byte A</span><span class="z-punctuation z-separator">,</span><span> B</span><span class="z-punctuation z-separator">,</span><span> C</span><span class="z-punctuation z-separator">,</span><span> D</span><span class="z-punctuation z-separator">,</span><span> E</span><span class="z-punctuation z-separator">,</span><span> H</span><span class="z-punctuation z-separator">,</span><span> L</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // General-Prupose Registers</span></span>
-<span class="giallo-l"><span>    byte F</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Special Flags Register</span></span>
-<span class="giallo-l"><span>    byte IX</span><span class="z-punctuation z-separator">,</span><span> IY</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Index Registers</span></span>
-<span class="giallo-l"><span>    byte SP</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Stack Pointer Register</span></span>
-<span class="giallo-l"><span>    byte PC</span><span class="z-punctuation z-terminator">;</span><span class="z-comment"> // Program Counter Register</span></span>
+<span class="giallo-l"><span class="z-3">struct</span><span> Cpu {</span></span>
+<span class="giallo-l"><span>    byte A</span><span class="z-9">,</span><span> B</span><span class="z-9">,</span><span> C</span><span class="z-9">,</span><span> D</span><span class="z-9">,</span><span> E</span><span class="z-9">,</span><span> H</span><span class="z-9">,</span><span> L</span><span class="z-9">;</span><span class="z-4 z-i"> // General-Prupose Registers</span></span>
+<span class="giallo-l"><span>    byte F</span><span class="z-9">;</span><span class="z-4 z-i"> // Special Flags Register</span></span>
+<span class="giallo-l"><span>    byte IX</span><span class="z-9">,</span><span> IY</span><span class="z-9">;</span><span class="z-4 z-i"> // Index Registers</span></span>
+<span class="giallo-l"><span>    byte SP</span><span class="z-9">;</span><span class="z-4 z-i"> // Stack Pointer Register</span></span>
+<span class="giallo-l"><span>    byte PC</span><span class="z-9">;</span><span class="z-4 z-i"> // Program Counter Register</span></span>
 <span class="giallo-l"><span>    ...</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-comment">/*</span></span>
-<span class="giallo-l"><span class="z-comment">    Bus and Cpu are initialized by main() or another function,</span></span>
-<span class="giallo-l"><span class="z-comment">    the ram array has the target binary already loaded at a</span></span>
-<span class="giallo-l"><span class="z-comment">    specific offset and the PC (Which effectively acts as a</span></span>
-<span class="giallo-l"><span class="z-comment">    pointer to memory) is set to that memory offset.</span></span>
+<span class="giallo-l"><span class="z-4 z-i">/*</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    Bus and Cpu are initialized by main() or another function,</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    the ram array has the target binary already loaded at a</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    specific offset and the PC (Which effectively acts as a</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    pointer to memory) is set to that memory offset.</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-comment">    That way once we read from ram we can just do ram[cpu-&gt;PC]</span></span>
-<span class="giallo-l"><span class="z-comment">    to get the opcode.</span></span>
-<span class="giallo-l"><span class="z-comment">*/</span></span>
-<span class="giallo-l"><span class="z-storage z-type">void</span><span class="z-entity z-name z-function"> cpu_fde</span><span class="z-punctuation z-section">(Bus </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">bus</span><span class="z-punctuation z-separator">,</span><span> Cpu </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">cpu</span><span class="z-punctuation z-section">)</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
-<span class="giallo-l"><span class="z-comment">    // Get the cpu instruction from memory pointed by the PC register</span></span>
-<span class="giallo-l"><span>    byte opcode </span><span class="z-keyword z-operator">=</span><span class="z-variable"> bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">ram[cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">PC]</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    That way once we read from ram we can just do ram[cpu-&gt;PC]</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    to get the opcode.</span></span>
+<span class="giallo-l"><span class="z-4 z-i">*/</span></span>
+<span class="giallo-l"><span class="z-3">void</span><span class="z-18"> cpu_fde</span><span>(Bus </span><span class="z-16">*</span><span class="z-11">bus</span><span class="z-9">,</span><span> Cpu </span><span class="z-16">*</span><span class="z-11">cpu</span><span>)</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    // Get the cpu instruction from memory pointed by the PC register</span></span>
+<span class="giallo-l"><span>    byte opcode </span><span class="z-16">=</span><span> bus</span><span class="z-9">-&gt;</span><span>ram[cpu</span><span class="z-9">-&gt;</span><span>PC]</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">    switch</span><span class="z-punctuation z-section">(opcode)</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">    {</span></span>
-<span class="giallo-l"><span class="z-comment">        // ADD A, B Instruction</span></span>
-<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">00</span><span class="z-punctuation z-separator">:</span></span>
-<span class="giallo-l"><span class="z-comment">            // Add B to A</span></span>
-<span class="giallo-l"><span class="z-variable">            cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">A</span><span class="z-keyword z-operator"> +=</span><span class="z-variable"> cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">B</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-comment">            // Increment PC</span></span>
-<span class="giallo-l"><span class="z-variable">            cpu</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">PC</span><span class="z-keyword z-operator">++</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-17">    switch</span><span>(opcode)</span></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // ADD A, B Instruction</span></span>
+<span class="giallo-l"><span class="z-17">        case 0x</span><span class="z-11">00</span><span class="z-9">:</span></span>
+<span class="giallo-l"><span class="z-4 z-i">            // Add B to A</span></span>
+<span class="giallo-l"><span>            cpu</span><span class="z-9">-&gt;</span><span>A</span><span class="z-16"> +=</span><span> cpu</span><span class="z-9">-&gt;</span><span>B</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-4 z-i">            // Increment PC</span></span>
+<span class="giallo-l"><span>            cpu</span><span class="z-9">-&gt;</span><span>PC</span><span class="z-16">++</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-17">            break</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">        case</span><span> ...</span><span class="z-punctuation z-separator">:</span></span>
+<span class="giallo-l"><span class="z-17">        case</span><span> ...</span><span class="z-9">:</span></span>
 <span class="giallo-l"><span>            ...</span></span>
 <span class="giallo-l"></span>
 <span class="giallo-l"><span>        ...</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">        default</span><span class="z-punctuation z-separator">:</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            printf</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Opcode unimplemented! 0x</span><span class="z-constant z-other z-constant z-character">%02X\n</span><span class="z-string">&quot;</span><span class="z-punctuation z-separator">,</span><span class="z-punctuation z-section"> opcode)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            exit</span><span class="z-punctuation z-section">(</span><span class="z-constant z-numeric">1</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">    }</span></span>
+<span class="giallo-l"><span class="z-17">        default</span><span class="z-9">:</span></span>
+<span class="giallo-l"><span class="z-18">            printf</span><span>(</span><span class="z-8">&quot;Opcode unimplemented! 0x</span><span class="z-7">%02X\n</span><span class="z-8">&quot;</span><span class="z-9">,</span><span> opcode)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-18">            exit</span><span>(</span><span class="z-11">1</span><span>)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span>    }</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span></code></pre>
 <p>This is the skeleton for an emulator; think of the PC (Program Counter, sometimes also called IP, Instruction Pointer) register as a pointer to memory from where we'll read instructions from.</p>
 <p>Normally, the PC then will get incremented by 1 at the end of the opcode processing (But some opcodes that handle PC relocation, such as JUMPs or CALLs may add an offset to it or straight up setting it to a determinate value).</p>
@@ -618,30 +630,30 @@
 <p>There's also the added challenge of handling peripherals; there's cases where you'll find I/O operations CPU-wise that interact with the peripherals on the system; or some other times, they can be memory-mapped.</p>
 <p>In any case, there's some food for thought involved into deciding the best way to tackle both of the systems.</p>
 <p>A simple, pseudocode example that explains the memory-mapped approach:</p>
-<pre class="giallo z-code"><code data-lang="c"><span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-comment">/*</span></span>
-<span class="giallo-l"><span class="z-comment">    This can be called with opcodes like LOAD ($A), $0x20</span></span>
-<span class="giallo-l"><span class="z-comment">    (Loads 0x20 to the address pointed by A)</span></span>
-<span class="giallo-l"><span class="z-comment">*/</span></span>
-<span class="giallo-l"><span class="z-storage z-type">void</span><span class="z-entity z-name z-function"> memory_write_byte</span><span class="z-punctuation z-section">(Bus </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">bus</span><span class="z-punctuation z-separator">,</span><span> Cpu </span><span class="z-keyword z-operator">*</span><span class="z-variable z-parameter">cpu</span><span class="z-punctuation z-separator">,</span><span class="z-storage z-type"> long</span><span class="z-variable z-parameter"> address</span><span class="z-punctuation z-separator">,</span><span> byte </span><span class="z-variable z-parameter">value</span><span class="z-punctuation z-section">)</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">{</span></span>
-<span class="giallo-l"><span class="z-keyword">    switch</span><span class="z-punctuation z-section"> (address)</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">    {</span></span>
-<span class="giallo-l"><span class="z-comment">        // Main RAM</span></span>
-<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">0</span><span> ... </span><span class="z-keyword">0x</span><span class="z-constant z-numeric">1000</span><span class="z-punctuation z-separator">:</span></span>
-<span class="giallo-l"><span class="z-variable">            bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-variable">ram[address]</span><span class="z-keyword z-operator"> =</span><span> value</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<pre class="giallo z-code" ><code data-lang="c"><span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-4 z-i">/*</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    This can be called with opcodes like LOAD ($A), $0x20</span></span>
+<span class="giallo-l"><span class="z-4 z-i">    (Loads 0x20 to the address pointed by A)</span></span>
+<span class="giallo-l"><span class="z-4 z-i">*/</span></span>
+<span class="giallo-l"><span class="z-3">void</span><span class="z-18"> memory_write_byte</span><span>(Bus </span><span class="z-16">*</span><span class="z-11">bus</span><span class="z-9">,</span><span> Cpu </span><span class="z-16">*</span><span class="z-11">cpu</span><span class="z-9">,</span><span class="z-3"> long</span><span class="z-11"> address</span><span class="z-9">,</span><span> byte </span><span class="z-11">value</span><span>)</span></span>
+<span class="giallo-l"><span>{</span></span>
+<span class="giallo-l"><span class="z-17">    switch</span><span> (address)</span></span>
+<span class="giallo-l"><span>    {</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // Main RAM</span></span>
+<span class="giallo-l"><span class="z-17">        case 0x</span><span class="z-11">0</span><span> ... </span><span class="z-17">0x</span><span class="z-11">1000</span><span class="z-9">:</span></span>
+<span class="giallo-l"><span>            bus</span><span class="z-9">-&gt;</span><span>ram[address]</span><span class="z-16"> =</span><span> value</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-17">            break</span><span class="z-9">;</span></span>
 <span class="giallo-l"><span>        cd </span></span>
-<span class="giallo-l"><span class="z-comment">        // Memory-mapped I/O</span></span>
-<span class="giallo-l"><span class="z-keyword">        case 0x</span><span class="z-constant z-numeric">FF10</span><span class="z-punctuation z-separator">:</span></span>
-<span class="giallo-l"><span class="z-variable">            bus</span><span class="z-punctuation z-separator">-&gt;</span><span class="z-entity z-name z-function">set_sprite_a_register</span><span class="z-punctuation z-section">(value)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-keyword">            break</span><span class="z-punctuation z-terminator">;</span></span>
+<span class="giallo-l"><span class="z-4 z-i">        // Memory-mapped I/O</span></span>
+<span class="giallo-l"><span class="z-17">        case 0x</span><span class="z-11">FF10</span><span class="z-9">:</span></span>
+<span class="giallo-l"><span>            bus</span><span class="z-9">-&gt;</span><span class="z-18">set_sprite_a_register</span><span>(value)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-17">            break</span><span class="z-9">;</span></span>
 <span class="giallo-l"></span>
-<span class="giallo-l"><span class="z-keyword">        default</span><span class="z-punctuation z-separator">:</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            printf</span><span class="z-punctuation z-section">(</span><span class="z-string">&quot;Unhandled address! 0x</span><span class="z-constant z-other z-constant z-character">%04X\n</span><span class="z-string">&quot;</span><span class="z-punctuation z-separator">,</span><span class="z-punctuation z-section"> address)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-entity z-name z-function">            exit</span><span class="z-punctuation z-section">(</span><span class="z-constant z-numeric">1</span><span class="z-punctuation z-section">)</span><span class="z-punctuation z-terminator">;</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">    }</span></span>
-<span class="giallo-l"><span class="z-punctuation z-section">}</span></span>
+<span class="giallo-l"><span class="z-17">        default</span><span class="z-9">:</span></span>
+<span class="giallo-l"><span class="z-18">            printf</span><span>(</span><span class="z-8">&quot;Unhandled address! 0x</span><span class="z-7">%04X\n</span><span class="z-8">&quot;</span><span class="z-9">,</span><span> address)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span class="z-18">            exit</span><span>(</span><span class="z-11">1</span><span>)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span>
 <span class="giallo-l"></span></code></pre>
 <p>There's also some other considerations to have; think about how you want to plot graphics; or play audio, or read from a filesystem... there's some design choices to be made in order to properly handle the rest of the system aside from the CPU and presenting it to the user (Or letting him interact with the emulated environment!).</p>
 <h1 id="bonus-track">Bonus Track</h1>
@@ -677,7 +689,7 @@
   
 </footer>
 
-<!---->
+
 
   <!-- Post Nav -->
   
@@ -685,29 +697,49 @@
   
   <a
     class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;docs&#x2F;"
+    href="https://cakehonolulu.github.io/docs/"
     ><span class="mr-1.5">←</span><span>Documentation</span></a
   >
   <!---->
   
   <a
     class="block-hover-mask ml-auto flex min-w-[50%] grow items-center justify-end rounded-r-md p-6 pl-3 font-semibold no-underline"
-    href="https:&#x2F;&#x2F;cakehonolulu.github.io&#x2F;hugo-to-zola-migration&#x2F;"
+    href="https://cakehonolulu.github.io/hugo-to-zola-migration/"
     ><span>Migrating my blog from Hugo to Zola</span><span class="ml-1.5">→</span></a
   >
   
 </nav>
 
-<!---->
+
 
   <!-- Comment -->
   <!---->
-  <!---->
+  
+<div class="giscus mt-12"></div>
+<script
+  src="https://giscus.app/client.js"
+  data-repo="cakehonolulu/cakehonolulu.github.io"
+  data-repo-id="R_kgDOHe4GmA"
+  data-category="General"
+  data-category-id="DIC_kwDOHe4GmM4DI_sO"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="catppuccin_macchiato"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+
 <!---->
   
 
   <!-- Page End inject -->
   
+
 </article>
 
       </main>
@@ -723,8 +755,8 @@
       cakehonolulu
     </a>
      |<!---->
-    <!---->
-    <a class="link" href="https:&#x2F;&#x2F;mit-license.org&#x2F;" rel="noopener" target="_blank">
+    
+    <a class="link" href="https://mit-license.org/" rel="noopener" target="_blank">
       MIT
     </a>
     <!---->
@@ -738,10 +770,12 @@
   </div>
   <!-- Footer inject -->
   
+
 </footer>
 
 
     <!-- Body End inject -->
     
+
   </body>
 </html>
