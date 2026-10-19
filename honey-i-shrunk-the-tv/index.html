@@ -1,0 +1,634 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Title -->
+  <title>Honey, I shrunk the TV - cakehonolulu&#39;s blog</title>
+
+  <!-- Meta -->
+  <meta name="theme-color" />
+
+  
+  <!-- Author -->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <!---->
+  
+  <meta name="description" content="Muting the built-in speakers in non-2026+ Q-Symphony TVs" />
+  <meta name="author" content="cakehonolulu" />
+  <!-- The Open Graph protocol -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Honey, I shrunk the TV" />
+  <meta property="og:site_name" content="cakehonolulu&#39;s blog" />
+  <meta property="og:description" content="Muting the built-in speakers in non-2026+ Q-Symphony TVs" />
+  <meta property="og:url" content="https://cakehonolulu.github.io/honey-i-shrunk-the-tv/" />
+  
+  <!---->
+  
+  <!---->
+  
+
+  <!-- Main CSS-->
+  <link rel="stylesheet" href="https://cakehonolulu.github.io/main.css" />
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --bg-dark: #18181b;
+      --header: #e4e4e7;
+      --header-dark: #27272a;
+    }
+  </style>
+
+  <!-- Markdown Highlighting -->
+  
+  <!---->
+  
+  <link rel="stylesheet" href="/giallo.css" />
+  
+  <!---->
+  
+
+  <!-- Preload -->
+  
+
+  <!-- Dark Icon -->
+  <link rel="preload" as="image" href="https://cakehonolulu.github.io/icons/theme.svg" />
+
+  <!-- Math -->
+  
+  <!---->
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.css"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/katex.min.js"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.19/dist/contrib/auto-render.min.js"
+  crossorigin="anonymous"
+></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () =>
+    renderMathInElement(document.body, {
+      // customised options
+      // • auto-render specific keys, e.g.:
+      delimiters: [
+        { left: "$$", right: "$$", display: true },
+        { left: "$", right: "$", display: false },
+      ],
+      // • rendering keys, e.g.:
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  <!---->
+  
+
+  <!-- Mermaid -->
+  
+  <!---->
+  <script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@12/dist/mermaid.esm.min.mjs";
+
+  const initMermaid = (isDark) => {
+    mermaid.initialize({
+      theme: isDark ? "dark" : "default",
+      look: "classic",
+      startOnLoad: false,
+    });
+    mermaid.run();
+  };
+
+  // Add data-mermaid-code attribute on all mermaid block.
+  document.querySelectorAll(".mermaid").forEach((element) => {
+    element.setAttribute("data-mermaid-code", element.innerHTML);
+  });
+
+  // Re-render mermaid when theme changed.
+  document.body.addEventListener("set-theme", (e) => {
+    document.querySelectorAll(".mermaid").forEach((element) => {
+      const mermaidCode = element.getAttribute("data-mermaid-code");
+      if (mermaidCode != null) {
+        element.removeAttribute("data-processed");
+        element.innerHTML = mermaidCode;
+      }
+    });
+    initMermaid(e.detail === "dark");
+  });
+
+  // The es module script will load defer, so the localStorage should already be set by script in header.
+  // If this script is loaded first, the script in header will dispatch an event to re-render mermaid, it's works too.
+  initMermaid(localStorage.getItem("dark") === "true");
+</script>
+
+  <!---->
+  
+
+  <!-- Favicon -->
+  <link rel="icon" href="https://cakehonolulu.github.io/favicon.ico" />
+  <link rel="apple-touch-icon" href="https://cakehonolulu.github.io/apple-touch-icon.png" />
+
+  <!-- Feeds -->
+  
+  <!---->
+  
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    title="Atom"
+    href="https://cakehonolulu.github.io/atom.xml"
+  />
+   
+  <link
+    rel="alternate"
+    type="application/rss+xml"
+    title="RSS"
+    href="https://cakehonolulu.github.io/rss.xml"
+  />
+  
+  <!---->
+  
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://cakehonolulu.github.io/honey-i-shrunk-the-tv/" />
+
+  <!-- Head inject -->
+  
+
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header
+  class="header fixed top-0 z-40 mx-auto min-h-14 w-full"
+>
+  <div class="mx-auto w-full max-w-4xl p-3 lg:flex lg:justify-between">
+    <div class="flex justify-between">
+      <div class="flex items-center">
+        <a class="text-2xl font-semibold" href="https://cakehonolulu.github.io">cakehonolulu&#39;s blog</a>
+        <div
+          class="btn-dark ml-4 h-6 w-6 shrink-0 cursor-pointer text-[0px] [background:url(./icons/theme.svg)_left_center/cover_no-repeat] dark:bg-right dark:invert"
+          role="button"
+          aria-label="Dark"
+        ></div>
+      </div>
+      
+      <div
+        class="btn-menu relative z-50 flex h-8 w-8 shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+        role="button"
+        aria-label="Menu"
+      ></div>
+      
+    </div>
+    <script>
+      // base
+      const htmlClass = document.documentElement.classList;
+      setTimeout(() => {
+        htmlClass.remove("not-ready");
+      }, 10);
+
+      // mobile menu
+      const btnMenu = document.querySelector(".btn-menu");
+      btnMenu?.addEventListener("click", () => {
+        htmlClass.toggle("open");
+      });
+
+      // dark theme
+      const setDark = (isDark) => {
+        if (isDark) {
+          htmlClass.add("dark");
+        } else {
+          htmlClass.remove("dark");
+        }
+        const mode = isDark ? "dark" : "light";
+        document.body.dispatchEvent(new CustomEvent("set-theme", { detail: mode }));
+        document.querySelector("#giallo")?.setAttribute("href", `/giallo-${mode}.css`);
+        localStorage.setItem("dark", isDark);
+      };
+
+      // init
+      const darkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+      if (htmlClass.contains("dark")) {
+        setDark(true);
+      } else {
+        const darkVal = localStorage.getItem("dark");
+        setDark(darkVal ? darkVal === "true" : darkScheme.matches);
+      }
+
+      // listen system
+      darkScheme.addEventListener("change", (event) => {
+        setDark(event.matches);
+      });
+
+      // manual switch
+      const btnDark = document.querySelector(".btn-dark");
+      btnDark.addEventListener("click", () => {
+        setDark(localStorage.getItem("dark") !== "true");
+      });
+    </script>
+    
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/about"
+            >About</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/projects"
+            >Projects</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/blog"
+            >Blog</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/tags"
+            >Tags</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/docs"
+            >Docs</a
+          >
+        </li>
+        
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-lg font-medium lg:px-3 lg:py-0"
+            href="https://cakehonolulu.github.io/cv"
+            >CV</a
+          >
+        </li>
+        
+      </ul>
+      <!-- Header Nav inject -->
+      
+
+    </nav>
+    
+  </div>
+</header>
+
+
+    <!-- Body Start inject -->
+    
+
+
+    <div class="flex">
+      <div class="order-1 hidden w-[calc((100%-var(--container-3xl))/2)] lg:block"></div>
+      <aside
+        class="sticky top-0 order-3 mt-48 hidden h-min w-[calc((100%-var(--container-3xl))/2)] lg:block"
+      >
+        
+
+      </aside>
+      <main
+        class="prose prose-neutral dark:prose-invert prose-pre:rounded-lg prose-img:rounded-lg order-2 mx-auto min-h-[calc(100vh-9rem)] w-full max-w-3xl px-4 pt-24 pb-16 wrap-break-word lg:pt-32"
+      >
+        
+<article>
+  <!-- Page Start inject -->
+  
+
+
+  <header class="mb-16">
+    <h1 class="my-0! pb-2.5">Honey, I shrunk the TV</h1>
+    <div class="text-sm antialiased opacity-60">
+  
+  <time>2026-10-19</time>
+  <span class="mx-1">&middot;</span>
+  <span>10min</span>
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <span class="mx-1">&middot;</span>
+  <span>cakehonolulu</span>
+  
+  <!-- Page Info inject -->
+  
+
+</div>
+
+  </header>
+
+  
+
+  <!-- TOC -->
+  
+<nav class="block-bg prose-a:secondary-link mb-12 flex rounded-lg p-2 text-lg">
+  <details>
+    <summary class="cursor-pointer py-1 pl-4">
+      <span class="ml-2">Table of Contents</span>
+    </summary>
+    <ul class="mx-2">
+      
+      <li>
+        <a href="#preface">Preface</a>
+        
+      </li>
+      
+      <li>
+        <a href="#my-setup">My setup</a>
+        
+      </li>
+      
+      <li>
+        <a href="#new-product-lineup">New product lineup</a>
+        
+      </li>
+      
+      <li>
+        <a href="#configuration-issues">Configuration issues</a>
+        
+      </li>
+      
+      <li>
+        <a href="#the-actual-q-symphony-limitation">The actual Q-Symphony &quot;limitation&quot;</a>
+        
+      </li>
+      
+      <li>
+        <a href="#enter-the-service-menu">Enter the service menu</a>
+        
+      </li>
+      
+    </ul>
+  </details>
+</nav>
+
+
+
+  <!-- Content -->
+  <section><div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/tv_symphony/honey.png" alt="Honey, I shrunk the TV" />
+<em>Graphic design is my passion</em></p>
+</div>
+<h2 id="preface">Preface</h2>
+<p>Some time ago, when I was deciding what sound system I wanted for my restroom, I stumbled across Samsung's (At that time, flagship) Q990D soundbar.</p>
+<div style="text-align: center;">
+<p><img src="https://www.stereoindex.com/tech/wp-content/uploads/2024/03/Samsung-HW-Q990D-Review.jpg" alt="Soundbar" />
+<em>The Q990D</em></p>
+</div>
+<p>I've always wanted an AVR since it basically enables me to improve the sound stage in a way that is more tailored to how I like things to sound; but oh my, they ain't cheap...</p>
+<h2 id="my-setup">My setup</h2>
+<p>So I went with the soundbar (r/hometheater please put down your pitchforks).</p>
+<p>It was heavily discounted since the new model had already been announced so it made sense for me.</p>
+<p>For the price, it does a good enough job for me; but one thing that kinda bothered me is that the sound coming out of the actual soundbar (The front part of the mix, basically) sounded too "crowded"/compressed.</p>
+<p>Like, it wasn't wide <em>enough</em> for my liking, center channel and the 2 fronts seemed like a single one; which makes sense since this is a soundbar after all, <em>lol</em>.</p>
+<p>I also want to say that by no means I'm an audio <em>connoisseur</em> so some of the terms I may use to describe the sound stage may be completely wrong, but hopefully you get the idea.</p>
+<p>Using Samsung's "SmartThings" app (Or the soundbar's remote) you can basically configure the soundbar to your liking, from the usual EQ stuff and sound modes, to speaker levels and all that. One particular setting that <em>piqued</em> my interest was the ability to configure the Q990D satellite (Traditionally, rear) speakers as front drivers instead of surrounds.</p>
+<div style="text-align: center;">
+<p><img src="https://preview.redd.it/in-front-mode-on-the-q990d-which-side-do-i-place-the-rear-v0-byh2hffhz1ce1.jpeg?width=690&amp;format=pjpg&amp;auto=webp&amp;s=66c00d8afb9ffaad9e983d2f2baf94e86716bddd" alt="Manual" />
+<em>Also stated as a valid config on the manual</em></p>
+</div>
+<p>I was actually interested on seeing if this would improve the sound, so I made some quick tests and indeed; the front sound stage improved. Issue is, I now didn't have rears...</p>
+<p>Whilst you can set a custom sound mode that "virtualizes" surround speakers (To my knowledge, it basically tries to use the satellite and the bar's side-firing speakers to bounce off your walls a surround-<em>ish</em> sounding sound; which... well...) I kinda wanted to have the best of the 2 worlds; but at the time I investigated how I could do so, the best way to go with it was to use the Samsung Music Frames...</p>
+<div style="text-align: center;">
+<p><img src="https://images.samsung.com/is/image/samsung/p6pim/es/feature/165208653/es-feature--nbsp-541096918?$FB_TYPE_A_MO_JPG$" alt="Samsung Music Frames" />
+<em>The things</em></p>
+</div>
+<p>...but I think it looked to hideous...</p>
+<p>So on I went with my life.</p>
+<h2 id="new-product-lineup">New product lineup</h2>
+<p>Sometime in 2026, Samsung announced 2 new wired/wireless speaker lineups; the Music Studio(s).</p>
+<div style="text-align: center;">
+<p><img src="https://preview.redd.it/samsung-3-1-1-music-studio-7-will-finally-make-me-want-to-v0-nfjvwl23v5bg1.jpg?width=640&amp;crop=smart&amp;auto=webp&amp;s=07d0ec316df1ac2576e624d5ba23523461b5614d" alt="Samsung Music Studios" />
+<em>Music Studio 5 and 7, respectively</em></p>
+</div>
+<p>The Music Studio 7 immediately caught my attention, whilst it was priced steeply (Again, for what you pay for the Q990D, the Studios and the Samsung TV you can probably get a much better AVR setup) it sounded (Pun intended) like it was probably what I was looking for.</p>
+<p>After some online searching, I found out that I could leverage Samsung's Q-Symphony to drive both the soundbar (And it's satellites) and the 2 Music Studio 7s on my setup.</p>
+<p>Q-Symphony, at the best of my knowledge, is an "orchestration" system that Samsung has (Similar to LG's WOWCast/WOW Orchestra) to enable simultaneous driving on (Usually) the TV's built-in speaker and your soundbar.</p>
+<p>The general opinion is that it doesn't make much sense to use it if you have a mid-to-high end soundbar (Since the TV speakers are usually "inferior" to those on the soundbar) and can create sound signature issues and whatnot. But it turns out it can also enable the use of other (Samsung-branded, of course) speakers.</p>
+<p>So I thought, hey, maybe this is worth a shot.</p>
+<p>Lo-and-behold, a week later they arrived.</p>
+<h2 id="configuration-issues">Configuration issues</h2>
+<p>I quickly unboxed the speakers, found a placeholder location to install them (I wanted to test them before commiting to a full install) and tried to configure them. To my surprise, I couldn't get the TV to recognize them in any way.</p>
+<p>After lots of digging and testing, I stumbled across an interesting message on the SmartThings app (Within the Music Studio 7 configuration menu).</p>
+<p>If your Wi-Fi router has <a rel="external" href="https://en.wikipedia.org/wiki/Dynamic_frequency_selection">DFS</a> enabled (I'm no expert, but it basically lets the router choose what channel to use for wireless communications) the Music Studio 7s outright refuse to connect to the TV (Or well, anything really; at least over Wi-Fi).</p>
+<p>The application vaguely let you know this (Not during setup, not during configuration, not during anything important when it comes to initializing and properly using them; funny) when you try to change what endpoint you want to connect to, this is like, 3-4 submenus deep in the config.</p>
+<p>So, I chose one of the supported channels on my router and they then, connected to the TV just fine.</p>
+<p>It kinda suprised me because it's the first device I ever encounter that has this "limitation". I figure that since Q-Symphony can be used over Wi-Fi, they want the thing to run as stable as possible (Even if that means a fixed channel, the use of the 5GHz band...), but I've never seen other devices try to go this far to even just work.</p>
+<p>After this, I proceeded to configure Q-Symphony. Second surprise of the day, if I wanted to drive both the soundbar and the Studios; I'd have to do so through' Wi-Fi entirely. It didn't matter if the soundbar was connected through' HDMI eARC to the TV (And the fact that I tried a few times Q-Symphony with the TV speakers to see how it worked and it let me do so using wired HDMI eARC just fine...).</p>
+<p>Weird thing, after some research online it seems that at some point someone somewhere on Samsung did <em>indeed</em> tell consumers that it was a feature Q-Symphony has (Like, the ability to use the soundbar in wired mode and the rest in wireless).</p>
+<p>Q-Symphony also seems to be mostly reserved for wireless use for some reason, I understand it from a marketing perspective (If you are trying to ) and ease of use, but it'd be cool to have the ability to also have the setup working in "wired" mode. This would make it argueably easier to set up, if you take out cableing from the equation that is. Side-effect is that you don't get the possible latency/disconnects/issues that wireless brings to the table.</p>
+<p>Anyway, I'm still deciding whether to put them on the front or the back; since Q-Symphony is pretty opaque and Samsung doesn't really tell much about it, I'm not entirely sure how many shortcuts it takes when it comes to doing the audio distribution.</p>
+<p>My main concern is:</p>
+<ul>
+<li>If I put the Music Studio 7s as surrounds and the Q990Ds satellites as fronts (Through the SmartThings app), will it do the channel separation correctly?</li>
+</ul>
+<p>The concern basically exists due to the fact that when I used the satellites as fronts w/o any surround mode or surround virtualization, you couldn't reallly hear the surround sound at all; which is to be expected.</p>
+<p>But since the inner workings of the system are undocumented I'm not particularly sure that they are doing proper channel driving based on what the setup looks like or if it just takes the least/most-common-denominator of the setup (Like, soundbar with whatever satellite config, be it with or without surround) and then mixes the rest of the speakers accordingly, effectively making the Studio 7s not play "true" surround channel audio and instead something Q-Symphony's algorithm spews or if it's intelligent enough to send the mix correctly depending on what the spatial configuration is.</p>
+<p>But I fear I don't have an answer to that, at least yet.</p>
+<p>Regardless, after all this setup and whatnot; the Studio 7s are now happily living as front speakers (And the soundbar acts like the central channel, of sorts).</p>
+<h2 id="the-actual-q-symphony-limitation">The actual Q-Symphony "limitation"</h2>
+<p>After some days of use, I started noticing some amount of "echo" when watching the TV. It was mostly noticeable whenever a specific sound was "moving" from the fronts to surround (For example, I was playing GTA 5 and when panning the view, certain NPC dialogues that moved from the fronts to the surrounds) or with certain types of dialogues (That are close to the microphone when being recorded, for instance).</p>
+<p>I was pretty confused and I thought it had to do with wireless latency issues with the Music Studio 7s. While it is related to latency (I think), the issue wasn't the Studio 7s <em>per se</em>, but the TV speakers.</p>
+<p>Some testing endured and I found out that, indeed, the Music Studio 7s and the soundbar were slightly later to the party when it comes to playing sounds vs the TV. My guess is that Q-Symphony doesn't insert a dynamic/"measured" delay when playing on the built-in speakers to ensure it doesn't play before the rest of the sound system does (Again, due to Wi-Fi and all that) so you get this issue.</p>
+<p>I thought well, no big deal; I just disable the TV speakers and call it a day. After all, the slight delay goes unnoticed for me (I can't really tell if there's noticeable lipsync delay and similar) so it's not like I'd be disabling something super important...</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/tv_symphony/speaker-control.png" alt="The problem" />
+<a rel="external" href="https://www.samsung.com/my/support/tv-audio-video/how-to-enjoy-q-symphony-on-your-samsung-tv/"><em>The problem</em></a></p>
+</div>
+<p>Apparently disabling the TV Speakers from Q-Symphony is limited to 2026+ hardware.</p>
+<p><em>what.</em></p>
+<p>So here I was, thinking how something like not driving a set of speakers was tied behind a paywall. And it's not like my 2025 TV doesn't have the processing power to not do so.</p>
+<p><em>lol.</em></p>
+<p>I started thinking, well, maybe I could disassemble the TV and see if I could disconnect those, but it was probably way too much work (And the risks it comes with); but what if somehow unplugging them makes it so that Q-Symphony gets disabled somehow? I couldn't risk it...</p>
+<h2 id="enter-the-service-menu">Enter the service menu</h2>
+<p>Nowadays, there's usually a TV remote button configuration that lets you access the "secret" menu of your TV (For mainstream brands at least). It <em>may</em> contains stuff like panel calibration, power-related stuff, maintenance mode things... It all really depends on the model and maker. But most importantly; it <em>may</em> contain audio-related settings that are otherwise not available on the regular menus.</p>
+<p>So I did what a sane person would do, which is, investigate the menu:</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/tv_symphony/service.jpeg" alt="The service menu" />
+<em>Mute + Up + Down + Center + Mute is the <a rel="external" href="https://en.wikipedia.org/wiki/Konami_Code">Konami-code</a> combination for my particular model</em></p>
+</div>
+<p>I fiddled with the submenus until I stumbled across the "Power" submenu:</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/tv_symphony/volume.jpeg" alt="The power menu" />
+<em>Min/Max volume options!</em></p>
+</div>
+<p>There it was, I saw 2 interesting options; "Min Volume" and "Max Volume" whose values are 0 and 100 respectively by default. I thought that maybe, setting "Max Volume" to 0 would mute the TV speakers; but at the same time someone might've been smart enough to also cap the maximum output for <em>the rest</em> of the audio system...</p>
+<p>I'm happy to report that, indeed, it mutes the built-in speakers but the rest all work just fine! My guess is that since Q-Symphony works over Wi-Fi they just didn't do whatever check they run but on the wireless source too:</p>
+<pre class="giallo z-code" ><code data-lang="c"><span class="giallo-l"><span class="z-17">extern</span><span class="z-3"> int</span><span> audio_cap_max_service_mode</span><span class="z-9">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-3">void</span><span class="z-18"> process_audio</span><span>(...) {</span></span>
+<span class="giallo-l"><span class="z-3">    int</span><span> audio_level </span><span class="z-16">=</span><span class="z-18"> get_tv_audio_lvl</span><span>(...)</span><span class="z-9">;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-4 z-i">    // Super duper simplification lol, the bug is surely something else (I hope)</span></span>
+<span class="giallo-l"><span class="z-17">    if</span><span> (audio_src </span><span class="z-16">==</span><span> TV </span><span class="z-16">||</span><span> audio_src </span><span class="z-16">==</span><span> HDMI </span><span class="z-16">||</span><span> audio_src </span><span class="z-16">==</span><span> OPTICAL </span><span class="z-16">||</span><span> audio_src </span><span class="z-16">==</span><span> eARC) {</span></span>
+<span class="giallo-l"><span>        audio_level </span><span class="z-16">=</span><span class="z-18"> min</span><span>(audio_level</span><span class="z-9">,</span><span> audio_cap_max_service_mode)</span><span class="z-9">;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-4 z-i">    // Q-Symphony unaffected... heh</span></span>
+<span class="giallo-l"><span>    ...</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>It sure feels like some check wasn't done somewhere, but hey, I'll take it :)</p>
+<div style="text-align: center;">
+<p><img src="https://cakehonolulu.github.io/images/tv_symphony/symphony-settings.jpg" alt="Q-Symphony Settings" />
+<em>Woohoo</em></p>
+</div>
+<p>It still quirks me a bit that I don't get to know how Q-Symphony truly does it's mixing and output but at least I don't have the jarring echo.</p>
+<p>This makes me question why would Samsung paywall something like this. It's not that they can't do it <em>right now</em> for older TVs. Why would they choose greed this out (Moreso when it can end up in a bad sound experience on a system they designed and advertised!). What hardware feature do you need to mute the output on newer TVs that mine doesn't have?</p>
+<p>But it's 2026, and corporate greed is rampant; so whatever.</p>
+</section>
+
+  <hr />
+
+  <!-- Post Taxonomies -->
+  
+<footer class="mt-12 flex flex-col">
+  <!---->
+  <!---->
+  <!---->
+  <!---->
+  
+  <div class="mb-2 flex flex-wrap">
+    <span class="block-bg mr-1.5 mb-1.5 rounded-lg px-5 py-1.5">Tags </span>
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/tv/"
+      >tv</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/smarttv/"
+      >smarttv</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/samsung/"
+      >samsung</a
+    >
+    
+    <a
+      class="block-bg block-hover mr-1.5 mb-1.5 rounded-lg px-5 py-1.5 no-underline"
+      href="https://cakehonolulu.github.io/tags/qsymphony/"
+      >qsymphony</a
+    >
+    
+  </div>
+  
+</footer>
+
+
+
+  <!-- Post Nav -->
+  
+<nav class="block-bg mt-12 flex flex-wrap rounded-lg text-lg">
+  
+  <a
+    class="block-hover-mask flex min-w-[50%] grow items-center rounded-l-md p-6 pr-3 font-semibold no-underline"
+    href="https://cakehonolulu.github.io/linux-on-32x/"
+    ><span class="mr-1.5">←</span><span>Linux on the Sega 32X. Who needs hardware synchronization primitives anyway?</span></a
+  >
+  <!---->
+  
+</nav>
+
+
+
+  <!-- Comment -->
+  <!---->
+  
+<div class="giscus mt-12"></div>
+<script
+  src="https://giscus.app/client.js"
+  data-repo="cakehonolulu/cakehonolulu.github.io"
+  data-repo-id="R_kgDOHe4GmA"
+  data-category="General"
+  data-category-id="DIC_kwDOHe4GmM4DI_sO"
+  data-mapping="pathname"
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="catppuccin_macchiato"
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+></script>
+
+<!---->
+  
+
+  <!-- Page End inject -->
+  
+
+</article>
+
+      </main>
+    </div>
+
+    <footer class="mx-auto flex max-w-3xl flex-wrap items-center px-8 py-4 text-sm opacity-60">
+  <div class="mr-auto basis-full lg:basis-1/2">
+    <!---->
+    <!---->
+    &copy; 2022 - 2026<!---->
+    
+    <a class="link" href="https://cakehonolulu.github.io">
+      cakehonolulu
+    </a>
+     |<!---->
+    
+    <a class="link" href="https://mit-license.org/" rel="noopener" target="_blank">
+      MIT
+    </a>
+    <!---->
+    
+  </div>
+  <div class="flex basis-full lg:basis-1/2 lg:justify-end">
+    <a class="link mr-6 lg:ml-6" href="https://www.getzola.org/" rel="noopener" target="_blank">
+      Powered by Zola
+    </a>
+    <a class="link" href="https://github.com/st1020/kita" rel="noopener" target="_blank">✎ Kita</a>
+  </div>
+  <!-- Footer inject -->
+  
+
+</footer>
+
+
+    <!-- Body End inject -->
+    
+
+  </body>
+</html>
