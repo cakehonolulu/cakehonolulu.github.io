@@ -53,6 +53,20 @@ url = "$BASE_URL/docs"
 name = "CV"
 url = "$BASE_URL/cv"
 
+[extra.giscus]
+repo = "cakehonolulu/cakehonolulu.github.io"
+repo_id = "R_kgDOHe4GmA"
+category = "General"
+category_id = "DIC_kwDOHe4GmM4DI_sO"
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "bottom"
+theme = "catppuccin_macchiato"
+lang = "en"
+loading = "lazy"
+
 [extra.profile]
 name = "cakehonolulu"
 bio = "A blog containing my personal rants and findings about software"
