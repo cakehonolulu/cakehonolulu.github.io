@@ -97,7 +97,7 @@ $$
 
 And cool diagrams:
 
-{% mermaid() %}
+{% <mermaid> %}
 graph TD
     A[(I start a blog)] --> B(I try not to forget about it)
     B --> C{I learn a new technology}
@@ -106,6 +106,6 @@ graph TD
     E --> B
     D --> F[I try not to forget about it????]
     F --> B
-{% end %}
+{% </mermaid> %}
 
 So yeah, a lot of cool stuff, and it's super fast (And secure, _duh_!) (_Take that Meta!_)

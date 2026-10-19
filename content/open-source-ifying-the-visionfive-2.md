@@ -76,7 +76,7 @@ When the board powers on, the CPU executes a ZSBL (Zero-stage bootloader) ~~pres
 
 Then, it jumps to a cut-down u-boot that gets loaded off of flash storage. It's called **u-boot SPL** (**S**econd **P**rogram **L**oader), it basically exists to provide a bit of a richer environment to run code on; it has a few interesting things bootloader-wise (It can load things off of an SPI NOR/NAND for instance) but not much else; it's task is to bootstrap into OpenSBI to finally enter RISC-V's S (**S**upervisor) mode and act as a handler for a few "supervisor" calls launched from lower privilege levels.
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     ZSBL["ZSBL<br/>(Zero stage bootloader)"] --> SPL["u‑boot SPL<br/>(Second program loader)"]
     SPL --> OpenSBI["OpenSBI"]
@@ -91,7 +91,7 @@ graph LR
     %% -- assign nodes to classes
     class M m_mode
     class S s_mode
-{% end %}
+{% </mermaid> %}
 
 ### RISC-V Supervisor-mode stage
 
@@ -109,7 +109,7 @@ So once the boot media is decided, it does the exciting `jmp` (Or should I say `
 
 Incidentally, Linux also _technically_ runs in S-mode; so we're missing one last stage; current event horizon is as follows:
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
     UBOOT["u‑boot"] --> eMMC["eMMC"]
     UBOOT --> SDIO["SDIO<br/>(SD Card)"]
@@ -118,13 +118,13 @@ graph LR
     eMMC --> Linux["Linux"]
     SDIO --> Linux
     NVME --> Linux
-{% end %}
+{% </mermaid> %}
 
 ### RISC-V User-mode stage
 
 Right after Linux finishes bootstraping all the required things for it, proceeds to setup user-mode registers (CSRs) and delegates the control to the least-privilged mode sometime after loading the required system services. So in a way, Linux _kinda_ lives in 2 separate privilege levels at the same time (Not that different from what you'd see on x86 _technically_).
 
-{% mermaid() %}
+{% <mermaid> %}
 graph LR
   %% -- Machine mode group
   subgraph "Machine mode"
@@ -179,7 +179,7 @@ graph LR
   class NVME device
   class LinuxUser usermode
 
-{% end %}
+{% </mermaid> %}
 
 That's it, that's the full chain.
 

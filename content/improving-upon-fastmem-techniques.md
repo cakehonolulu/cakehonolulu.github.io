@@ -450,7 +450,7 @@ Imagine your emulator has to wait some time waiting for some IO stuff to happen;
 
 ## General flow
 
-{% mermaid() %}
+{% <mermaid> %}
 %%{init: { 'themeVariables': { 'fontSize': '20px'}, 'flowchart': {'subGraphTitleMargin': {'bottom': 35}} }}%%
 flowchart TD
   subgraph JIT ["JIT context"]
@@ -465,7 +465,7 @@ flowchart TD
     F --> G[Return to JIT]
   end
   G --> C
-{% end %}
+{% </mermaid> %}
 <div style="text-align: center;">
 <i>General flow schema for patching the JIT callsite</i>
 </div>
